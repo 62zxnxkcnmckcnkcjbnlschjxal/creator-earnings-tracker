@@ -1910,7 +1910,14 @@ function loadAuthStatus(){
       return;
     }
     return loadAuthConfig();
-  }).catch(function(){ authHint('无法连接访问验证接口（本地预览环境正常现象）',''); });
+  }).catch(function(e){
+    var msg='无法连接访问验证接口';
+    if(e && e.status===404) msg='访问验证接口未部署（/api/auth 返回 404）：请确认已上传 functions/_middleware.js 和 functions/api/auth.js 并重新部署';
+    else if(location.protocol==='file:') msg='本地打开文件时无法调用接口，部署到 CF 后正常';
+    authHint(msg,'err');
+    var my=document.getElementById('authMyIp');
+    if(my) my.textContent='-';
+  });
 }
 function loadAuthConfig(){
   return fetch('/api/auth/config').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
@@ -1922,7 +1929,7 @@ function loadAuthConfig(){
     renderAuthIpList();
     var hint='已登录 · 密码'+(d.passwordViaEnv?'由 CF 密文 ACCESS_PASSWORD 提供':'已设置'+(d.passwordSet?'':'（未设置，需先设置密码才能启用）'));
     authHint(hint,'ok');
-  }).catch(function(){ authHint('读取配置失败（接口未部署或未授权）',''); });
+  }).catch(function(){ authHint('读取配置失败：接口未部署（404）或当前未解锁（401），请先确认部署状态','err'); });
 }
 function saveAuthConfig(payload){
   return fetch('/api/auth/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
@@ -1946,11 +1953,14 @@ if(authSaveEl) authSaveEl.addEventListener('click',function(){
       authHint((res.d&&res.d.error)||'保存失败','err');
       if(res.s===401){ toast('未授权：请先通过密码解锁'); authHint('未授权：请先通过密码解锁','err'); }
     }
+  }).catch(function(){
+    authHint('保存失败：访问验证接口不可用（请确认已部署 functions/_middleware.js 与 auth.js，并重新部署站点）','err');
+    toast('保存失败：接口未部署或网络异常');
   });
 });
 var authAddEl=document.getElementById('authAddIp');
 if(authAddEl) authAddEl.addEventListener('click',function(){
-  if(!authState.ip || authState.ip==='unknown'){ authHint('无法获取当前 IP','err'); return; }
+  if(!authState.ip || authState.ip==='unknown'){ authHint('无法获取当前 IP：/api/auth/status 接口未生效（请确认已部署 functions 并重新部署站点）','err'); return; }
   if(authState.ipWhitelist.indexOf(authState.ip)<0) authState.ipWhitelist.push(authState.ip);
   renderAuthIpList();
   authHint('已把当前 IP 加入白名单，记得点「保存验证设置」','');
