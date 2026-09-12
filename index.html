@@ -768,6 +768,17 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
               <div class="set-hint" id="nmpStatusHint" style="display:none;margin-top:6px;padding:8px 10px;border-radius:8px;font-size:12px;"></div>
             </div>
             <div class="set-group">
+              <div class="set-title">访问验证（服务端拦截）</div>
+              <label class="set-row"><span>启用访问验证</span><input type="checkbox" id="authEnabled"></label>
+              <div class="set-row"><span>访问密码</span><input type="password" id="authPassword" placeholder="留空表示不修改当前密码"></div>
+              <div class="set-row"><span>当前访问 IP</span><span id="authMyIp" style="font-family:ui-monospace,monospace;font-size:12.5px;color:var(--muted);"></span><button class="btn btn-soft" id="authAddIp" style="flex-shrink:0;">加入白名单</button></div>
+              <div class="set-row"><span>IP 白名单</span><span id="authIpList" style="flex:1;font-size:12.5px;color:var(--muted);"></span></div>
+              <div class="set-actions"><button class="btn btn-soft" id="authSave">保存验证设置</button><button class="btn btn-soft" id="authLogout">退出登录</button></div>
+              <div class="set-hint" id="authHint" style="display:none;margin-top:6px;padding:8px 10px;border-radius:8px;font-size:12px;"></div>
+              <div class="set-hint">启用后，未授权设备（不在 IP 白名单、未通过密码解锁）将无法加载本网站任何页面与接口。解锁凭证为 HttpOnly Cookie，30 天内有效；连续输错 5 次密码会锁定 10 分钟。密码也可在 Cloudflare 配置加密密文 <b>ACCESS_PASSWORD</b>（env 优先，更安全）。</div>
+              <div class="set-hint" style="background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border);">启用前请务必记好密码，或先在 CF 配置 ACCESS_PASSWORD 密文兜底；若同时清空密码和白名单，验证会自动关闭，防止把站点锁死。</div>
+            </div>
+            <div class="set-group">
               <div class="set-title">DeepSeek</div>
               <div class="set-row"><span>服务器密钥</span><span id="dsKeyStatus" style="font-size:13px;font-weight:600;color:var(--muted);">检测中…</span></div>
               <div class="set-row"><span>API Key（本地）</span><input type="password" id="dsApiKey" placeholder="sk-...（服务器已配置时可留空）"></div>
@@ -776,7 +787,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
               <div class="set-hint" id="dsKeyStatusHint" style="display:none;margin-top:6px;padding:8px 10px;border-radius:8px;font-size:12px;"></div>
               <div class="set-hint">密钥优先级：Cloudflare 加密环境变量 > 本地填写的 Key。服务器已配置时本地可不填。对话通过 Cloudflare 代理转发，密钥始终不暴露给前端。</div>
               <div class="set-hint" id="dsDeployHint" style="display:none;margin-top:6px;padding:8px 10px;border-radius:8px;font-size:12px;background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border);">
-                <strong>接口未部署</strong>：当前环境无法调用 /api/deepseek。若使用 Cloudflare Pages，请通过 Git 集成或 Wrangler CLI 部署（Dashboard 直接上传 zip 不会部署 functions/ 目录）。<a href="javascript:void(0)" onclick="switchTab('privacy')" style="color:var(--danger);text-decoration:underline;">查看部署说明</a>
+                <strong>接口未部署</strong>：当前环境无法调用 /api/deepseek。若使用 Cloudflare Pages，请通过 Git 集成或 Wrangler CLI 部署（Dashboard 直接上传 zip 不会部署 functions/ 目录）。<a href="#privacy" style="color:var(--danger);text-decoration:underline;">查看部署说明</a>
               </div>
             </div>
           </div>
@@ -825,7 +836,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             <div class="footer" id="globalFooter">
         <div class="privacy-footer-summary">
           创作者收益工作台 — 非官方个人自用工具 ·
-          <a href="javascript:void(0)" onclick="switchTab('privacy')">隐私政策与品牌声明</a>
+          <a href="#privacy">隐私政策与品牌声明</a>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px;">
           <span class="footer-hint">数据自动云端同步（部署到 CF 后多设备共享）；断网时保存在本浏览器，恢复后自动推送。CSV / JSON 备份恢复照常可用。</span>
@@ -1013,6 +1024,7 @@ document.querySelectorAll('.tab').forEach(function(tab){
 });
 function switchTab(name){
   activeTab=name;
+  try{ if(location.hash!=='#'+name) history.replaceState(null,'','#'+name); }catch(e){}
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active',t.dataset.tab===name); });
   document.getElementById('viewHome').hidden=(name!=='home');
   document.getElementById('viewDone').hidden=(name!=='done');
@@ -1028,6 +1040,13 @@ function switchTab(name){
   var gf=document.getElementById('globalFooter');
   if(gf) gf.hidden=(name!=='home' && name!=='settings');
 }
+// hash 路由：地址栏 #privacy 等可直接打开对应页，支持前进后退
+window.addEventListener('hashchange',function(){
+  var n=(location.hash||'').replace('#','').trim();
+  var views=['home','done','chat','notice','privacy','settings'];
+  if(n && views.indexOf(n)>=0) switchTab(n);
+});
+(function(){ var n=(location.hash||'').replace('#','').trim(); if(n) switchTab(n); })();
 
 /* ---- 占比条渲染（汇总卡 + 实况栏共用） ---- */
 function fillShare(barEl, legendEl){
@@ -1845,6 +1864,104 @@ function markdownToHtml(raw){
   }
   return out.join('');
 }
+
+/* ---- 访问验证（服务端拦截） ---- */
+var authState={enabled:false,authed:false,ip:'',ipWhitelist:[],passwordSet:false,passwordViaEnv:false};
+function authHint(msg,type){
+  var el=document.getElementById('authHint');
+  if(!el) return;
+  if(!msg){ el.style.display='none'; el.textContent=''; return; }
+  el.style.display='block';
+  el.textContent=msg;
+  if(type==='ok'){ el.style.background='var(--green-soft)'; el.style.color='var(--green)'; el.style.border='1px solid var(--green-border)'; }
+  else if(type==='err'){ el.style.background='var(--danger-soft)'; el.style.color='var(--danger)'; el.style.border='1px solid var(--danger-border)'; }
+  else { el.style.background='var(--soft)'; el.style.color='var(--muted)'; el.style.border='1px solid var(--border)'; }
+}
+function renderAuthIpList(){
+  var el=document.getElementById('authIpList');
+  if(!el) return;
+  if(!authState.ipWhitelist.length){ el.textContent='（空）'; return; }
+  el.textContent='';
+  authState.ipWhitelist.forEach(function(ip){
+    var chip=document.createElement('span');
+    chip.style.cssText='display:inline-flex;align-items:center;gap:6px;background:var(--soft);border:1px solid var(--border);border-radius:6px;padding:2px 8px;margin:2px 4px 2px 0;font-family:ui-monospace,monospace;font-size:12px;';
+    chip.textContent=ip;
+    var del=document.createElement('button');
+    del.type='button';
+    del.textContent='×';
+    del.style.cssText='border:0;background:none;cursor:pointer;color:var(--danger);font-size:13px;padding:0;';
+    del.addEventListener('click',function(){
+      authState.ipWhitelist=authState.ipWhitelist.filter(function(x){return x!==ip;});
+      renderAuthIpList();
+    });
+    chip.appendChild(del);
+    el.appendChild(chip);
+  });
+}
+function loadAuthStatus(){
+  fetch('/api/auth/status').then(function(r){return r.json();}).then(function(d){
+    authState.enabled=!!d.enabled; authState.authed=!!d.authed; authState.ip=d.ip||'';
+    var en=document.getElementById('authEnabled');
+    var my=document.getElementById('authMyIp');
+    if(en) en.checked=authState.enabled;
+    if(my) my.textContent=authState.ip||'-';
+    if(!authState.authed){
+      if(authState.enabled) authHint('当前设备未解锁（未授权访问会被服务端拦截）','err');
+      return;
+    }
+    return loadAuthConfig();
+  }).catch(function(){ authHint('无法连接访问验证接口（本地预览环境正常现象）',''); });
+}
+function loadAuthConfig(){
+  return fetch('/api/auth/config').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
+    authState.ipWhitelist=d.ipWhitelist||[];
+    authState.passwordSet=!!d.passwordSet;
+    authState.passwordViaEnv=!!d.passwordViaEnv;
+    var en=document.getElementById('authEnabled');
+    if(en) en.checked=!!d.enabled;
+    renderAuthIpList();
+    var hint='已登录 · 密码'+(d.passwordViaEnv?'由 CF 密文 ACCESS_PASSWORD 提供':'已设置'+(d.passwordSet?'':'（未设置，需先设置密码才能启用）'));
+    authHint(hint,'ok');
+  }).catch(function(){ authHint('读取配置失败（接口未部署或未授权）',''); });
+}
+function saveAuthConfig(payload){
+  return fetch('/api/auth/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+    .then(function(r){ return r.json().then(function(d){ return {s:r.status,d:d}; }); });
+}
+var authSaveEl=document.getElementById('authSave');
+if(authSaveEl) authSaveEl.addEventListener('click',function(){
+  var en=document.getElementById('authEnabled');
+  var pwd=document.getElementById('authPassword');
+  var payload={ enabled: en?en.checked:false };
+  if(pwd && pwd.value.trim()) payload.password=pwd.value.trim();
+  if(authState.ipWhitelist.length || payload.enabled) payload.ipWhitelist=authState.ipWhitelist;
+  saveAuthConfig(payload).then(function(res){
+    if(res.s===200 && res.d.ok){
+      authHint('验证设置已保存'+(res.d.config&&res.d.config.enabled?'，访问验证已启用':'，访问验证未启用'),'ok');
+      authState.enabled=!!(res.d.config&&res.d.config.enabled);
+      if(authState.enabled) toast('访问验证已启用，未授权设备将被拦截');
+      if(pwd) pwd.value='';
+      if(en) en.checked=authState.enabled;
+    }else{
+      authHint((res.d&&res.d.error)||'保存失败','err');
+      if(res.s===401){ toast('未授权：请先通过密码解锁'); authHint('未授权：请先通过密码解锁','err'); }
+    }
+  });
+});
+var authAddEl=document.getElementById('authAddIp');
+if(authAddEl) authAddEl.addEventListener('click',function(){
+  if(!authState.ip || authState.ip==='unknown'){ authHint('无法获取当前 IP','err'); return; }
+  if(authState.ipWhitelist.indexOf(authState.ip)<0) authState.ipWhitelist.push(authState.ip);
+  renderAuthIpList();
+  authHint('已把当前 IP 加入白名单，记得点「保存验证设置」','');
+});
+var authLogoutEl=document.getElementById('authLogout');
+if(authLogoutEl) authLogoutEl.addEventListener('click',function(){
+  fetch('/api/auth/logout',{method:'POST'}).then(function(r){return r.json();}).then(function(d){
+    if(d.ok){ authHint('已退出登录，本设备下次访问需重新解锁','ok'); toast('已退出登录'); }
+  });
+});
+setTimeout(loadAuthStatus, 500);
 
 /* ---- DeepSeek 助手 ---- */
 var dsState={messages:[],apiKey:''};
