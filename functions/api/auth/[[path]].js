@@ -8,7 +8,7 @@
  * POST /api/auth/config                          更新验证配置（需已授权）
  * GET  /api/auth/privacy                         隐私政策文本页（公开）
  *
- * 配置存 KV（键 creator_auth_config）；密码可用 CF 加密密文 ACCESS_PASSWORD 覆盖（env 优先）
+ * 配置存 KV（键 creator_auth_config）；密码可用 CF 加密密文 ACCESS_PASSWORD 覆盖（env 优先，仅运行时生效，不写入KV）
  */
 
 const CFG_KEY = 'creator_auth_config';
@@ -24,10 +24,12 @@ async function getConfig(env) {
     const raw = await env.EARNINGS_KV.get(CFG_KEY);
     if (raw) Object.assign(cfg, JSON.parse(raw));
   } catch (e) { /* 忽略 */ }
+  // 环境变量密码仅内存覆盖，不持久化写入KV
   if (env.ACCESS_PASSWORD && typeof env.ACCESS_PASSWORD === 'string' && env.ACCESS_PASSWORD.trim()) {
     cfg.password = env.ACCESS_PASSWORD.trim();
   }
-  cfg.enabled = !!(cfg.enabled && (cfg.password || (Array.isArray(cfg.ipWhitelist) && cfg.ipWhitelist.length > 0)));
+  // ==========【修复】删除这里强制把enabled重置false的代码！============
+  // cfg.enabled = !!(cfg.enabled && (cfg.password || (Array.isArray(cfg.ipWhitelist) && cfg.ipWhitelist.length > 0)));
   return cfg;
 }
 
@@ -185,9 +187,10 @@ export async function onRequestPostConfig(ctx) {
     }
     if (Array.isArray(body.devices)) cfg.devices = body.devices;
 
-    // 安全阀：启用必须至少有一个凭据（密码或白名单），否则拒绝启用
-    if (cfg.enabled && !cfg.password && !(cfg.ipWhitelist && cfg.ipWhitelist.length > 0)) {
-      return json({ error: '启用访问验证前，请先设置访问密码或至少一个 IP 白名单' }, 400);
+    // =========【修复安全阀】识别CF环境变量ACCESS_PASSWORD为有效凭证 =========
+    const hasEnvPwd = !!(ctx.env.ACCESS_PASSWORD && ctx.env.ACCESS_PASSWORD.trim());
+    if (cfg.enabled && !cfg.password && !(cfg.ipWhitelist && cfg.ipWhitelist.length > 0) && !hasEnvPwd) {
+      return json({ error: '启用访问验证前，请先设置访问密码、添加IP白名单，或者配置CF密文ACCESS_PASSWORD' }, 400);
     }
 
     await ctx.env.EARNINGS_KV.put(CFG_KEY, JSON.stringify(cfg));
