@@ -60,9 +60,14 @@ export async function onRequestGet(ctx) {
     const source = url.searchParams.get('source') || 'local';
 
     if (action === 'key-status') {
-      // 只返回 true/false，绝不返回密钥本身
-      const hasEnvKey = !!(ctx.env.DEEPSEEK_API_KEY && typeof ctx.env.DEEPSEEK_API_KEY === 'string' && ctx.env.DEEPSEEK_API_KEY.startsWith('sk-'));
-      return json({ configured: hasEnvKey });
+      // 调试：输出是否存在、密钥长度，不输出明文
+      const rawEnv = ctx.env.DEEPSEEK_API_KEY ?? null;
+      const hasEnvKey = !!(rawEnv && typeof rawEnv === 'string' && rawEnv.startsWith('sk-'));
+      return json({
+        configured: hasEnvKey,
+        envKeyExists: rawEnv !== null,
+        keyLength: rawEnv ? rawEnv.length : 0
+      });
     }
 
     if (action === 'verify') {
