@@ -1020,13 +1020,15 @@ function setThemeName(n){ themeName=n; try{ localStorage.setItem('themeName', n)
 (function(){
 'use strict';
 var STORAGE_KEY='creatorPendingV2';
-var FIXED=['抖音','快手','小红书','网易创作酱'];
-var TYPE_PRESETS=['与光同行奖','全勤奖','匠心创作奖','热点共创奖','热点创意奖','多平台发布奖','拉新活跃奖','基础瓜分','进阶瓜分','新手榜单','创作榜单','追光'];
+var FIXED=['抖音','快手','小红书','网易创作酱','网易光遇追光计划'];
+var TYPE_PRESETS=['基础瓜分','进阶瓜分','新手榜单','创作榜单','追光'];
+var GUANGYU_TYPES=['与光同行奖','全勤奖','匠心创作奖','热点共创奖','热点创意奖','多平台发布奖','拉新活跃奖'];
 var PLATFORM_STYLE={
   '抖音':{c:'#e0204c',bg:'#ffe9ee'},
   '快手':{c:'#e85d04',bg:'#fff1e6'},
   '小红书':{c:'#e6203a',bg:'#ffecee'},
-  '网易创作酱':{c:'#c81e2c',bg:'#fde9eb'}
+  '网易创作酱':{c:'#c81e2c',bg:'#fde9eb'},
+  '网易光遇追光计划':{c:'#b45309',bg:'#fdf3dc'}
 };
 var TYPE_STYLE={
   '与光同行奖':{c:'#b45309',bg:'#fdf3dc'},
@@ -1045,7 +1047,7 @@ var TYPE_STYLE={
 var FALLBACK_STYLE={c:'#475569',bg:'#edf0f5'};
 
 function defaults(){
-  var seedAct={id:uid(),name:'光遇追光计划',platform:'网易创作酱',time:Date.now(),entries:[]};
+  var seedAct={id:uid(),name:'光遇追光计划',platform:'网易光遇追光计划',time:Date.now(),entries:[]};
   return {t:0, activities:[seedAct], notices:[]};
 }
 function load(){
@@ -1336,8 +1338,10 @@ function renderActivity(a){
   }
   var form=document.createElement('form');
   form.className='entry-add';
-  var defType=formDefaults[a.id]||((a.platform==='网易创作酱'||/追光|光遇/.test(a.name||''))?'与光同行奖':'基础瓜分');
-  var opts=TYPE_PRESETS.map(function(t){ return '<option value="'+t+'"'+(t===defType?' selected':'')+'>'+t+'</option>'; }).join('');
+  var isGuangYu=(a.platform==='网易光遇追光计划');
+  var typeList=isGuangYu?GUANGYU_TYPES:TYPE_PRESETS;
+  var defType=formDefaults[a.id]||(isGuangYu?'与光同行奖':(a.platform==='网易创作酱'?'追光':'基础瓜分'));
+  var opts=typeList.map(function(t){ return '<option value="'+t+'"'+(t===defType?' selected':'')+'>'+t+'</option>'; }).join('');
   form.innerHTML=
     '<select class="type-sel">'+opts+'<option value="__custom">自定义…</option></select>'+
     '<input class="type-custom" maxlength="12" placeholder="类型名称" autocapitalize="off" autocorrect="off" spellcheck="false">'+
@@ -1444,8 +1448,9 @@ function addEntry(form,actId){
   if(!(amount>0)){ toast('请输入大于 0 的金额'); return; }
   var note=form.querySelector('.note-in').value.trim();
   a.entries.unshift({id:uid(),type:type,amount:amount,note:note,time:Date.now(),paid:false});
-  var ti=TYPE_PRESETS.indexOf(type);
-  formDefaults[actId]=TYPE_PRESETS[ti>=0?(ti+1)%TYPE_PRESETS.length:0];
+  var tl=(a.platform==='网易光遇追光计划')?GUANGYU_TYPES:TYPE_PRESETS;
+  var ti=tl.indexOf(type);
+  formDefaults[actId]=tl[ti>=0?(ti+1)%tl.length:0];
   save(); renderAll(); toast('已添加 '+money(amount)+'（'+type+'）');
 }
 function deleteEntry(id){
