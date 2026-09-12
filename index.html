@@ -19,8 +19,8 @@ html,body{background:linear-gradient(180deg,#f6f8fc 0%,#eef1f8 100%);color:var(-
 body{min-height:100vh}
 .page{max-width:1180px;margin:0 auto;padding:22px 18px calc(52px + env(safe-area-inset-bottom))}
 /* header */
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-.brand{display:flex;align-items:center;gap:11px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
 .brand .logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#4a6cf7,#7a5cff);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 14px -6px rgba(90,90,255,.55)}
 .brand h1{font-size:18px;font-weight:700;letter-spacing:.2px}
@@ -32,7 +32,14 @@ body{min-height:100vh}
 .sync-badge.s-syncing .sb-dot{background:#b45309}
 .sync-badge.s-error{color:var(--danger);border-color:#f2d3d3;background:var(--danger-soft)}
 .sync-badge.s-error .sb-dot{background:var(--danger)}
-.top-actions{display:flex;gap:8px}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+/* tabs */
+.tabbar{display:flex;gap:8px;margin-bottom:16px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:5px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.tab{flex:1;border:none;background:transparent;border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;min-height:44px}
+.tab:hover{color:var(--text);background:#f4f6fb}
+.tab.active{background:linear-gradient(135deg,#4a6cf7,#7a5cff);color:#fff;box-shadow:0 4px 12px -4px rgba(90,90,255,.5)}
+.tab .cnt{font-size:11px;font-weight:700;background:rgba(0,0,0,.08);border-radius:999px;padding:1px 7px}
+.tab.active .cnt{background:rgba(255,255,255,.25)}
 /* buttons */
 .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:#fff;color:var(--text);
   border-radius:11px;padding:8px 14px;font-size:13.5px;font-weight:500;cursor:pointer;transition:all .15s;line-height:1.4;user-select:none}
@@ -42,6 +49,8 @@ body{min-height:100vh}
 .btn-primary:hover{filter:brightness(1.06)}
 .btn-soft{background:#eef3ff;border-color:#d9e2ff;color:var(--primary);font-weight:600}
 .btn-soft:hover{background:#e2eaff;border-color:#c3d2ff}
+.btn-danger{color:var(--danger);border-color:#f2d3d3;background:#fff}
+.btn-danger:hover{background:var(--danger-soft)}
 /* cards */
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;
   box-shadow:0 1px 2px rgba(16,24,40,.04),0 10px 28px -18px rgba(30,60,180,.14)}
@@ -77,7 +86,7 @@ body{min-height:100vh}
 /* platform grid */
 .platform-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:16px}
 .plat-card{margin-bottom:0}
-.plat-head{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid #f0f2f8;margin-bottom:14px}
+.plat-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;row-gap:8px;padding-bottom:14px;border-bottom:1px solid #f0f2f8;margin-bottom:14px}
 .plat-badge{font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;letter-spacing:.3px}
 .plat-total{margin-left:auto;font-size:12.5px;color:var(--muted);font-weight:500;white-space:nowrap}
 .plat-total b{font-size:15px;color:var(--text);font-variant-numeric:tabular-nums}
@@ -98,7 +107,7 @@ body{min-height:100vh}
 .act-total{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
 .act-total b{font-size:14px;color:var(--text)}
 .act-total .paid-tag{color:var(--green);font-weight:600}
-.act-tools{display:flex;gap:4px;margin-left:4px}
+.act-tools{display:flex;gap:4px;margin-left:4px;flex-shrink:0}
 .act-tools .icon-btn{width:26px;height:26px;font-size:12px;border-radius:8px}
 .act-body{padding:0 12px 12px;border-top:1px solid #f0f2f8}
 .act.collapsed .act-body{display:none}
@@ -125,6 +134,37 @@ body{min-height:100vh}
 .entry-add .amt-in{width:104px;font-weight:600;font-variant-numeric:tabular-nums}
 .entry-add .note-in{flex:1;min-width:130px}
 .entry-add .btn{padding:0 16px;height:38px}
+/* done page */
+.done-summary-card{background:linear-gradient(135deg,#0f9d6a 0%,#14b8a6 100%);border:none;color:#fff;
+  box-shadow:0 16px 36px -16px rgba(15,157,106,.5)}
+.done-summary-top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.done-summary-label{font-size:13px;opacity:.88;margin-bottom:5px;font-weight:500}
+.done-summary-total{font-size:40px;font-weight:800;letter-spacing:-.5px;line-height:1.05;font-variant-numeric:tabular-nums}
+.done-summary-sub{font-size:12.5px;opacity:.9;margin-top:6px}
+.done-group{margin-bottom:14px}
+.done-group:last-child{margin-bottom:0}
+.done-group .plat-badge{margin-bottom:8px;display:inline-flex}
+.done-act{border:1px solid var(--border);border-radius:13px;background:#fbfcfe;padding:12px;margin-bottom:10px}
+.done-act:last-child{margin-bottom:0}
+.da-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.da-name{font-size:14px;font-weight:700;text-decoration:line-through;color:#8a93a6;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.da-total{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;margin-left:auto}
+.da-time{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.da-actions{display:flex;gap:6px}
+.da-actions .btn{font-size:12px;padding:6px 10px;border-radius:9px}
+.da-entries{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px dashed #eef0f6}
+.da-entry{font-size:12px;color:#8a93a6;text-decoration:line-through;background:#f1f3f8;border-radius:8px;padding:4px 9px;font-variant-numeric:tabular-nums}
+.done-empty{color:var(--muted);font-size:13px;padding:18px 0;text-align:center}
+/* settings */
+.settings{display:flex;flex-direction:column;gap:16px}
+.set-group{display:flex;flex-direction:column;gap:10px}
+.set-title{font-size:13px;font-weight:700;color:var(--text);padding-bottom:6px;border-bottom:1px solid #f0f2f8}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13.5px;color:var(--text)}
+.set-row input[type=text],.set-row input[type=number],.set-row select{height:38px;border:1px solid var(--border);border-radius:10px;padding:0 10px;font-size:14px;outline:none;background:#fff;color:var(--text);width:170px;-webkit-appearance:none;appearance:none}
+.set-row input:focus,.set-row select:focus{border-color:#a9baff;box-shadow:0 0 0 3px rgba(90,90,255,.1)}
+.set-row input[type=checkbox]{width:22px;height:22px;accent-color:var(--primary)}
+.set-hint{font-size:12px;color:var(--muted);line-height:1.6}
+.set-actions{display:flex;gap:8px}
 /* footer */
 .footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 2px 0}
 .footer-hint{font-size:12px;color:var(--muted);line-height:1.7}
@@ -139,10 +179,14 @@ body{min-height:100vh}
   pointer-events:none;max-width:calc(100vw - 48px);text-align:center}
 .toast[hidden]{display:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* number input */
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
 /* responsive */
 @media (max-width:640px){
   .page{padding:16px 12px calc(48px + env(safe-area-inset-bottom))}
-  .summary-total{font-size:40px}
+  .card{padding:16px 14px}
+  .summary-total{font-size:38px}
   .platform-grid{grid-template-columns:1fr}
   .btn{min-height:44px}
   .icon-btn{width:34px;height:34px}
@@ -156,10 +200,14 @@ body{min-height:100vh}
   .e-del{min-height:38px;padding:6px 10px}
   .act-tools .icon-btn{width:32px;height:32px}
   .footer-link{min-height:44px}
+  .set-row input[type=text],.set-row input[type=number],.set-row select{width:150px}
 }
 @media (max-width:400px){
-  .top-actions .btn{font-size:12px;padding:7px 10px}
-  .summary-stats{gap:16px}
+  .top-actions .btn{flex:1 1 auto;justify-content:center;padding:7px 6px;font-size:12px}
+  .summary-stats{gap:14px}
+  .summary-total{font-size:34px}
+  .act-total{font-size:11px}
+  .da-actions{width:100%;justify-content:flex-end}
 }
 </style>
 </head>
@@ -189,45 +237,99 @@ body{min-height:100vh}
     </div>
   </header>
 
-  <section class="card summary-card">
-    <div class="summary-top">
-      <div>
-        <div class="summary-label">待发放总金额（已勾选不计入）</div>
-        <div class="summary-total" id="totalEl">¥0.00</div>
-      </div>
-      <div class="summary-stats">
-        <div class="stat"><b id="statPlat">0</b><span>平台</span></div>
-        <div class="stat"><b id="statAct">0</b><span>活动</span></div>
-        <div class="stat"><b id="statEntry">0</b><span>待发笔数</span></div>
-      </div>
-    </div>
-    <div class="share-bar" id="shareBar"></div>
-    <div class="share-legend" id="shareLegend"></div>
-  </section>
+  <div class="tabbar">
+    <button class="tab active" data-tab="home">待发收益<span class="cnt" id="tabHomeCount">0</span></button>
+    <button class="tab" data-tab="done">已发放<span class="cnt" id="tabDoneCount">0</span></button>
+  </div>
 
-  <section class="card">
-    <div class="card-head">
-      <h2>添加活动</h2>
-      <span class="card-hint">一个平台可建多个活动，活动下逐条添加奖励</span>
-    </div>
-    <form class="add-form" id="addForm">
-      <div class="field f-name">
-        <label>活动名称</label>
-        <input id="actName" maxlength="30" placeholder="如：致梵高创作激励" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <!-- ===== 待发收益（首页） ===== -->
+  <div id="viewHome">
+    <section class="card summary-card">
+      <div class="summary-top">
+        <div>
+          <div class="summary-label">待发放总金额（已勾选不计入）</div>
+          <div class="summary-total" id="totalEl">¥0.00</div>
+        </div>
+        <div class="summary-stats">
+          <div class="stat"><b id="statPlat">0</b><span>平台</span></div>
+          <div class="stat"><b id="statAct">0</b><span>活动</span></div>
+          <div class="stat"><b id="statPending">0</b><span>待发活动</span></div>
+        </div>
       </div>
-      <div class="field f-plat">
-        <label>归属平台</label>
-        <select id="actPlatform"></select>
-      </div>
-      <div class="field f-newplat" id="newPlatField" hidden>
-        <label>新平台名称</label>
-        <input id="newPlatName" maxlength="12" placeholder="如：B站" autocapitalize="off" autocorrect="off" spellcheck="false">
-      </div>
-      <button type="submit" class="btn btn-primary add-submit">添加活动</button>
-    </form>
-  </section>
+      <div class="share-bar" id="shareBar"></div>
+      <div class="share-legend" id="shareLegend"></div>
+    </section>
 
-  <div class="platform-grid" id="platformGrid"></div>
+    <section class="card">
+      <div class="card-head">
+        <h2>添加活动</h2>
+        <span class="card-hint">一个平台可建多个活动，活动下逐条添加奖励；全部勾选后自动移入「已发放」</span>
+      </div>
+      <form class="add-form" id="addForm">
+        <div class="field f-name">
+          <label>活动名称</label>
+          <input id="actName" maxlength="30" placeholder="如：致梵高创作激励" autocapitalize="off" autocorrect="off" spellcheck="false">
+        </div>
+        <div class="field f-plat">
+          <label>归属平台</label>
+          <select id="actPlatform"></select>
+        </div>
+        <div class="field f-newplat" id="newPlatField" hidden>
+          <label>新平台名称</label>
+          <input id="newPlatName" maxlength="12" placeholder="如：B站" autocapitalize="off" autocorrect="off" spellcheck="false">
+        </div>
+        <button type="submit" class="btn btn-primary add-submit">添加活动</button>
+      </form>
+    </section>
+
+    <div class="platform-grid" id="platformGrid"></div>
+  </div>
+
+  <!-- ===== 已发放（结清页） ===== -->
+  <div id="viewDone" hidden>
+    <section class="card done-summary-card">
+      <div class="done-summary-top">
+        <div>
+          <div class="done-summary-label">已发放奖金（结清归档）</div>
+          <div class="done-summary-total" id="doneTotalEl">¥0.00</div>
+          <div class="done-summary-sub" id="doneSubEl"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>已发放活动</h2>
+        <span class="card-hint">已结清的活动自动移到这里（划线展示），不再计入待发</span>
+      </div>
+      <div id="doneList"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>设置</h2></div>
+      <div class="settings">
+        <div class="set-group">
+          <div class="set-title">网易云播放器</div>
+          <label class="set-row"><span>显示播放器</span><input type="checkbox" id="nmpOn"></label>
+          <div class="set-row"><span>歌单 ID</span><input type="text" id="nmpPlaylist" inputmode="numeric" placeholder="如 3778678"></div>
+          <div class="set-row"><span>主题</span>
+            <select id="nmpTheme">
+              <option value="auto">跟随系统</option>
+              <option value="light">浅色</option>
+              <option value="dark">深色</option>
+            </select>
+          </div>
+          <div class="set-actions"><button class="btn btn-soft" id="nmpSave">保存播放器设置</button></div>
+          <div class="set-hint">播放器为 NeteaseMiniPlayer（右下角浮动），播放依赖网易云接口。歌单 ID：打开 music.163.com 歌单页，网址 playlist?id= 后面的数字。</div>
+        </div>
+        <div class="set-group">
+          <div class="set-title">已发放数据</div>
+          <div class="set-actions"><button class="btn btn-danger" id="clearDoneBtn">清空已发放记录</button></div>
+          <div class="set-hint">清空会删除所有已结清活动（不影响待发数据），不可恢复。</div>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <div class="footer">
     <span class="footer-hint">数据自动云端同步（部署到 CF 后多设备共享）；断网时保存在本浏览器，恢复后自动推送。CSV / JSON 备份恢复照常可用。</span>
@@ -241,8 +343,10 @@ body{min-height:100vh}
 
 <input type="file" id="importCsvInput" accept=".csv,text/csv" hidden>
 <input type="file" id="importJsonInput" accept=".json,application/json" hidden>
+<div id="nmpHolder"></div>
 <div class="toast" id="toastEl" hidden></div>
 
+<script src="assets/nmpv3.min.js"></script>
 <script>
 (function(){
 'use strict';
@@ -285,6 +389,7 @@ function load(){
 var state=load()||defaults();
 var collapsed={}; /* actId -> true, 内存态不持久化 */
 var formDefaults={}; /* actId -> 奖励类型默认值（自动进阶用） */
+var activeTab='home';
 function save(){
   state.t=Date.now();
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
@@ -348,21 +453,35 @@ function platformStyle(n){ return PLATFORM_STYLE[n]||FALLBACK_STYLE; }
 function typeStyle(t){ return TYPE_STYLE[t]||FALLBACK_STYLE; }
 
 /* ---- 派生数据 ---- */
+function isSettled(a){ return a.entries.length>0 && a.entries.every(function(e){return e.paid;}); }
+function pendingActs(){ return state.activities.filter(function(a){ return !isSettled(a); }); }
+function settledActs(){ return state.activities.filter(isSettled); }
+function actTotal(a){ return a.entries.reduce(function(s,e){ return e.paid?s:s+Number(e.amount); },0); }
+function actAllAmount(a){ return a.entries.reduce(function(s,e){ return s+Number(e.amount); },0); }
+function actSettledAt(a){ return a.entries.reduce(function(m,e){ return Math.max(m,Number(e.time)||0); },0); }
 function platforms(){
   var custom=[];
   state.activities.forEach(function(a){ if(FIXED.indexOf(a.platform)<0 && custom.indexOf(a.platform)<0) custom.push(a.platform); });
   return FIXED.concat(custom);
 }
 function actsOf(platform){ return state.activities.filter(function(a){return a.platform===platform;}); }
-function actTotal(a){ return a.entries.reduce(function(s,e){ return e.paid?s:s+Number(e.amount); },0); }
 function platTotal(platform){ return actsOf(platform).reduce(function(s,a){ return s+actTotal(a); },0); }
-function grandTotal(){ return state.activities.reduce(function(s,a){ return s+actTotal(a); },0); }
-function unpaidCount(){ return state.activities.reduce(function(s,a){ return s+a.entries.filter(function(e){return !e.paid;}).length; },0); }
+function grandTotal(){ return pendingActs().reduce(function(s,a){ return s+actTotal(a); },0); }
 function orderByFirstSeen(){
   var custom=[];
   state.activities.forEach(function(a){ if(FIXED.indexOf(a.platform)<0 && custom.indexOf(a.platform)<0) custom.push(a.platform); });
   return FIXED.concat(custom);
 }
+
+/* ---- 页签 ---- */
+document.querySelectorAll('.tab').forEach(function(tab){
+  tab.addEventListener('click',function(){
+    activeTab=this.dataset.tab;
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active',t===tab); });
+    document.getElementById('viewHome').hidden=(activeTab!=='home');
+    document.getElementById('viewDone').hidden=(activeTab!=='done');
+  });
+});
 
 /* ---- 渲染 ---- */
 function renderSummary(){
@@ -370,7 +489,9 @@ function renderSummary(){
   totalEl.textContent=money(t);
   statPlat.textContent=platforms().filter(function(p){return actsOf(p).length>0;}).length;
   statAct.textContent=state.activities.length;
-  statEntry.textContent=unpaidCount();
+  statPending.textContent=pendingActs().length;
+  tabHomeCount.textContent=pendingActs().length;
+  tabDoneCount.textContent=settledActs().length;
   shareBar.innerHTML='';
   shareLegend.innerHTML='';
   if(t<=0){
@@ -398,7 +519,9 @@ function renderSummary(){
 function renderPlatforms(){
   platformGrid.innerHTML='';
   orderByFirstSeen().forEach(function(p){
-    var acts=actsOf(p);
+    var all=actsOf(p);
+    if(!all.length) return;
+    var homeActs=all.filter(function(a){return !isSettled(a);});
     var style=platformStyle(p);
     var t=platTotal(p);
     var isFixed=FIXED.indexOf(p)>=0;
@@ -409,7 +532,7 @@ function renderPlatforms(){
       '<div class="plat-head">'+
         '<span class="plat-badge" style="color:'+style.c+';background:'+style.bg+'">'+esc(p)+'</span>'+
         '<span class="plat-total">'+
-          (t<=0&&acts.length?'<span class="paid-tag">已结清</span>':'待发 <b>'+money(t)+'</b>')+
+          (t<=0&&homeActs.length===0?'<span class="paid-tag">已结清</span>':'待发 <b>'+money(t)+'</b>')+
         '</span>'+
         '<span class="plat-actions">'+
           '<button class="btn btn-soft add-act-btn" data-addact="'+esc(p)+'">+ 添加活动</button>'+
@@ -418,13 +541,13 @@ function renderPlatforms(){
       '</div>';
     var body=document.createElement('div');
     body.className='acts';
-    if(!acts.length){
+    if(!homeActs.length){
       var empty=document.createElement('div');
       empty.className='plat-empty';
-      empty.textContent='暂无活动，点右上角「+ 添加活动」开始记录';
+      empty.textContent='该平台活动已全部结清（见「已发放」页）';
       body.appendChild(empty);
     }else{
-      acts.forEach(function(a){ body.appendChild(renderActivity(a)); });
+      homeActs.forEach(function(a){ body.appendChild(renderActivity(a)); });
     }
     card.appendChild(body);
     platformGrid.appendChild(card);
@@ -444,7 +567,7 @@ function renderActivity(a){
     '<span class="act-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>'+
     '<span class="act-name">'+esc(a.name)+'</span>'+
     '<span class="act-total">'+
-      (t<=0&&a.entries.length?'<span class="paid-tag">已结清</span>':'待发 <b>'+money(t)+'</b>'+(pending?' · '+pending+'笔':''))+
+      '待发 <b>'+money(t)+'</b>'+(pending?' · '+pending+'笔':'')+
     '</span>'+
     '<span class="act-tools">'+
       '<button class="icon-btn act-edit" data-editact="'+a.id+'" title="重命名">✎</button>'+
@@ -468,7 +591,7 @@ function renderActivity(a){
       var row=document.createElement('div');
       row.className='entry'+(e.paid?' paid':'');
       row.innerHTML=
-        '<label class="ck" title="勾选 = 已到账，不计入待发总额">'+
+        '<label class="ck" title="勾选 = 已到账，全部勾选后活动自动结清">'+
           '<input type="checkbox" class="ck-in" data-entry="'+e.id+'"'+(e.paid?' checked':'')+'>'+
         '</label>'+
         '<span class="e-type" style="color:'+st.c+';background:'+st.bg+'">'+esc(e.type)+'</span>'+
@@ -503,6 +626,46 @@ function renderActivity(a){
   wrap.appendChild(body);
   return wrap;
 }
+function renderDone(){
+  var acts=settledActs();
+  var t=acts.reduce(function(s,a){ return s+actAllAmount(a); },0);
+  doneTotalEl.textContent=money(t);
+  doneSubEl.textContent=acts.length+' 个活动已结清归档';
+  doneList.innerHTML='';
+  if(!acts.length){
+    doneList.innerHTML='<div class="done-empty">暂无已发放记录。待发活动全部勾选后会自动结清并移到这里。</div>';
+    return;
+  }
+  orderByFirstSeen().forEach(function(p){
+    var groupActs=acts.filter(function(a){return a.platform===p;});
+    if(!groupActs.length) return;
+    var style=platformStyle(p);
+    var group=document.createElement('div');
+    group.className='done-group';
+    group.innerHTML='<span class="plat-badge" style="color:'+style.c+';background:'+style.bg+'">'+esc(p)+'</span>';
+    groupActs.forEach(function(a){
+      var act=document.createElement('div');
+      act.className='done-act';
+      act.setAttribute('data-done',a.id);
+      var entriesHtml=a.entries.map(function(e){
+        return '<span class="da-entry">'+esc(e.type)+' '+money(e.amount)+(e.note?' · '+esc(e.note):'')+'</span>';
+      }).join('');
+      act.innerHTML=
+        '<div class="da-head">'+
+          '<span class="da-name">'+esc(a.name)+'</span>'+
+          '<span class="da-total">'+money(actAllAmount(a))+'</span>'+
+          '<span class="da-time">结清 '+fmtTime(actSettledAt(a))+'</span>'+
+          '<span class="da-actions">'+
+            '<button class="btn btn-soft" data-restore="'+a.id+'">恢复待发</button>'+
+            '<button class="btn btn-danger" data-deldone="'+a.id+'">删除</button>'+
+          '</span>'+
+        '</div>'+
+        '<div class="da-entries">'+entriesHtml+'</div>';
+      group.appendChild(act);
+    });
+    doneList.appendChild(group);
+  });
+}
 function renderSelect(){
   var cur=actPlatform.value;
   var opts=FIXED.map(function(p){ return '<option value="'+p+'">'+p+'</option>'; }).join('');
@@ -512,7 +675,7 @@ function renderSelect(){
   actPlatform.innerHTML=opts+'<option value="__new">＋ 新建平台…</option>';
   if(cur && (FIXED.indexOf(cur)>=0 || state.activities.some(function(a){return a.platform===cur;}))) actPlatform.value=cur;
 }
-function renderAll(){ renderSummary(); renderPlatforms(); }
+function renderAll(){ renderSummary(); renderPlatforms(); renderDone(); }
 
 /* ---- 操作 ---- */
 function addActivity(name,platform){
@@ -560,12 +723,34 @@ function deleteEntry(id){
   save(); renderAll(); toast('已删除该条目');
 }
 function togglePaid(id){
-  var e=null;
-  state.activities.forEach(function(a){ a.entries.forEach(function(x){ if(x.id===id) e=x; }); });
-  if(!e) return;
+  var e=null,act=null;
+  state.activities.forEach(function(a){
+    a.entries.forEach(function(x){ if(x.id===id){ e=x; act=a; } });
+  });
+  if(!e||!act) return;
   e.paid=!e.paid;
   save(); renderAll();
-  toast(e.paid?'已标记到账，'+money(e.amount)+' 不计入待发':'已恢复为待发放');
+  if(e.paid && isSettled(act)){
+    toast('「'+act.name+'」已结清，已移入已发放页');
+  } else if(e.paid){
+    toast('已标记到账，'+money(e.amount)+' 不计入待发');
+  } else {
+    toast('已恢复为待发放');
+  }
+}
+function restoreActivity(id){
+  var a=state.activities.find(function(x){return x.id===id;});
+  if(!a) return;
+  a.entries.forEach(function(e){ e.paid=false; });
+  save(); renderAll(); toast('「'+a.name+'」已恢复为待发，移回首页');
+  switchTab('home');
+}
+function clearDone(){
+  var acts=settledActs();
+  if(!acts.length){ toast('暂无已发放记录'); return; }
+  if(!confirm('确定清空全部 '+acts.length+' 个已发放活动？此操作不可恢复。')) return;
+  state.activities=state.activities.filter(function(a){return !isSettled(a);});
+  save(); renderAll(); toast('已清空已发放记录');
 }
 function deletePlatform(p){
   var acts=actsOf(p);
@@ -579,6 +764,12 @@ function sanitizeDecimal(v){
   var i=v.indexOf('.');
   if(i>=0) v=v.slice(0,i+1)+v.slice(i+1).replace(/\./g,'');
   return v;
+}
+function switchTab(name){
+  activeTab=name;
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active',t.dataset.tab===name); });
+  document.getElementById('viewHome').hidden=(name!=='home');
+  document.getElementById('viewDone').hidden=(name!=='done');
 }
 
 /* ---- 全局事件委托 ---- */
@@ -607,6 +798,13 @@ platformGrid.addEventListener('input',function(ev){
   var t=ev.target;
   if(t.classList&&t.classList.contains('amt-in')) t.value=sanitizeDecimal(t.value);
 });
+doneList.addEventListener('click',function(ev){
+  var btn=ev.target.closest('button');
+  if(!btn) return;
+  if(btn.dataset.restore) restoreActivity(btn.dataset.restore);
+  else if(btn.dataset.deldone) deleteActivity(btn.dataset.deldone);
+});
+clearDoneBtn.addEventListener('click',clearDone);
 
 /* ---- 添加活动表单 ---- */
 actPlatform.addEventListener('change',function(){
@@ -748,10 +946,42 @@ importJsonInput.addEventListener('change',function(){
   reader.readAsText(f,'utf-8');
 });
 
+/* ---- 网易云播放器（NeteaseMiniPlayer v3） ---- */
+function loadNmp(){ try{ return JSON.parse(localStorage.getItem('nmpSettings'))||{}; }catch(e){ return {}; } }
+var nmpS=Object.assign({on:true,playlist:'3778678',theme:'auto'},loadNmp());
+var nmpHolder=document.getElementById('nmpHolder');
+function applyPlayer(){
+  nmpHolder.innerHTML='';
+  if(!nmpS.on) return;
+  if(!window.NeteaseMiniPlayer) return;
+  var div=document.createElement('div');
+  div.className='netease-mini-player';
+  div.setAttribute('data-playlist-id',String(nmpS.playlist||'3778678'));
+  div.setAttribute('data-position','bottom-right');
+  div.setAttribute('data-lyric','true');
+  div.setAttribute('data-theme',nmpS.theme||'auto');
+  div.setAttribute('data-autoplay','false');
+  nmpHolder.appendChild(div);
+  if(document.readyState!=='loading'){
+    try{ window.NeteaseMiniPlayer.init(nmpHolder); }catch(e){}
+  }
+}
+nmpOn.checked=nmpS.on;
+nmpPlaylist.value=nmpS.playlist;
+nmpTheme.value=nmpS.theme;
+nmpSave.addEventListener('click',function(){
+  nmpS.on=nmpOn.checked;
+  nmpS.playlist=String(nmpPlaylist.value).trim()||'3778678';
+  nmpS.theme=nmpTheme.value;
+  try{ localStorage.setItem('nmpSettings',JSON.stringify(nmpS)); }catch(e){}
+  applyPlayer();
+  toast('播放器设置已保存');
+});
+
 /* ---- 重置 ---- */
 resetBtn.addEventListener('click',function(){
   if(!confirm('确定清空全部数据？此操作不可恢复。')) return;
-  state=defaults(); collapsed={}; save(); renderAll(); toast('已清空，重新开始记录');
+  state=defaults(); collapsed={}; formDefaults={}; save(); renderAll(); toast('已清空，重新开始记录');
 });
 
 /* ---- toast ---- */
@@ -765,6 +995,7 @@ function toast(msg){
 }
 
 renderAll();
+applyPlayer();
 setTimeout(pullCloud,120);
 })();
 </script>
