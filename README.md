@@ -1,4 +1,4 @@
-# 创作者收益工作台 v3.1
+# 创作者收益工作台 v3.6
 
 ## 部署说明（重要）
 
@@ -85,15 +85,15 @@ npx wrangler pages secret put DEEPSEEK_API_KEY --project-name <项目名>
 ### 目录结构说明
 
 ```
-creator-earnings-tracker-v2.8/
-├── index.html              # 主页面（前端应用）
+creator-earnings-tracker/
+├── index.html              # 主页面（前端应用，v3.6 最新）
 ├── manifest.json           # PWA 配置
 ├── functions/              # Cloudflare Pages Functions（必须通过 Git/CLI 部署）
-│   ├── _middleware.js      # 全站访问验证中间件（锁屏 + IP 白名单 + 会话校验）
+│   ├── _middleware.js      # 全站访问验证中间件（锁屏深色适配 + IP 白名单 + 会话校验）
 │   └── api/
 │       ├── auth/[[path]].js  # 访问验证管理接口（catch-all：/api/auth/* 全部子路径）
 │       ├── deepseek.js     # DeepSeek API 代理（支持 Cloudflare 加密环境变量密钥）
-│       ├── state.js        # 云端同步（KV）
+│       ├── state.js        # 云端同步（KV，含活动 + 公告 + 内联鉴权）
 │       └── music.js        # 网易云音乐代理（含 ncmFetch、needLogin 回退、Cookie 支持）
 ├── assets/                 # 字体、播放器脚本
 ├── icons/                  # PWA 图标
@@ -131,6 +131,41 @@ creator-earnings-tracker-v2.8/
 - 若同时清空密码与 IP 白名单，验证**自动关闭**（安全阀），防止把站点锁死；
 - 会话有效期 30 天，到期后需重新输入密码；
 - 请勿把访问密码与 DeepSeek 密钥写在代码或 README 中提交到公开仓库。
+
+### v3.6 更新内容（公告标题与内联编辑 + 主题按钮统一）
+1. **公告支持标题 + 内容 + 日期**：添加公告表单新增「公告标题」输入框（如"光遇追光计划第 21 期"），下方填活动奖励、规则说明等内容，再选日期；公告列表标题加粗显示在内容上方。
+2. **公告内联编辑**：点「编辑」自动将标题/内容/日期填入表单，按钮变为「保存修改」，改完保存即更新；不再使用浏览器 prompt 弹窗（手机端体验差），编辑态显示「取消」按钮可退出。
+3. **公告多设备云端同步**：公告与活动数据一起存入 Cloudflare KV（`state.notices` 并入 `/api/state`），平板上添加/编辑/删除 → 推送云端 → 手机端自动拉到，多设备可见。
+4. **DeepSeek 公告上下文增强**：注入给 DeepSeek 的公告上下文携带标题，格式 `[日期] 标题：内容`，公告解读更准确。
+5. **主题切换按钮三端统一**：电脑端主区工具栏与平板/手机端窄屏头部两处按钮统一为 `☀️/🌙/⚙️`，所有屏幕比例显示一致。
+
+### v3.5 更新内容（主题色全面联动，修复硬编码彩色）
+1. **首页「待发放收益」总览卡**背景从固定红色渐变改为跟随主题主色（切换海蓝主题即变蓝色卡、青瓷即青色卡）。
+2. **「已发放」总览卡**固定绿色渐变与绿色阴影改为跟随主题绿色变量。
+3. **修复全部硬编码彩色阴影**：logo、选中页签、主按钮的红色阴影、已发放卡绿色阴影，改用 `color-mix()` 从主题主色自动生成——切换任意主题阴影颜色同步变化，深浅模式自动适配。
+4. **播放器歌单选中色**与深色模式引用块背景改为跟随主题。
+
+### v3.4 更新内容（状态栏修复 + 6 套配色主题 + 抖音美好体）
+1. **修复手机状态栏白色刺眼**：PWA 全屏时状态栏透明区显示 `html` 根背景，之前 html 无背景色导致露白。现在 html 背景跟随主题深色，深色模式下状态栏为深色。
+2. **设置 → 外观 → 新增「主题色」**：6 套配色主题——绯红（默认）/ 青瓷 / 紫罗兰 / 琥珀 / 海蓝 / 樱粉，**每套均有对应的深色模式样式**，一键切换，本地保存。
+3. **DeepSeek 回答改用抖音美好体（DouyinSansText）字体**，与站内标题风格统一。
+
+### v3.3 更新内容（公告改名 + 公告云端同步 + 助手全屏）
+1. **「公示」全部改名「公告」**：页面标题、按钮、空状态、DeepSeek 快捷按钮「公示解读」→「公告解读」。
+2. **公告云端同步**：公告记录并入 `state.notices`，与活动一起走 `/api/state` 存入 CF KV，换设备自动同步。
+3. **DeepSeek 助手全屏**：打开助手页时隐藏顶部工具栏与底部工具条，只保留聊天界面。
+4. **底部工具条（备份/恢复/清空 + 非官方说明）只在「待发放首页」和「设置页」显示**；修复 CSS `display:flex` 覆盖 `hidden` 属性导致工具条隐藏失效的 bug。
+5. **手机 tabbar「待发放」横排**：改为 3 列网格布局，数字徽标横排显示，不再竖排。
+6. **锁屏页深色适配**：`functions/_middleware.js` 锁屏页支持深色模式 + `viewport-fit=cover` 全屏 + 动态 theme-color（随系统深浅自动切换）。
+7. **设置页当前访问 IP 长串适配**：IP 过长自动换行，不再撑破布局。
+
+### v3.2 更新内容（访问验证启用收尾）
+1. **前端 auth 状态防异步覆盖**：保存设置后立即刷新验证状态（`authDirty` / `wlDirty` 标记），避免旧请求返回覆盖新状态。
+2. 线上部署后确认访问验证可正常启用（勾选 → 保存 → 服务端锁定生效）。
+
+### v3.1 更新内容（访问验证首次启用死锁修复）
+1. **bootstrap 首次启用修复**：判断"验证从未启用"必须直接读 KV 原始配置（`EARNINGS_KV.get(CFG_KEY)`），不能用 `getConfig()` 读取——否则会被 `ACCESS_PASSWORD` 加密密文污染，导致首次启用死锁（勾选后保存自动取消）。
+2. 交付纯净 `export async function onRequest(ctx)` 单分发器版 auth 接口（`functions/api/auth/[[path]].js`），彻底消除路由冲突。
 
 ### v3.0 更新内容（登录验证根因修复）
 1. **修复访问验证接口路由冲突（v2.9 登录失效的根因）**：v2.9 的 `functions/api/auth/[[path]].js` 同时导出了 `onRequestPost` 与 `onRequest`，Cloudflare Pages 编译后把 `POST /api/auth/*` 全部固定路由到 `onRequestPost`（登录处理器），导致 `/api/auth/logout`、`/api/auth/config` 等 POST 请求也被当作登录请求处理，返回密码错误。v3.0 移除所有方法专属导出，仅保留单一 `export async function onRequest(ctx)`，内部按 `url.pathname` 与 `request.method` 自行分发到 `handleLogin` / `handleLogout` / `handlePostConfig` 等私有函数，彻底消除路由冲突。
