@@ -1,4 +1,4 @@
-# 创作者收益工作台 v2.8
+# 创作者收益工作台 v3.0
 
 ## 部署说明（重要）
 
@@ -131,6 +131,14 @@ creator-earnings-tracker-v2.8/
 - 若同时清空密码与 IP 白名单，验证**自动关闭**（安全阀），防止把站点锁死；
 - 会话有效期 30 天，到期后需重新输入密码；
 - 请勿把访问密码与 DeepSeek 密钥写在代码或 README 中提交到公开仓库。
+
+### v3.0 更新内容（登录验证根因修复）
+1. **修复访问验证接口路由冲突（v2.9 登录失效的根因）**：v2.9 的 `functions/api/auth/[[path]].js` 同时导出了 `onRequestPost` 与 `onRequest`，Cloudflare Pages 编译后把 `POST /api/auth/*` 全部固定路由到 `onRequestPost`（登录处理器），导致 `/api/auth/logout`、`/api/auth/config` 等 POST 请求也被当作登录请求处理，返回密码错误。v3.0 移除所有方法专属导出，仅保留单一 `export async function onRequest(ctx)`，内部按 `url.pathname` 与 `request.method` 自行分发到 `handleLogin` / `handleLogout` / `handlePostConfig` 等私有函数，彻底消除路由冲突。
+2. **前端 fetch 增加 `credentials: 'same-origin'`**：v2.9 前端 auth 请求未携带 credentials，在 PWA / standalone 模式或跨域场景下 Cookie（`ce_auth`）不会被浏览器发送，导致登录后服务端收不到会话凭证。v3.0 所有 auth 相关 fetch（status / config / login / logout）均显式携带 `credentials: 'same-origin'`。
+3. **防御纵深：/api/state 增加授权校验**：即便 `_middleware.js` 被绕过（如本地开发直接请求 Functions），`state.js` 内联 `isAuthed` 检查，未授权时返回 401，保护云端业务数据。
+4. **修复 `loadAuthStatus` 404 检测**：catch 块中 `e.status===404` 对 fetch 异常无效（异常对象是 Error 而非 Response），改为在 `.then(r => ...)` 阶段检测 `r.status===404` 后主动抛出，保证 404 提示文案正确触发。
+5. **恢复 v2.8 字体文件**：v2.9 意外丢失了 `assets/DouyinSansBold.*.woff2`，v3.0 从 v2.8 基线恢复，确保「创」字 Logo 字体正常渲染。
+6. **移除空文件 artifact**：v2.9 包含 1 字节空文件 `functions/api/auth/#`，v3.0 已清理。
 
 ### v2.9.1 更新内容（关键路由修复）
 1. **修复访问验证接口 404/返回首页问题**：CF Pages 路由规则中 `functions/api/auth.js` 只匹配 `/api/auth`，不匹配 `/api/auth/status` 等子路径。已改为 `functions/api/auth/[[path]].js`（catch-all），`/api/auth/*` 全部子路径均可正确路由。
