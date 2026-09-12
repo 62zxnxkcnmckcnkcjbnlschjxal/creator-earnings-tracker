@@ -1947,8 +1947,12 @@ if(authSaveEl) authSaveEl.addEventListener('click',function(){
   if(authState.ipWhitelist.length || payload.enabled) payload.ipWhitelist=authState.ipWhitelist;
   saveAuthConfig(payload).then(function(res){
     if(res.s===200 && res.d.ok){
-      authHint('验证设置已保存'+(res.d.config&&res.d.config.enabled?'，访问验证已启用':'，访问验证未启用'),'ok');
-      authState.enabled=!!(res.d.config&&res.d.config.enabled);
+      var serverEnabled=!!(res.d.config&&res.d.config.enabled);
+      var diag='';
+      if(payload.enabled===true && !serverEnabled) diag='（服务器未启用：请确认已填写访问密码，或至少有一个 IP 白名单）';
+      if(payload.enabled!==true) diag='（保存时启用开关未勾选，请先勾选“启用访问验证”）';
+      authHint('验证设置已保存，访问验证'+(serverEnabled?'已启用':'未启用')+diag,'ok');
+      authState.enabled=serverEnabled;
       authDirty=false;
       var en2=document.getElementById('authEnabled');
       if(en2) en2.checked=authState.enabled;
