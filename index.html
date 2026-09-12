@@ -17,8 +17,8 @@ html,body{background:linear-gradient(180deg,#f6f8fc 0%,#eef1f8 100%);color:var(-
   font-family:system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
   -webkit-font-smoothing:antialiased}
 body{min-height:100vh}
-.page{max-width:1180px;margin:0 auto;padding:22px 18px calc(52px + env(safe-area-inset-bottom))}
-/* header */
+.page{max-width:1400px;margin:0 auto;padding:20px 18px calc(52px + env(safe-area-inset-bottom))}
+/* ===== 窄屏头部（手机/小窗） ===== */
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .brand{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
 .brand .logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#4a6cf7,#7a5cff);
@@ -33,14 +33,56 @@ body{min-height:100vh}
 .sync-badge.s-error{color:var(--danger);border-color:#f2d3d3;background:var(--danger-soft)}
 .sync-badge.s-error .sb-dot{background:var(--danger)}
 .top-actions{display:flex;gap:8px;flex-wrap:wrap}
-/* tabs */
+/* ===== 顶部页签（窄屏） ===== */
 .tabbar{display:flex;gap:8px;margin-bottom:16px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:5px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
 .tab{flex:1;border:none;background:transparent;border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;min-height:44px}
 .tab:hover{color:var(--text);background:#f4f6fb}
 .tab.active{background:linear-gradient(135deg,#4a6cf7,#7a5cff);color:#fff;box-shadow:0 4px 12px -4px rgba(90,90,255,.5)}
 .tab .cnt{font-size:11px;font-weight:700;background:rgba(0,0,0,.08);border-radius:999px;padding:1px 7px}
 .tab.active .cnt{background:rgba(255,255,255,.25)}
-/* buttons */
+/* ===== 侧边栏（平板全屏/桌面） ===== */
+.rail{display:none}
+.toolbar{display:none}
+@media (min-width:760px){
+  .page{padding:20px 26px calc(40px + env(safe-area-inset-bottom))}
+  .top{display:none}
+  .shell{display:grid;grid-template-columns:240px minmax(0,1fr);gap:24px;align-items:start}
+  .rail{display:flex;flex-direction:column;gap:14px;position:sticky;top:20px}
+  .rail-brand{display:flex;align-items:center;gap:11px;padding:2px 4px}
+  .rail-brand .logo{width:40px;height:40px;border-radius:13px}
+  .rail-name{font-size:15px;font-weight:700;line-height:1.4}
+  .rail-name small{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:2px}
+  .rail-nav{display:flex;flex-direction:column;gap:5px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:6px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+  .rail-nav .tab{justify-content:flex-start;font-size:13.5px;min-height:42px;padding:10px 12px;border-radius:10px}
+  .rail-nav .tab .cnt{margin-left:auto}
+  .rail-live{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:11px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 10px 28px -18px rgba(30,60,180,.12)}
+  .live-title{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:2px}
+  .live-label{font-size:12.5px;color:var(--muted)}
+  .live-total{font-size:30px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1.1}
+  .live-stats{display:flex;gap:18px;border-top:1px dashed #eef0f6;padding-top:11px}
+  .live-stats .stat{display:flex;flex-direction:column;gap:1px}
+  .live-stats .stat b{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+  .live-stats .stat span{font-size:10.5px;color:var(--muted)}
+  .live-share{display:flex;height:9px;border-radius:6px;overflow:hidden;background:#eef0f6;gap:2px}
+  .live-share .bar-seg{height:100%;min-width:2px}
+  .live-legend{display:flex;flex-wrap:wrap;gap:5px 12px}
+  .live-legend .legend-item{font-size:11px;color:var(--muted)}
+  .live-legend .legend-item .legend-dot{width:8px;height:8px;border-radius:3px}
+  .live-done{font-size:12.5px;color:var(--muted);border-top:1px dashed #eef0f6;padding-top:11px;line-height:1.7}
+  .live-done b{color:var(--green);font-variant-numeric:tabular-nums}
+  .rail-foot{display:flex;flex-direction:column;gap:9px;padding:0 4px}
+  .rail-foot .rail-tip{font-size:11px;color:var(--muted);line-height:1.6}
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .toolbar-title{font-size:20px;font-weight:800;letter-spacing:.2px}
+  .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .summary-card{display:none}
+  .done-summary-card{display:none}
+  .tabbar{display:none}
+  .add-form{grid-template-columns:minmax(0,1fr) 210px 210px auto}
+  .platform-grid{grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:18px}
+  .footer{border-top:1px solid var(--border);margin-top:20px;padding-top:16px}
+}
+/* ===== 通用按钮 ===== */
 .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:#fff;color:var(--text);
   border-radius:11px;padding:8px 14px;font-size:13.5px;font-weight:500;cursor:pointer;transition:all .15s;line-height:1.4;user-select:none}
 .btn:hover{background:#f7f9fd;border-color:#d6dbe8}
@@ -51,13 +93,13 @@ body{min-height:100vh}
 .btn-soft:hover{background:#e2eaff;border-color:#c3d2ff}
 .btn-danger{color:var(--danger);border-color:#f2d3d3;background:#fff}
 .btn-danger:hover{background:var(--danger-soft)}
-/* cards */
+/* ===== 卡片（模块） ===== */
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;
   box-shadow:0 1px 2px rgba(16,24,40,.04),0 10px 28px -18px rgba(30,60,180,.14)}
 .card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .card-head h2{font-size:15px;font-weight:700}
 .card-hint{font-size:12px;color:var(--muted)}
-/* summary */
+/* ===== 汇总卡（窄屏） ===== */
 .summary-card{background:linear-gradient(135deg,#4a6cf7 0%,#6d5bf7 52%,#8d5cf5 100%);border:none;color:#fff;
   box-shadow:0 16px 36px -16px rgba(88,92,255,.55)}
 .summary-top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
@@ -73,8 +115,8 @@ body{min-height:100vh}
 .share-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px}
 .legend-item{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:rgba(255,255,255,.94);font-variant-numeric:tabular-nums}
 .legend-dot{width:9px;height:9px;border-radius:3.5px;flex-shrink:0}
-/* add activity form */
-.add-form{display:grid;grid-template-columns:1fr 150px 150px auto;gap:10px}
+/* ===== 添加活动表单 ===== */
+.add-form{display:grid;grid-template-columns:minmax(0,1fr) 150px 150px auto;gap:10px}
 .field{display:flex;flex-direction:column;gap:5px;min-width:0}
 .field[hidden]{display:none}
 .field label{font-size:12px;color:var(--muted);font-weight:500}
@@ -83,9 +125,9 @@ body{min-height:100vh}
 .add-form input:focus,.add-form select:focus{border-color:#a9baff;box-shadow:0 0 0 3px rgba(90,90,255,.12)}
 .add-form input::placeholder{color:#a7adbb}
 .add-submit{align-self:flex-end}
-/* platform grid */
+/* ===== 平台网格 ===== */
 .platform-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:16px}
-.plat-card{margin-bottom:0}
+.plat-card{margin-bottom:0;min-width:0}
 .plat-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;row-gap:8px;padding-bottom:14px;border-bottom:1px solid #f0f2f8;margin-bottom:14px}
 .plat-badge{font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;letter-spacing:.3px}
 .plat-total{margin-left:auto;font-size:12.5px;color:var(--muted);font-weight:500;white-space:nowrap}
@@ -97,7 +139,7 @@ body{min-height:100vh}
 .icon-btn:hover{color:var(--danger);border-color:#f2d3d3;background:var(--danger-soft)}
 .add-act-btn{font-size:12px;padding:6px 10px;border-radius:9px}
 .plat-empty{color:var(--muted);font-size:13px;padding:6px 2px 2px}
-/* activity */
+/* ===== 活动 ===== */
 .act{border:1px solid var(--border);border-radius:13px;background:#fbfcfe;margin-bottom:10px;overflow:hidden}
 .act:last-child{margin-bottom:0}
 .act-head{display:flex;align-items:center;gap:8px;padding:11px 12px;cursor:pointer;user-select:none}
@@ -111,7 +153,7 @@ body{min-height:100vh}
 .act-tools .icon-btn{width:26px;height:26px;font-size:12px;border-radius:8px}
 .act-body{padding:0 12px 12px;border-top:1px solid #f0f2f8}
 .act.collapsed .act-body{display:none}
-/* entries */
+/* ===== 条目 ===== */
 .entry{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px dashed #eef0f6}
 .entry:last-of-type{border-bottom:none}
 .ck{display:flex;align-items:center;cursor:pointer;flex-shrink:0;padding:4px 2px}
@@ -124,7 +166,7 @@ body{min-height:100vh}
 .entry.paid .e-note{color:#b6bcc9}
 .e-del{border:1px solid transparent;background:transparent;color:var(--muted);font-size:12px;cursor:pointer;padding:5px 9px;border-radius:8px;flex-shrink:0}
 .e-del:hover{color:var(--danger);background:var(--danger-soft);border-color:#f2d3d3}
-/* entry add */
+/* ===== 条目添加 ===== */
 .entry-add{display:flex;flex-wrap:wrap;gap:8px;padding-top:11px;align-items:center}
 .entry-add select,.entry-add input{height:38px;border:1px solid var(--border);border-radius:10px;padding:0 10px;font-size:14px;background:#fff;color:var(--text);outline:none;-webkit-appearance:none;appearance:none}
 .entry-add input:focus,.entry-add select:focus{border-color:#a9baff;box-shadow:0 0 0 3px rgba(90,90,255,.1)}
@@ -134,7 +176,7 @@ body{min-height:100vh}
 .entry-add .amt-in{width:104px;font-weight:600;font-variant-numeric:tabular-nums}
 .entry-add .note-in{flex:1;min-width:130px}
 .entry-add .btn{padding:0 16px;height:38px}
-/* done page */
+/* ===== 已发放页 ===== */
 .done-summary-card{background:linear-gradient(135deg,#0f9d6a 0%,#14b8a6 100%);border:none;color:#fff;
   box-shadow:0 16px 36px -16px rgba(15,157,106,.5)}
 .done-summary-top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
@@ -155,7 +197,7 @@ body{min-height:100vh}
 .da-entries{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px dashed #eef0f6}
 .da-entry{font-size:12px;color:#8a93a6;text-decoration:line-through;background:#f1f3f8;border-radius:8px;padding:4px 9px;font-variant-numeric:tabular-nums}
 .done-empty{color:var(--muted);font-size:13px;padding:18px 0;text-align:center}
-/* settings */
+/* ===== 设置 ===== */
 .settings{display:flex;flex-direction:column;gap:16px}
 .set-group{display:flex;flex-direction:column;gap:10px}
 .set-title{font-size:13px;font-weight:700;color:var(--text);padding-bottom:6px;border-bottom:1px solid #f0f2f8}
@@ -165,15 +207,15 @@ body{min-height:100vh}
 .set-row input[type=checkbox]{width:22px;height:22px;accent-color:var(--primary)}
 .set-hint{font-size:12px;color:var(--muted);line-height:1.6}
 .set-actions{display:flex;gap:8px}
-/* footer */
-.footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 2px 0}
+/* ===== 底部 ===== */
+.footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 2px 0;margin-top:8px}
 .footer-hint{font-size:12px;color:var(--muted);line-height:1.7}
 .footer-actions{display:flex;gap:6px;flex-wrap:wrap}
 .footer-link{font-size:12px;color:var(--muted);border:1px solid var(--border);background:#fff;border-radius:9px;cursor:pointer;padding:8px 12px;transition:all .15s}
 .footer-link:hover{color:var(--text);border-color:#d6dbe8}
 .footer-danger{color:var(--danger)}
 .footer-danger:hover{color:var(--danger);border-color:#f2d3d3;background:var(--danger-soft)}
-/* toast */
+/* ===== toast ===== */
 .toast{position:fixed;left:50%;bottom:calc(34px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);background:#1c2333;color:#fff;font-size:13px;
   padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .2s,transform .2s;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.22);
   pointer-events:none;max-width:calc(100vw - 48px);text-align:center}
@@ -182,12 +224,14 @@ body{min-height:100vh}
 /* number input */
 input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield;appearance:textfield}
-/* responsive */
-@media (max-width:640px){
+/* 防内容撑宽（flex/grid 收缩兜底） */
+.plat-card,.acts,.act,.act-head,.act-body,.entry-add,.card,.toolbar-actions{min-width:0}
+/* ===== 窄屏响应 ===== */
+@media (max-width:759px){
   .page{padding:16px 12px calc(48px + env(safe-area-inset-bottom))}
   .card{padding:16px 14px}
   .summary-total{font-size:38px}
-  .platform-grid{grid-template-columns:1fr}
+  .platform-grid{grid-template-columns:minmax(0,1fr)}
   .btn{min-height:44px}
   .icon-btn{width:34px;height:34px}
   .add-form{grid-template-columns:1fr 1fr}
@@ -213,131 +257,180 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 </head>
 <body>
 <div class="page">
+  <!-- ===== 窄屏头部 ===== -->
   <header class="top">
     <div class="brand">
       <div class="logo">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>
       </div>
       <h1>创作者待发收益工作台</h1>
-      <span class="sync-badge s-local" id="syncBadge"><span class="sb-dot"></span>本地模式</span>
+      <span class="sync-badge s-local"><span class="sb-dot"></span>本地模式</span>
     </div>
     <div class="top-actions">
-      <button class="btn" id="copyBtn" title="复制为表格文本，可粘贴到 WPS 表格">
+      <button class="btn js-copy" title="复制为表格文本，可粘贴到 WPS 表格">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         复制到 WPS
       </button>
-      <button class="btn" id="exportBtn" title="导出 CSV 文件，可用 WPS 打开">
+      <button class="btn js-export" title="导出 CSV 文件，可用 WPS 打开">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
         导出 CSV
       </button>
-      <button class="btn" id="importCsvBtn" title="从 CSV 文件恢复数据（含备注与到账状态）">
+      <button class="btn js-import" title="从 CSV 文件恢复数据（含备注与到账状态）">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 8l5-5 5 5M12 15V3"/></svg>
         导入 CSV
       </button>
     </div>
   </header>
 
+  <!-- ===== 顶部页签（窄屏） ===== -->
   <div class="tabbar">
-    <button class="tab active" data-tab="home">待发收益<span class="cnt" id="tabHomeCount">0</span></button>
+    <button class="tab active" data-tab="home">待发放收益<span class="cnt" id="tabHomeCount">0</span></button>
     <button class="tab" data-tab="done">已发放<span class="cnt" id="tabDoneCount">0</span></button>
   </div>
 
-  <!-- ===== 待发收益（首页） ===== -->
-  <div id="viewHome">
-    <section class="card summary-card">
-      <div class="summary-top">
+  <div class="shell">
+    <!-- ===== 侧边栏（平板全屏/桌面） ===== -->
+    <aside class="rail">
+      <div class="rail-brand">
+        <div class="logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>
+        </div>
+        <div class="rail-name">创作者工作台<small>待发收益 · 实况</small></div>
+      </div>
+      <nav class="rail-nav">
+        <button class="tab active" data-tab="home">待发放收益<span class="cnt" id="railHomeCount">0</span></button>
+        <button class="tab" data-tab="done">已发放<span class="cnt" id="railDoneCount">0</span></button>
+      </nav>
+      <div class="rail-live">
+        <div class="live-title">LIVE · 实况</div>
         <div>
-          <div class="summary-label">待发放总金额（已勾选不计入）</div>
-          <div class="summary-total" id="totalEl">¥0.00</div>
+          <div class="live-label">待发放总金额（未到账）</div>
+          <div class="live-total" id="liveTotal">¥0.00</div>
         </div>
-        <div class="summary-stats">
-          <div class="stat"><b id="statPlat">0</b><span>平台</span></div>
-          <div class="stat"><b id="statAct">0</b><span>活动</span></div>
-          <div class="stat"><b id="statPending">0</b><span>待发活动</span></div>
+        <div class="live-stats">
+          <div class="stat"><b id="liveStatPlat">0</b><span>平台</span></div>
+          <div class="stat"><b id="liveStatAct">0</b><span>活动</span></div>
+          <div class="stat"><b id="liveStatPending">0</b><span>待发活动</span></div>
+        </div>
+        <div class="live-share" id="liveShareBar"></div>
+        <div class="live-legend" id="liveShareLegend"></div>
+        <div class="live-done">已发放 <b id="liveDoneAmt">¥0.00</b> · <span id="liveDoneCnt">0</span> 个活动结清</div>
+      </div>
+      <div class="rail-foot">
+        <span class="sync-badge s-local"><span class="sb-dot"></span>本地模式</span>
+        <span class="rail-tip">数据自动云端同步，多设备共享；断网时保存在本浏览器。</span>
+      </div>
+    </aside>
+
+    <!-- ===== 主区 ===== -->
+    <main class="main">
+      <div class="toolbar">
+        <div class="toolbar-title" id="toolbarTitle">待发放收益</div>
+        <div class="toolbar-actions">
+          <button class="btn js-copy">复制到 WPS</button>
+          <button class="btn js-export">导出 CSV</button>
+          <button class="btn js-import">导入 CSV</button>
         </div>
       </div>
-      <div class="share-bar" id="shareBar"></div>
-      <div class="share-legend" id="shareLegend"></div>
-    </section>
 
-    <section class="card">
-      <div class="card-head">
-        <h2>添加活动</h2>
-        <span class="card-hint">一个平台可建多个活动，活动下逐条添加奖励；全部勾选后自动移入「已发放」</span>
-      </div>
-      <form class="add-form" id="addForm">
-        <div class="field f-name">
-          <label>活动名称</label>
-          <input id="actName" maxlength="30" placeholder="如：致梵高创作激励" autocapitalize="off" autocorrect="off" spellcheck="false">
-        </div>
-        <div class="field f-plat">
-          <label>归属平台</label>
-          <select id="actPlatform"></select>
-        </div>
-        <div class="field f-newplat" id="newPlatField" hidden>
-          <label>新平台名称</label>
-          <input id="newPlatName" maxlength="12" placeholder="如：B站" autocapitalize="off" autocorrect="off" spellcheck="false">
-        </div>
-        <button type="submit" class="btn btn-primary add-submit">添加活动</button>
-      </form>
-    </section>
-
-    <div class="platform-grid" id="platformGrid"></div>
-  </div>
-
-  <!-- ===== 已发放（结清页） ===== -->
-  <div id="viewDone" hidden>
-    <section class="card done-summary-card">
-      <div class="done-summary-top">
-        <div>
-          <div class="done-summary-label">已发放奖金（结清归档）</div>
-          <div class="done-summary-total" id="doneTotalEl">¥0.00</div>
-          <div class="done-summary-sub" id="doneSubEl"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="card-head">
-        <h2>已发放活动</h2>
-        <span class="card-hint">已结清的活动自动移到这里（划线展示），不再计入待发</span>
-      </div>
-      <div id="doneList"></div>
-    </section>
-
-    <section class="card">
-      <div class="card-head"><h2>设置</h2></div>
-      <div class="settings">
-        <div class="set-group">
-          <div class="set-title">网易云播放器</div>
-          <label class="set-row"><span>显示播放器</span><input type="checkbox" id="nmpOn"></label>
-          <div class="set-row"><span>歌单 ID</span><input type="text" id="nmpPlaylist" inputmode="numeric" placeholder="如 3778678"></div>
-          <div class="set-row"><span>主题</span>
-            <select id="nmpTheme">
-              <option value="auto">跟随系统</option>
-              <option value="light">浅色</option>
-              <option value="dark">深色</option>
-            </select>
+      <!-- 待发放收益（首页） -->
+      <div id="viewHome">
+        <section class="card summary-card">
+          <div class="summary-top">
+            <div>
+              <div class="summary-label">待发放总金额（已勾选不计入）</div>
+              <div class="summary-total" id="totalEl">¥0.00</div>
+            </div>
+            <div class="summary-stats">
+              <div class="stat"><b id="statPlat">0</b><span>平台</span></div>
+              <div class="stat"><b id="statAct">0</b><span>活动</span></div>
+              <div class="stat"><b id="statPending">0</b><span>待发活动</span></div>
+            </div>
           </div>
-          <div class="set-actions"><button class="btn btn-soft" id="nmpSave">保存播放器设置</button></div>
-          <div class="set-hint">播放器为 NeteaseMiniPlayer（右下角浮动），播放依赖网易云接口。歌单 ID：打开 music.163.com 歌单页，网址 playlist?id= 后面的数字。</div>
-        </div>
-        <div class="set-group">
-          <div class="set-title">已发放数据</div>
-          <div class="set-actions"><button class="btn btn-danger" id="clearDoneBtn">清空已发放记录</button></div>
-          <div class="set-hint">清空会删除所有已结清活动（不影响待发数据），不可恢复。</div>
+          <div class="share-bar" id="shareBar"></div>
+          <div class="share-legend" id="shareLegend"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>添加活动</h2>
+            <span class="card-hint">一个平台可建多个活动，活动下逐条添加奖励；全部勾选后自动移入「已发放」</span>
+          </div>
+          <form class="add-form" id="addForm">
+            <div class="field f-name">
+              <label>活动名称</label>
+              <input id="actName" maxlength="30" placeholder="如：致梵高创作激励" autocapitalize="off" autocorrect="off" spellcheck="false">
+            </div>
+            <div class="field f-plat">
+              <label>归属平台</label>
+              <select id="actPlatform"></select>
+            </div>
+            <div class="field f-newplat" id="newPlatField" hidden>
+              <label>新平台名称</label>
+              <input id="newPlatName" maxlength="12" placeholder="如：B站" autocapitalize="off" autocorrect="off" spellcheck="false">
+            </div>
+            <button type="submit" class="btn btn-primary add-submit">添加活动</button>
+          </form>
+        </section>
+
+        <div class="platform-grid" id="platformGrid"></div>
+      </div>
+
+      <!-- 已发放（结清页） -->
+      <div id="viewDone" hidden>
+        <section class="card done-summary-card">
+          <div class="done-summary-top">
+            <div>
+              <div class="done-summary-label">已发放奖金（结清归档）</div>
+              <div class="done-summary-total" id="doneTotalEl">¥0.00</div>
+              <div class="done-summary-sub" id="doneSubEl"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>已发放活动</h2>
+            <span class="card-hint">已结清的活动自动移到这里（划线展示），不再计入待发</span>
+          </div>
+          <div id="doneList"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><h2>设置</h2></div>
+          <div class="settings">
+            <div class="set-group">
+              <div class="set-title">网易云播放器</div>
+              <label class="set-row"><span>显示播放器</span><input type="checkbox" id="nmpOn"></label>
+              <div class="set-row"><span>歌单 ID</span><input type="text" id="nmpPlaylist" inputmode="numeric" placeholder="如 3778678"></div>
+              <div class="set-row"><span>主题</span>
+                <select id="nmpTheme">
+                  <option value="auto">跟随系统</option>
+                  <option value="light">浅色</option>
+                  <option value="dark">深色</option>
+                </select>
+              </div>
+              <div class="set-actions"><button class="btn btn-soft" id="nmpSave">保存播放器设置</button></div>
+              <div class="set-hint">播放器为 NeteaseMiniPlayer（右下角浮动），播放依赖网易云接口。歌单 ID：打开 music.163.com 歌单页，网址 playlist?id= 后面的数字。</div>
+            </div>
+            <div class="set-group">
+              <div class="set-title">已发放数据</div>
+              <div class="set-actions"><button class="btn btn-danger" id="clearDoneBtn">清空已发放记录</button></div>
+              <div class="set-hint">清空会删除所有已结清活动（不影响待发数据），不可恢复。</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="footer">
+        <span class="footer-hint">数据自动云端同步（部署到 CF 后多设备共享）；断网时保存在本浏览器，恢复后自动推送。CSV / JSON 备份恢复照常可用。</span>
+        <div class="footer-actions">
+          <button class="footer-link" id="backupBtn">备份数据</button>
+          <button class="footer-link" id="restoreBtn">恢复数据</button>
+          <button class="footer-link footer-danger" id="resetBtn">清空数据</button>
         </div>
       </div>
-    </section>
-  </div>
-
-  <div class="footer">
-    <span class="footer-hint">数据自动云端同步（部署到 CF 后多设备共享）；断网时保存在本浏览器，恢复后自动推送。CSV / JSON 备份恢复照常可用。</span>
-    <div class="footer-actions">
-      <button class="footer-link" id="backupBtn">备份数据</button>
-      <button class="footer-link" id="restoreBtn">恢复数据</button>
-      <button class="footer-link footer-danger" id="resetBtn">清空数据</button>
-    </div>
+    </main>
   </div>
 </div>
 
@@ -387,8 +480,8 @@ function load(){
   }catch(e){ return null; }
 }
 var state=load()||defaults();
-var collapsed={}; /* actId -> true, 内存态不持久化 */
-var formDefaults={}; /* actId -> 奖励类型默认值（自动进阶用） */
+var collapsed={};
+var formDefaults={};
 var activeTab='home';
 function save(){
   state.t=Date.now();
@@ -397,15 +490,16 @@ function save(){
 }
 function saveLocalOnly(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
 
-/* ---- 云端同步（Cloudflare Pages Functions + KV） ---- */
+/* ---- 云端同步 ---- */
 var cloudHost=false, pushTimer=null;
 try{ cloudHost=(location.protocol==='https:'||location.protocol==='http:'); }catch(e){ cloudHost=false; }
-var syncEl=document.getElementById('syncBadge');
+var syncEls=document.querySelectorAll('.sync-badge');
 function setSync(mode){
-  if(!syncEl) return;
-  syncEl.className='sync-badge s-'+mode;
   var label={'cloud':'云端已同步','syncing':'同步中','local':'本地模式','error':'同步失败'};
-  syncEl.innerHTML='<span class="sb-dot"></span>'+(label[mode]||mode);
+  syncEls.forEach(function(el){
+    el.className='sync-badge s-'+mode;
+    el.innerHTML='<span class="sb-dot"></span>'+(label[mode]||mode);
+  });
 }
 function normalizeCloud(d){
   if(!d||typeof d!=='object') d={};
@@ -473,30 +567,32 @@ function orderByFirstSeen(){
   return FIXED.concat(custom);
 }
 
-/* ---- 页签 ---- */
+/* ---- 页签切换（顶部 + 侧边栏共用） ---- */
 document.querySelectorAll('.tab').forEach(function(tab){
   tab.addEventListener('click',function(){
     activeTab=this.dataset.tab;
     document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active',t===tab); });
     document.getElementById('viewHome').hidden=(activeTab!=='home');
     document.getElementById('viewDone').hidden=(activeTab!=='done');
+    var tt=document.getElementById('toolbarTitle');
+    if(tt) tt.textContent=(activeTab==='done'?'已发放':'待发放收益');
   });
 });
+function switchTab(name){
+  activeTab=name;
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active',t.dataset.tab===name); });
+  document.getElementById('viewHome').hidden=(name!=='home');
+  document.getElementById('viewDone').hidden=(name!=='done');
+  var tt=document.getElementById('toolbarTitle');
+  if(tt) tt.textContent=(name==='done'?'已发放':'待发放收益');
+}
 
-/* ---- 渲染 ---- */
-function renderSummary(){
+/* ---- 占比条渲染（汇总卡 + 实况栏共用） ---- */
+function fillShare(barEl, legendEl){
+  barEl.innerHTML=''; legendEl.innerHTML='';
   var t=grandTotal();
-  totalEl.textContent=money(t);
-  statPlat.textContent=platforms().filter(function(p){return actsOf(p).length>0;}).length;
-  statAct.textContent=state.activities.length;
-  statPending.textContent=pendingActs().length;
-  tabHomeCount.textContent=pendingActs().length;
-  tabDoneCount.textContent=settledActs().length;
-  shareBar.innerHTML='';
-  shareLegend.innerHTML='';
   if(t<=0){
-    shareBar.innerHTML='';
-    shareLegend.innerHTML='<div class="bar-empty">暂无待发金额，添加活动并录入奖励吧</div>';
+    legendEl.innerHTML='<div class="bar-empty">暂无待发金额，添加活动并录入奖励吧</div>';
     return;
   }
   orderByFirstSeen().forEach(function(p){
@@ -507,14 +603,35 @@ function renderSummary(){
     seg.style.width=(v/t*100)+'%';
     seg.style.background=platformStyle(p).c;
     seg.title=p+'：'+money(v);
-    shareBar.appendChild(seg);
+    barEl.appendChild(seg);
     var item=document.createElement('div');
     item.className='legend-item';
     var dot=document.createElement('span'); dot.className='legend-dot'; dot.style.background=platformStyle(p).c;
     var label=document.createElement('span'); label.textContent=p+' '+(v/t*100).toFixed(1)+'%';
     item.appendChild(dot); item.appendChild(label);
-    shareLegend.appendChild(item);
+    legendEl.appendChild(item);
   });
+}
+function renderSummary(){
+  var t=grandTotal();
+  totalEl.textContent=money(t);
+  statPlat.textContent=platforms().filter(function(p){return actsOf(p).length>0;}).length;
+  statAct.textContent=state.activities.length;
+  statPending.textContent=pendingActs().length;
+  tabHomeCount.textContent=pendingActs().length;
+  tabDoneCount.textContent=settledActs().length;
+  fillShare(shareBar, shareLegend);
+  /* 侧边栏实况 */
+  liveTotal.textContent=money(t);
+  liveStatPlat.textContent=platforms().filter(function(p){return actsOf(p).length>0;}).length;
+  liveStatAct.textContent=state.activities.length;
+  liveStatPending.textContent=pendingActs().length;
+  fillShare(liveShareBar, liveShareLegend);
+  var d=settledActs();
+  liveDoneAmt.textContent=money(d.reduce(function(s,a){ return s+actAllAmount(a); },0));
+  liveDoneCnt.textContent=d.length;
+  railHomeCount.textContent=pendingActs().length;
+  railDoneCount.textContent=settledActs().length;
 }
 function renderPlatforms(){
   platformGrid.innerHTML='';
@@ -765,12 +882,6 @@ function sanitizeDecimal(v){
   if(i>=0) v=v.slice(0,i+1)+v.slice(i+1).replace(/\./g,'');
   return v;
 }
-function switchTab(name){
-  activeTab=name;
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active',t.dataset.tab===name); });
-  document.getElementById('viewHome').hidden=(name!=='home');
-  document.getElementById('viewDone').hidden=(name!=='done');
-}
 
 /* ---- 全局事件委托 ---- */
 platformGrid.addEventListener('click',function(ev){
@@ -838,7 +949,7 @@ function rows(){
   });
   return [['平台','活动','奖励类型','金额(元)','备注','时间','状态']].concat(out);
 }
-exportBtn.addEventListener('click',function(){
+function doExport(){
   var data=rows().concat([['—','—','—','—','—','—','—'],['总计待发','','',grandTotal().toFixed(2),'','','']]);
   var csv='\ufeff'+data.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(','); }).join('\r\n');
   var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
@@ -848,8 +959,8 @@ exportBtn.addEventListener('click',function(){
   document.body.appendChild(a); a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },200);
   toast('CSV 已导出，可用 WPS 打开');
-});
-copyBtn.addEventListener('click',function(){
+}
+function doCopy(){
   var text=rows().map(function(r){ return r.join('\t'); }).join('\n');
   function fallback(){
     var ta=document.createElement('textarea');
@@ -863,7 +974,10 @@ copyBtn.addEventListener('click',function(){
   if(navigator.clipboard&&navigator.clipboard.writeText){
     navigator.clipboard.writeText(text).then(function(){ toast('已复制，在 WPS 表格中粘贴即可'); },fallback);
   } else { fallback(); }
-});
+}
+document.querySelectorAll('.js-copy').forEach(function(b){ b.addEventListener('click',doCopy); });
+document.querySelectorAll('.js-export').forEach(function(b){ b.addEventListener('click',doExport); });
+document.querySelectorAll('.js-import').forEach(function(b){ b.addEventListener('click',function(){ importCsvInput.value=''; importCsvInput.click(); }); });
 
 /* ---- 导入 CSV / 备份 / 恢复 ---- */
 function parseCSV(text){
@@ -889,7 +1003,7 @@ function importFromCSV(text){
   var rows=parseCSV(text);
   var acts=[],map={};
   rows.forEach(function(r,i){
-    if(i===0) return; /* 表头 */
+    if(i===0) return;
     var platform=String(r[0]||'').trim(), name=String(r[1]||'').trim(), type=String(r[2]||'').trim();
     var amount=parseFloat(String(r[3]||'').replace(/,/g,''));
     var note=String(r[4]||''), timeStr=String(r[5]||''), status=String(r[6]||'').trim();
@@ -910,7 +1024,6 @@ function importFromCSV(text){
   state={activities:acts}; collapsed={}; formDefaults={}; save(); renderAll();
   toast('已导入 '+acts.length+' 个活动、'+n+' 条记录');
 }
-importCsvBtn.addEventListener('click',function(){ importCsvInput.value=''; importCsvInput.click(); });
 importCsvInput.addEventListener('change',function(){
   var f=this.files&&this.files[0];
   if(!f) return;
