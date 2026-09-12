@@ -3,7 +3,7 @@
  * functions/_middleware.js —— 作用于站点所有请求（含静态页面与全部 API）
  *
  * 验证逻辑（按顺序放行）：
- *   1. /api/auth/* 管理接口始终放行（登录/登出/状态查询本身必须可访问）
+ *   1. /api/auth/* 管理接口始终放行（接口内部自行校验授权）
  *   2. 未启用访问验证（无密码且无 IP 白名单）→ 全部放行（安全阀，防止锁死自己）
  *   3. 请求 IP 命中白名单 → 放行
  *   4. Cookie ce_auth 携带有效会话（30 天）→ 放行
@@ -28,6 +28,7 @@ async function getConfig(env) {
   if (env.ACCESS_PASSWORD && typeof env.ACCESS_PASSWORD === 'string' && env.ACCESS_PASSWORD.trim()) {
     cfg.password = env.ACCESS_PASSWORD.trim();
   }
+  // 与 auth/[[path]].js 保持一致：只有设置了密码或白名单，enabled 才生效
   cfg.enabled = !!(cfg.enabled && (cfg.password || (Array.isArray(cfg.ipWhitelist) && cfg.ipWhitelist.length > 0)));
   return cfg;
 }
@@ -115,7 +116,7 @@ function submit(){
   var v=pwd.value.trim();
   if(!v){show('请输入访问密码');return;}
   btn.disabled=true;btn.textContent='验证中...';
-  fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:v})})
+  fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:v}),credentials:'same-origin'})
     .then(function(r){return r.json().then(function(d){return {s:r.status,d:d};});})
     .then(function(res){
       if(res.s===200 && res.d.ok){ location.reload(); return; }
