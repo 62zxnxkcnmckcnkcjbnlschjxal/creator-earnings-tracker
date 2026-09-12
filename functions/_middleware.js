@@ -47,7 +47,7 @@ export async function onRequest(ctx) {
   const url = new URL(ctx.request.url);
 
   // 管理接口始终放行（接口内部自行校验授权）
-  if (url.pathname.startsWith('/api/auth/')) return ctx.next();
+  if (url.pathname === '/api/auth' || url.pathname.startsWith('/api/auth/')) return ctx.next();
 
   const cfg = await getConfig(ctx.env);
   if (!cfg.enabled) return ctx.next();
