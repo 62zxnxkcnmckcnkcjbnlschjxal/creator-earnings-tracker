@@ -181,7 +181,7 @@ input, select, textarea { font-size: 16px !important; }
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .brand{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
 .brand .logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--primary),var(--primary2));
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 14px -6px rgba(255,71,87,.55)}
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 14px -6px color-mix(in srgb,var(--primary) 55%,transparent)}
 .brand h1{font-size:18px;font-weight:700;letter-spacing:.2px}
 .brand .logo .lg-dark{display:none}
 :root.dark .brand .logo .lg-light{display:none}
@@ -199,7 +199,7 @@ input, select, textarea { font-size: 16px !important; }
 .tabbar{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px;background:var(--tabbar-bg);border:1px solid var(--border);border-radius:14px;padding:6px;box-shadow:var(--shadow-sm)}
 .tab{flex:1;border:none;background:transparent;border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;min-height:44px;white-space:nowrap;flex-wrap:nowrap}
 .tab:hover{color:var(--text);background:var(--tabbar-hover)}
-.tab.active{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 4px 14px -4px rgba(255,71,87,.45)}
+.tab.active{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 4px 14px -4px color-mix(in srgb,var(--primary) 45%,transparent)}
 .tab .cnt{font-size:11px;font-weight:700;background:rgba(0,0,0,.08);border-radius:999px;padding:1px 7px;flex-shrink:0}
 .tab.active .cnt{background:rgba(255,255,255,.25)}
 /* ===== 侧边栏（平板全屏/桌面） ===== */
@@ -212,7 +212,7 @@ input, select, textarea { font-size: 16px !important; }
   .rail{display:flex;flex-direction:column;gap:14px;position:sticky;top:20px}
   .rail-brand{display:flex;align-items:center;gap:11px;padding:2px 4px}
   .rail-brand .logo{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--primary),var(--primary2));
-    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -6px rgba(255,71,87,.55)}
+    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -6px color-mix(in srgb,var(--primary) 55%,transparent)}
   .rail-brand .logo .logo-char{font-family:'DouyinSans',system-ui,sans-serif;font-size:24px;font-weight:700;color:#fff;line-height:1;user-select:none}
   .rail-name{font-size:15px;font-weight:700;line-height:1.4}
   .rail-name small{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:2px}
@@ -251,7 +251,7 @@ input, select, textarea { font-size: 16px !important; }
   border-radius:11px;padding:8px 14px;font-size:13.5px;font-weight:500;cursor:pointer;transition:all .15s;line-height:1.4;user-select:none}
 .btn:hover{background:var(--btn-hover);border-color:var(--btn-hover-border)}
 .btn:active{transform:translateY(1px)}
-.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary2));border-color:transparent;color:#fff;box-shadow:0 6px 14px -6px rgba(255,71,87,.45)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary2));border-color:transparent;color:#fff;box-shadow:0 6px 14px -6px color-mix(in srgb,var(--primary) 45%,transparent)}
 .btn-primary:hover{filter:brightness(1.06)}
 .btn-soft{background:var(--btn-soft-bg);border-color:var(--btn-soft-border);color:var(--primary);font-weight:600}
 .btn-soft:hover{background:var(--btn-soft-hover);border-color:var(--btn-soft-hover-border)}
@@ -264,7 +264,7 @@ input, select, textarea { font-size: 16px !important; }
 .card-head h2{font-size:15px;font-weight:700}
 .card-hint{font-size:12px;color:var(--muted)}
 /* ===== 汇总卡（窄屏） ===== */
-.summary-card{background:linear-gradient(135deg,#FF4757 0%,#FF6B81 52%,#FF8A9B 100%);border:none;color:#fff;
+.summary-card{background:linear-gradient(135deg,var(--primary) 0%,var(--primary2) 55%,color-mix(in srgb,var(--primary2) 78%,var(--bg-start)) 100%);border:none;color:#fff;
   box-shadow:var(--shadow-xl)}
 .summary-top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
 .summary-label{font-size:13px;opacity:.88;margin-bottom:5px;font-weight:500}
@@ -341,8 +341,8 @@ input, select, textarea { font-size: 16px !important; }
 .entry-add .note-in{flex:1;min-width:130px}
 .entry-add .btn{padding:0 16px;height:38px}
 /* ===== 已发放页 ===== */
-.done-summary-card{background:linear-gradient(135deg,#0f9d6a 0%,#22c55e 100%);border:none;color:#fff;
-  box-shadow:0 16px 36px -16px rgba(15,157,106,.4)}
+.done-summary-card{background:linear-gradient(135deg,var(--green) 0%,color-mix(in srgb,var(--green) 72%,var(--bg-start)) 100%);border:none;color:#fff;
+  box-shadow:0 16px 36px -16px color-mix(in srgb,var(--green) 40%,transparent)}
 .done-summary-top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
 .done-summary-label{font-size:13px;opacity:.88;margin-bottom:5px;font-weight:500}
 .done-summary-total{font-size:40px;font-weight:800;letter-spacing:-.5px;line-height:1.05;font-variant-numeric:tabular-nums}
@@ -498,7 +498,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .mp-playlist.open{display:block}
 .mp-pl-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:12px}
 .mp-pl-item:hover{background:rgba(255,255,255,.08)}
-.mp-pl-item.active{color:#FF8A9B;font-weight:700}
+.mp-pl-item.active{color:var(--primary2);font-weight:700}
 .mp-pl-item span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ===== DeepSeek 聊天 ===== */
@@ -541,6 +541,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .notice-actions{display:flex;gap:6px}
 .notice-actions button{font-size:12px;padding:5px 10px;border-radius:8px}
 .notice-content{font-size:13.5px;line-height:1.65;color:var(--text);white-space:pre-wrap;word-break:break-word}
+.notice-title{font-size:14.5px;font-weight:700;color:var(--text);line-height:1.5;margin-top:2px}
 .notice-empty{color:var(--muted);font-size:13px;padding:18px 0;text-align:center}
 .notice-hint{font-size:12px;color:var(--muted);margin-top:8px}
 
@@ -590,7 +591,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .md-body hr{border:none;border-top:1px solid var(--border);margin:10px 0}
 .md-body strong{font-weight:700}
 .md-body em{font-style:italic}
-:root.dark .md-body blockquote{background:rgba(255,107,129,.08);border-left-color:var(--primary2)}
+:root.dark .md-body blockquote{background:color-mix(in srgb,var(--primary2) 8%,transparent);border-left-color:var(--primary2)}
 :root.dark .md-body pre{background:#1a1e2e;border-color:#2a2e3e}
 :root.dark .md-body code{background:#1a1e2e;border-color:#2a2e3e}
 .chat-bubble.md-body{white-space:normal}
@@ -608,10 +609,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       <span class="sync-badge s-local"><span class="sb-dot"></span>本地模式</span>
     </div>
     <div class="top-actions">
-      <button class="btn js-theme" title="切换深浅色模式" aria-label="切换深浅色模式">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        主题
-      </button>
+      <button class="btn js-theme" title="切换深浅色模式" aria-label="切换深浅色模式">☀️/🌙/⚙️</button>
       <button class="btn js-copy" title="复制为表格文本，可粘贴到 WPS 表格">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         复制到 WPS
@@ -678,7 +676,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       <div class="toolbar">
         <div class="toolbar-title" id="toolbarTitle">待发放收益</div>
         <div class="toolbar-actions">
-          <button class="btn js-theme">☀️/🌙/⚙️</button>
+          <button class="btn js-theme" title="切换深浅色模式" aria-label="切换深浅色模式">☀️/🌙/⚙️</button>
           <button class="btn js-copy">复制到 WPS</button>
           <button class="btn js-export">导出 CSV</button>
           <button class="btn js-import">导入 CSV</button>
@@ -942,10 +940,11 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             <span class="card-hint">记录平台公告信息，供 DeepSeek 查询引用</span>
           </div>
           <form class="notice-form" id="noticeForm">
-            <textarea id="noticeContent" placeholder="输入公告内容..." rows="3"></textarea>
+            <input type="text" id="noticeTitle" placeholder="公告标题（如：光遇追光计划第 21 期）">
+            <textarea id="noticeContent" placeholder="公告内容（活动奖励、规则说明等）..." rows="3"></textarea>
             <div class="notice-row">
               <input type="date" id="noticeDate">
-              <button type="submit" class="btn btn-primary">添加公告</button>
+              <button type="submit" class="btn btn-primary" id="noticeSubmitBtn">添加公告</button>
             </div>
           </form>
           <div id="noticeList"></div>
@@ -2452,7 +2451,7 @@ function saveNotices(){
 }
 function getNoticeContext(){
   if(!notices.length) return '';
-  return notices.slice(0,5).map(function(n){ return '['+n.date+'] '+n.content; }).join('\n');
+  return notices.slice(0,5).map(function(n){ var t=(n.title&&n.title.trim())?n.title:''; return '['+n.date+'] '+(t?t+'：':'')+n.content; }).join('\n');
 }
 
 function renderNotice(){
@@ -2473,25 +2472,38 @@ function renderNotice(){
         '<div class="notice-actions">'+
           '<button class="btn btn-soft" data-editnotice="'+realIdx+'">编辑</button>'+
           '<button class="btn btn-danger" data-delnotice="'+realIdx+'">删除</button>'+
+          (editingNoticeIdx===realIdx?'<button class="btn btn-soft" data-canceledit="1">取消</button>':'')+
         '</div>'+
       '</div>'+
+      (n.title&&n.title.trim()?'<div class="notice-title">'+esc(n.title)+'</div>':'')+
       '<div class="notice-content">'+esc(n.content)+'</div>';
     list.appendChild(item);
   });
 }
 
+var editingNoticeIdx=-1;
 noticeForm.addEventListener('submit',function(ev){
   ev.preventDefault();
+  var title=String(noticeTitle.value||'').trim();
   var content=String(noticeContent.value||'').trim();
   var date=String(noticeDate.value||'').trim();
   if(!content){ toast('请输入公告内容'); return; }
   if(!date){ date=new Date().toISOString().slice(0,10); }
-  notices.push({id:uid(),content:content,date:date,time:Date.now()});
-  saveNotices();
+  if(editingNoticeIdx>=0){
+    var n=notices[editingNoticeIdx];
+    if(!n){ editingNoticeIdx=-1; }
+    else{
+      n.title=title; n.content=content; n.date=date; n.time=Date.now();
+      saveNotices(); renderNotice(); toast('公告已更新');
+    }
+  }else{
+    notices.push({id:uid(),title:title,content:content,date:date,time:Date.now()});
+    saveNotices(); renderNotice(); toast('公告已添加');
+  }
+  editingNoticeIdx=-1;
   noticeForm.reset();
   noticeDate.value=new Date().toISOString().slice(0,10);
-  renderNotice();
-  toast('公告已添加');
+  noticeSubmitBtn.textContent='添加公告';
 });
 
 // 公告事件委托
@@ -2510,14 +2522,18 @@ noticeList.addEventListener('click',function(ev){
     var idx=parseInt(btn.dataset.editnotice);
     var n=notices[idx];
     if(!n) return;
-    var newContent=prompt('编辑公告内容',n.content);
-    if(newContent===null) return;
-    newContent=String(newContent).trim();
-    if(!newContent){ toast('内容不能为空'); return; }
-    n.content=newContent;
-    saveNotices();
-    renderNotice();
-    toast('已更新');
+    editingNoticeIdx=idx;
+    noticeTitle.value=n.title||'';
+    noticeContent.value=n.content;
+    noticeDate.value=n.date||'';
+    noticeSubmitBtn.textContent='保存修改';
+    noticeForm.scrollIntoView({behavior:'smooth',block:'start'});
+    noticeTitle.focus();
+  } else if(btn.dataset.canceledit){
+    editingNoticeIdx=-1;
+    noticeForm.reset();
+    noticeDate.value=new Date().toISOString().slice(0,10);
+    noticeSubmitBtn.textContent='添加公告';
   }
 });
 
