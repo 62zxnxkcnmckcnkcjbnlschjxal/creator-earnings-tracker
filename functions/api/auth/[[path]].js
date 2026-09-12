@@ -58,7 +58,7 @@ async function isAuthed(env, req) {
 }
 
 /* ================= POST /api/auth/login ================= */
-export async function onRequestPost(ctx) {
+async function handleLogin(ctx) {
   try {
     const body = await ctx.request.json();
     const pwd = String(body.password || '').trim();
@@ -106,7 +106,7 @@ export async function onRequestPost(ctx) {
 }
 
 /* ================= POST /api/auth/logout ================= */
-export async function onRequestPostLogout(ctx) {
+async function handleLogout(ctx) {
   try {
     const token = getCookie(ctx.request, 'ce_auth');
     if (token) await ctx.env.EARNINGS_KV.delete(SESS_PREFIX + token);
@@ -124,7 +124,7 @@ export async function onRequestPostLogout(ctx) {
 }
 
 /* ================= GET /api/auth/status（公开） ================= */
-export async function onRequestGetStatus(ctx) {
+async function handleGetStatus(ctx) {
   try {
     const cfg = await getConfig(ctx.env);
     const ip = getIP(ctx.request);
@@ -144,7 +144,7 @@ export async function onRequestGetStatus(ctx) {
 }
 
 /* ================= GET /api/auth/config（需授权） ================= */
-export async function onRequestGetConfig(ctx) {
+async function handleGetConfig(ctx) {
   const authed = await isAuthed(ctx.env, ctx.request);
   if (!authed) return json({ error: '未授权' }, 401);
   const cfg = await getConfig(ctx.env);
@@ -159,7 +159,7 @@ export async function onRequestGetConfig(ctx) {
 }
 
 /* ================= POST /api/auth/config（需授权，或首次启用 bootstrap） ================= */
-export async function onRequestPostConfig(ctx) {
+async function handlePostConfig(ctx) {
   // bootstrap 判断基于 KV 原始配置（不受 env.ACCESS_PASSWORD 覆盖干扰）：
   // 只要 KV 里从未配置过（无 enabled / 无密码 / 无白名单），就允许未授权首次启用
   let raw0 = null;
@@ -202,7 +202,7 @@ export async function onRequestPostConfig(ctx) {
 }
 
 /* ================= GET /api/auth/privacy（公开） ================= */
-export async function onRequestGetPrivacy(ctx) {
+async function handleGetPrivacy(ctx) {
   const html = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>隐私政策与品牌声明 · 创作者收益工作台</title>
@@ -235,26 +235,25 @@ a{color:#FF4757}
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
 }
 
-/* ================= 路由分发 ================= */
-async function onRequestGet(ctx) {
-  const url = new URL(ctx.request.url);
-  const action = url.pathname.split('/').pop(); // login/logout/status/config/privacy
-  if (action === 'status') return onRequestGetStatus(ctx);
-  if (action === 'config') return onRequestGetConfig(ctx);
-  if (action === 'privacy') return onRequestGetPrivacy(ctx);
-  return json({ error: '不支持的操作' }, 400);
-}
-
+/* ================= 路由分发（唯一导出入口 onRequest） ================= */
+// 注意：本文件【只】导出 onRequest。绝不能同时导出 onRequestPost / onRequestGet 等方法专属处理器，
+// 否则 Cloudflare Pages 会把所有 POST 请求固定路由到 onRequestPost（登录处理器），
+// 导致 /api/auth/config（保存）、/api/auth/logout 等全部被当作登录请求处理 —— 保存配置永远不生效。
 export async function onRequest(ctx) {
+  const url = new URL(ctx.request.url);
+  const action = url.pathname.split('/').pop() || '';
   if (ctx.request.method === 'POST') {
-    const url = new URL(ctx.request.url);
-    const action = url.pathname.split('/').pop();
-    if (action === 'login') return onRequestPost(ctx);
-    if (action === 'logout') return onRequestPostLogout(ctx);
-    if (action === 'config') return onRequestPostConfig(ctx);
+    if (action === 'login') return handleLogin(ctx);
+    if (action === 'logout') return handleLogout(ctx);
+    if (action === 'config') return handlePostConfig(ctx);
     return json({ error: '不支持的操作' }, 400);
   }
-  if (ctx.request.method === 'GET') return onRequestGet(ctx);
+  if (ctx.request.method === 'GET') {
+    if (action === 'status') return handleGetStatus(ctx);
+    if (action === 'config') return handleGetConfig(ctx);
+    if (action === 'privacy') return handleGetPrivacy(ctx);
+    return json({ error: '不支持的操作' }, 400);
+  }
   if (ctx.request.method === 'OPTIONS') {
     return new Response(null, { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' } });
   }
