@@ -1868,6 +1868,7 @@ function markdownToHtml(raw){
 /* ---- 访问验证（服务端拦截） ---- */
 var authState={enabled:false,authed:false,ip:'',ipWhitelist:[],passwordSet:false,passwordViaEnv:false};
 var authDirty=false; // 用户是否手动改过访问验证开关（防止异步加载覆盖）
+var wlDirty=false;    // 用户是否手动改过 IP 白名单（防止异步加载覆盖）
 function authHint(msg,type){
   var el=document.getElementById('authHint');
   if(!el) return;
@@ -1922,7 +1923,7 @@ function loadAuthStatus(){
 }
 function loadAuthConfig(){
   return fetch('/api/auth/config').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
-    authState.ipWhitelist=d.ipWhitelist||[];
+    if(!wlDirty) authState.ipWhitelist=d.ipWhitelist||[];
     authState.passwordSet=!!d.passwordSet;
     authState.passwordViaEnv=!!d.passwordViaEnv;
     var en=document.getElementById('authEnabled');
@@ -1945,6 +1946,11 @@ if(authSaveEl) authSaveEl.addEventListener('click',function(){
   var payload={ enabled: en?en.checked:false };
   if(pwd && pwd.value.trim()) payload.password=pwd.value.trim();
   if(authState.ipWhitelist.length || payload.enabled) payload.ipWhitelist=authState.ipWhitelist;
+  if(payload.enabled && !payload.password && (!authState.ipWhitelist || !authState.ipWhitelist.length)){
+    authHint('无法启用：未填写访问密码，且 IP 白名单为空。请填写密码，或先点「加入白名单」','err');
+    toast('未填写密码且无白名单，无法启用');
+    return;
+  }
   saveAuthConfig(payload).then(function(res){
     if(res.s===200 && res.d.ok){
       var serverEnabled=!!(res.d.config&&res.d.config.enabled);
@@ -1954,6 +1960,7 @@ if(authSaveEl) authSaveEl.addEventListener('click',function(){
       authHint('验证设置已保存，访问验证'+(serverEnabled?'已启用':'未启用')+diag,'ok');
       authState.enabled=serverEnabled;
       authDirty=false;
+      wlDirty=false;
       var en2=document.getElementById('authEnabled');
       if(en2) en2.checked=authState.enabled;
       if(authState.enabled) toast('访问验证已启用，未授权设备将被拦截');
@@ -1972,6 +1979,7 @@ var authAddEl=document.getElementById('authAddIp');
 if(authAddEl) authAddEl.addEventListener('click',function(){
   if(!authState.ip || authState.ip==='unknown'){ authHint('无法获取当前 IP：/api/auth/status 接口未生效（请确认已部署 functions 并重新部署站点）','err'); return; }
   if(authState.ipWhitelist.indexOf(authState.ip)<0) authState.ipWhitelist.push(authState.ip);
+  wlDirty=true;
   renderAuthIpList();
   authHint('已把当前 IP 加入白名单，记得点「保存验证设置」','');
 });
@@ -2383,3 +2391,4 @@ setTimeout(pullCloud,120);
 </script>
 </body>
 </html>
+<!-- （注：内容由AI生成） -->
