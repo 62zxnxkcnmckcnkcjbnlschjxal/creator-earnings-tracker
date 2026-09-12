@@ -1867,6 +1867,7 @@ function markdownToHtml(raw){
 
 /* ---- 访问验证（服务端拦截） ---- */
 var authState={enabled:false,authed:false,ip:'',ipWhitelist:[],passwordSet:false,passwordViaEnv:false};
+var authDirty=false; // 用户是否手动改过访问验证开关（防止异步加载覆盖）
 function authHint(msg,type){
   var el=document.getElementById('authHint');
   if(!el) return;
@@ -1903,7 +1904,7 @@ function loadAuthStatus(){
     authState.enabled=!!d.enabled; authState.authed=!!d.authed; authState.ip=d.ip||'';
     var en=document.getElementById('authEnabled');
     var my=document.getElementById('authMyIp');
-    if(en) en.checked=authState.enabled;
+    if(en && !authDirty) en.checked=authState.enabled;
     if(my) my.textContent=authState.ip||'-';
     if(!authState.authed){
       if(authState.enabled) authHint('当前设备未解锁（未授权访问会被服务端拦截）','err');
@@ -1925,7 +1926,7 @@ function loadAuthConfig(){
     authState.passwordSet=!!d.passwordSet;
     authState.passwordViaEnv=!!d.passwordViaEnv;
     var en=document.getElementById('authEnabled');
-    if(en) en.checked=!!d.enabled;
+    if(en && !authDirty) en.checked=!!d.enabled;
     renderAuthIpList();
     var hint='已登录 · 密码'+(d.passwordViaEnv?'由 CF 密文 ACCESS_PASSWORD 提供':'已设置'+(d.passwordSet?'':'（未设置，需先设置密码才能启用）'));
     authHint(hint,'ok');
@@ -1935,6 +1936,8 @@ function saveAuthConfig(payload){
   return fetch('/api/auth/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
     .then(function(r){ return r.json().then(function(d){ return {s:r.status,d:d}; }); });
 }
+var authEnEl2=document.getElementById('authEnabled');
+if(authEnEl2) authEnEl2.addEventListener('change',function(){ authDirty=true; });
 var authSaveEl=document.getElementById('authSave');
 if(authSaveEl) authSaveEl.addEventListener('click',function(){
   var en=document.getElementById('authEnabled');
@@ -1946,6 +1949,9 @@ if(authSaveEl) authSaveEl.addEventListener('click',function(){
     if(res.s===200 && res.d.ok){
       authHint('验证设置已保存'+(res.d.config&&res.d.config.enabled?'，访问验证已启用':'，访问验证未启用'),'ok');
       authState.enabled=!!(res.d.config&&res.d.config.enabled);
+      authDirty=false;
+      var en2=document.getElementById('authEnabled');
+      if(en2) en2.checked=authState.enabled;
       if(authState.enabled) toast('访问验证已启用，未授权设备将被拦截');
       if(pwd) pwd.value='';
       if(en) en.checked=authState.enabled;
