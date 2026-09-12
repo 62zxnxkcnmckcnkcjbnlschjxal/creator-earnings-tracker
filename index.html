@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="创作者收益工作台">
 <meta name="theme-color" id="metaTheme" content="#f8f9fc">
 <link rel="manifest" href="manifest.json">
@@ -99,11 +99,11 @@ input, select, textarea { font-size: 16px !important; }
 .sync-badge.s-error .sb-dot{background:var(--danger)}
 .top-actions{display:flex;gap:8px;flex-wrap:wrap}
 /* ===== 顶部页签（窄屏） ===== */
-.tabbar{display:flex;gap:8px;margin-bottom:16px;background:var(--tabbar-bg);border:1px solid var(--border);border-radius:14px;padding:5px;box-shadow:var(--shadow-sm)}
-.tab{flex:1;border:none;background:transparent;border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;min-height:44px}
+.tabbar{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px;background:var(--tabbar-bg);border:1px solid var(--border);border-radius:14px;padding:6px;box-shadow:var(--shadow-sm)}
+.tab{flex:1;border:none;background:transparent;border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;min-height:44px;white-space:nowrap;flex-wrap:nowrap}
 .tab:hover{color:var(--text);background:var(--tabbar-hover)}
 .tab.active{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 4px 14px -4px rgba(255,71,87,.45)}
-.tab .cnt{font-size:11px;font-weight:700;background:rgba(0,0,0,.08);border-radius:999px;padding:1px 7px}
+.tab .cnt{font-size:11px;font-weight:700;background:rgba(0,0,0,.08);border-radius:999px;padding:1px 7px;flex-shrink:0}
 .tab.active .cnt{background:rgba(255,255,255,.25)}
 /* ===== 侧边栏（平板全屏/桌面） ===== */
 .rail{display:none}
@@ -268,7 +268,7 @@ input, select, textarea { font-size: 16px !important; }
 .settings{display:flex;flex-direction:column;gap:16px}
 .set-group{display:flex;flex-direction:column;gap:10px}
 .set-title{font-size:13px;font-weight:700;color:var(--text);padding-bottom:6px;border-bottom:1px solid var(--line)}
-.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13.5px;color:var(--text)}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13.5px;color:var(--text);flex-wrap:wrap}
 .set-row input[type=text],.set-row input[type=password],.set-row input[type=number],.set-row select{height:38px;border:1px solid var(--border);border-radius:10px;padding:0 10px;font-size:16px;outline:none;background:var(--btn-bg);color:var(--text);width:170px;-webkit-appearance:none;appearance:none}
 .set-row input:focus,.set-row select:focus{border-color:var(--focus);box-shadow:0 0 0 3px var(--focus-ring)}
 .set-row input[type=checkbox]{width:22px;height:22px;accent-color:var(--primary)}
@@ -279,6 +279,7 @@ input, select, textarea { font-size: 16px !important; }
 .theme-seg button.active{background:var(--btn-bg);color:var(--text);box-shadow:var(--shadow-sm)}
 /* ===== 底部 ===== */
 .footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 2px 0;margin-top:8px}
+.footer[hidden]{display:none}
 .footer-hint{font-size:12px;color:var(--muted);line-height:1.7}
 .footer-actions{display:flex;gap:6px;flex-wrap:wrap}
 .footer-link{font-size:12px;color:var(--muted);border:1px solid var(--border);background:var(--btn-bg);border-radius:9px;cursor:pointer;padding:8px 12px;transition:all .15s}
@@ -304,6 +305,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   .platform-grid{grid-template-columns:minmax(0,1fr)}
   .btn{min-height:44px}
   .icon-btn{width:34px;height:34px}
+  .tab{font-size:12.5px;padding:9px 6px;min-height:40px}
+  .tabbar{margin-bottom:14px}
   .add-form{grid-template-columns:1fr 1fr}
   .add-form .f-name{grid-column:1 / -1}
   .add-form .f-plat{grid-column:1}
@@ -419,7 +422,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .chat-loading span:nth-child(3){animation-delay:.3s}
 @keyframes dotBounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
 
-/* ===== 公示 ===== */
+/* ===== 公告 ===== */
 .notice-form{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
 .notice-form textarea{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px;font-size:16px;background:var(--btn-bg);color:var(--text);outline:none;resize:vertical;min-height:80px}
 .notice-form textarea:focus{border-color:var(--focus);box-shadow:0 0 0 3px var(--focus-ring)}
@@ -437,7 +440,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .notice-hint{font-size:12px;color:var(--muted);margin-top:8px}
 
 /* 4 tab 适配 */
-.tabbar{gap:6px}
+.tabbar{gap:6px;margin-bottom:14px}
 .tab{font-size:13px;padding:9px 8px}
 
 
@@ -523,7 +526,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     <button class="tab active" data-tab="home">待发放<span class="cnt" id="tabHomeCount">0</span></button>
     <button class="tab" data-tab="done">已发放<span class="cnt" id="tabDoneCount">0</span></button>
     <button class="tab" data-tab="chat">DeepSeek</button>
-    <button class="tab" data-tab="notice">公示</button>
+    <button class="tab" data-tab="notice">公告</button>
     <button class="tab" data-tab="privacy">隐私</button>
     <button class="tab" data-tab="settings">设置</button>
   </div>
@@ -539,7 +542,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         <button class="tab active" data-tab="home">待发放收益<span class="cnt" id="railHomeCount">0</span></button>
         <button class="tab" data-tab="done">已发放<span class="cnt" id="railDoneCount">0</span></button>
         <button class="tab" data-tab="chat">DeepSeek</button>
-        <button class="tab" data-tab="notice">公示</button>
+        <button class="tab" data-tab="notice">公告</button>
         <button class="tab" data-tab="privacy">隐私政策</button>
         <button class="tab" data-tab="settings">设置</button>
       </nav>
@@ -669,7 +672,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
               <h3>一、数据收集范围</h3>
               <p>本工具不设置账号注册与登录体系，也不会收集您的个人身份信息（如姓名、手机号、邮箱等）。</p>
               <ul>
-                <li><strong>业务数据（Cloudflare KV 云端同步）：</strong>活动内容、奖励信息、公示记录等业务状态数据，通过 <code>/api/state</code> 接口存储在 Cloudflare KV。数据为全局共享状态，不区分用户身份。</li>
+                <li><strong>业务数据（Cloudflare KV 云端同步）：</strong>活动内容、奖励信息、公告记录等业务状态数据，通过 <code>/api/state</code> 接口存储在 Cloudflare KV。数据为全局共享状态，不区分用户身份。</li>
                 <li><strong>界面偏好（浏览器本地存储）：</strong>播放器设置、各模块折叠/展开状态等仅保存在浏览器 localStorage 中，不会上传到任何服务器。</li>
                 <li><strong>DeepSeek 对话数据：</strong>API Key 仅保存在浏览器本地，对话通过 Cloudflare Function 透明转发至 api.deepseek.com，本工具服务器不存储对话内容。</li>
                 <li><strong>音乐播放：</strong>页面嵌入了网易云歌单播放器，本工具不采集、不存储与音乐播放相关的任何用户数据。</li>
@@ -704,7 +707,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
             <div class="privacy-section">
               <h3>五、与《光·遇》（Sky）相关的声明</h3>
-              <p>本工具展示的活动、奖励、公示等业务数据，与游戏《光·遇》（国际版名称 Sky: Children of the Light）的游戏内活动相关。《光·遇》由国外开发团队 thatgamecompany, Inc.（简称 TGC）开发，其中国大陆地区版本由网易游戏代理发行。本工具与 thatgamecompany、网易公司均不存在任何形式的隶属、合作、授权或关联关系，亦未获得任何一方的授权、许可或背书。</p>
+              <p>本工具展示的活动、奖励、公告等业务数据，与游戏《光·遇》（国际版名称 Sky: Children of the Light）的游戏内活动相关。《光·遇》由国外开发团队 thatgamecompany, Inc.（简称 TGC）开发，其中国大陆地区版本由网易游戏代理发行。本工具与 thatgamecompany、网易公司均不存在任何形式的隶属、合作、授权或关联关系，亦未获得任何一方的授权、许可或背书。</p>
             </div>
 
             <div class="privacy-divider"></div>
@@ -771,8 +774,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
               <div class="set-title">访问验证（服务端拦截）</div>
               <label class="set-row"><span>启用访问验证</span><input type="checkbox" id="authEnabled"></label>
               <div class="set-row"><span>访问密码</span><input type="password" id="authPassword" placeholder="留空表示不修改当前密码"></div>
-              <div class="set-row"><span>当前访问 IP</span><span id="authMyIp" style="font-family:ui-monospace,monospace;font-size:12.5px;color:var(--muted);"></span><button class="btn btn-soft" id="authAddIp" style="flex-shrink:0;">加入白名单</button></div>
-              <div class="set-row"><span>IP 白名单</span><span id="authIpList" style="flex:1;font-size:12.5px;color:var(--muted);"></span></div>
+              <div class="set-row"><span>当前访问 IP</span><span id="authMyIp" style="font-family:ui-monospace,monospace;font-size:12.5px;color:var(--muted);flex:1 1 120px;min-width:0;word-break:break-all;"></span><button class="btn btn-soft" id="authAddIp" style="flex-shrink:0;">加入白名单</button></div>
+              <div class="set-row"><span>IP 白名单</span><span id="authIpList" style="flex:1 1 140px;min-width:0;font-size:12.5px;color:var(--muted);word-break:break-all;"></span></div>
               <div class="set-actions"><button class="btn btn-soft" id="authSave">保存验证设置</button><button class="btn btn-soft" id="authLogout">退出登录</button></div>
               <div class="set-hint" id="authHint" style="display:none;margin-top:6px;padding:8px 10px;border-radius:8px;font-size:12px;"></div>
               <div class="set-hint">启用后，未授权设备（不在 IP 白名单、未通过密码解锁）将无法加载本网站任何页面与接口。解锁凭证为 HttpOnly Cookie，30 天内有效；连续输错 5 次密码会锁定 10 分钟。密码也可在 Cloudflare 配置加密密文 <b>ACCESS_PASSWORD</b>（env 优先，更安全）。</div>
@@ -815,18 +818,18 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         </section>
       </div>
 
-      <!-- 公示页 -->
+      <!-- 公告页 -->
       <div id="viewNotice" hidden>
         <section class="card">
           <div class="card-head">
-            <h2>公示管理</h2>
-            <span class="card-hint">记录平台公示信息，供 DeepSeek 查询引用</span>
+            <h2>公告管理</h2>
+            <span class="card-hint">记录平台公告信息，供 DeepSeek 查询引用</span>
           </div>
           <form class="notice-form" id="noticeForm">
-            <textarea id="noticeContent" placeholder="输入公示内容..." rows="3"></textarea>
+            <textarea id="noticeContent" placeholder="输入公告内容..." rows="3"></textarea>
             <div class="notice-row">
               <input type="date" id="noticeDate">
-              <button type="submit" class="btn btn-primary">添加公示</button>
+              <button type="submit" class="btn btn-primary">添加公告</button>
             </div>
           </form>
           <div id="noticeList"></div>
@@ -908,7 +911,7 @@ var TYPE_STYLE={
 };
 var FALLBACK_STYLE={c:'#475569',bg:'#edf0f5'};
 
-function defaults(){ return {t:0, activities:[]}; }
+function defaults(){ return {t:0, activities:[], notices:[]}; }
 function load(){
   try{
     var raw=localStorage.getItem(STORAGE_KEY);
@@ -923,6 +926,7 @@ function load(){
       a.entries.forEach(function(e){ if(e.type==='瓜分'){ e.type='基础瓜分'; changed=true; } });
     });
     if(changed) try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }catch(e){}
+    if(Array.isArray(d.notices)) notices=d.notices;
     return d;
   }catch(e){ return null; }
 }
@@ -954,6 +958,7 @@ function normalizeCloud(d){
   if(!d||typeof d!=='object') d={};
   if(typeof d.t!=='number') d.t=0;
   if(!Array.isArray(d.activities)) d.activities=[];
+  if(!Array.isArray(d.notices)) d.notices=[];
   d.activities.forEach(function(a){
     if(!Array.isArray(a.entries)) a.entries=[];
     a.entries.forEach(function(e){ if(e.type==='瓜分') e.type='基础瓜分'; });
@@ -981,7 +986,9 @@ function pullCloud(){
       d=normalizeCloud(d);
       if(!d.activities.length && state.activities.length){ return pushNow(); }
       if(d.t>=(state.t||0)){
-        state=d; saveLocalOnly(); renderAll(); setSync('cloud');
+        state=d; saveLocalOnly();
+        if(Array.isArray(d.notices)){ notices=d.notices; try{ localStorage.setItem(NOTICE_KEY,JSON.stringify(notices)); }catch(e){} }
+        renderAll(); setSync('cloud');
       } else {
         return pushNow();
       }
@@ -1033,12 +1040,16 @@ function switchTab(name){
   document.getElementById('viewPrivacy').hidden=(name!=='privacy');
   document.getElementById('viewSettings').hidden=(name!=='settings');
   var tt=document.getElementById('toolbarTitle');
-  var titles={home:'待发放收益',done:'已发放',chat:'DeepSeek 助手',notice:'公示管理',privacy:'隐私政策与品牌声明',settings:'设置'};
+  var titles={home:'待发放收益',done:'已发放',chat:'DeepSeek 助手',notice:'公告管理',privacy:'隐私政策与品牌声明',settings:'设置'};
   if(tt) tt.textContent=(titles[name]||'待发放收益');
-  if(name==='chat') renderChat();
-  if(name==='notice') renderNotice();
+  // 底部工具条：仅首页与设置页显示（DeepSeek 助手等全屏页不显示）
   var gf=document.getElementById('globalFooter');
   if(gf) gf.hidden=(name!=='home' && name!=='settings');
+  // DeepSeek 助手全屏：隐藏顶部工具栏，聊天区占满主区
+  var tb=document.querySelector('.toolbar');
+  if(tb) tb.style.display=(name==='chat')?'none':'';
+  if(name==='chat'){ try{ renderChat(); }catch(e){} }
+  if(name==='notice'){ try{ renderNotice(); }catch(e){} }
 }
 // hash 路由：地址栏 #privacy 等可直接打开对应页，支持前进后退
 window.addEventListener('hashchange',function(){
@@ -1046,7 +1057,6 @@ window.addEventListener('hashchange',function(){
   var views=['home','done','chat','notice','privacy','settings'];
   if(n && views.indexOf(n)>=0) switchTab(n);
 });
-(function(){ var n=(location.hash||'').replace('#','').trim(); if(n) switchTab(n); })();
 
 /* ---- 占比条渲染（汇总卡 + 实况栏共用） ---- */
 function fillShare(barEl, legendEl){
@@ -1781,7 +1791,7 @@ function buildDataContext(){
     parts.push('\n【已发放汇总】暂无已发放记录');
   }
   if(notices.length){
-    parts.push('\n【最近公示】');
+    parts.push('\n【最近公告】');
     notices.slice(0,5).forEach(function(n){
       parts.push('- ['+n.date+'] '+n.content);
     });
@@ -1901,10 +1911,7 @@ function renderAuthIpList(){
   });
 }
 function loadAuthStatus(){
-  fetch('/api/auth/status',{credentials:'same-origin'}).then(function(r){
-    if(r.status===404) throw {status:404};
-    return r.json();
-  }).then(function(d){
+  fetch('/api/auth/status').then(function(r){return r.json();}).then(function(d){
     authState.enabled=!!d.enabled; authState.authed=!!d.authed; authState.ip=d.ip||'';
     var en=document.getElementById('authEnabled');
     var my=document.getElementById('authMyIp');
@@ -1925,7 +1932,7 @@ function loadAuthStatus(){
   });
 }
 function loadAuthConfig(){
-  return fetch('/api/auth/config',{credentials:'same-origin'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
+  return fetch('/api/auth/config').then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
     if(!wlDirty) authState.ipWhitelist=d.ipWhitelist||[];
     authState.passwordSet=!!d.passwordSet;
     authState.passwordViaEnv=!!d.passwordViaEnv;
@@ -1937,7 +1944,7 @@ function loadAuthConfig(){
   }).catch(function(){ authHint('读取配置失败：接口未部署（404）或当前未解锁（401），请先确认部署状态','err'); });
 }
 function saveAuthConfig(payload){
-  return fetch('/api/auth/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),credentials:'same-origin'})
+  return fetch('/api/auth/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
     .then(function(r){ return r.json().then(function(d){ return {s:r.status,d:d}; }); });
 }
 var authEnEl2=document.getElementById('authEnabled');
@@ -1988,7 +1995,7 @@ if(authAddEl) authAddEl.addEventListener('click',function(){
 });
 var authLogoutEl=document.getElementById('authLogout');
 if(authLogoutEl) authLogoutEl.addEventListener('click',function(){
-  fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){
+  fetch('/api/auth/logout',{method:'POST'}).then(function(r){return r.json();}).then(function(d){
     if(d.ok){ authHint('已退出登录，本设备下次访问需重新解锁','ok'); toast('已退出登录'); }
   });
 });
@@ -2193,7 +2200,7 @@ checkServerKeyStatus();
 var CHAT_PRESETS=[
   {label:'催发提醒',text:'那些活动已经很久没发放了，请帮我整理一份催发提醒话术，包含每个待发放活动的平台、活动名称和金额。'},
   {label:'收益分析',text:'请帮我分析目前的待发收益情况，按平台统计总金额和笔数，并给出接下来应该优先关注哪些活动的建议。'},
-  {label:'公示解读',text:'请根据最近的平台公示内容，帮我解读一下对创作者收益可能产生的影响。'},
+  {label:'公告解读',text:'请根据最近的平台公告内容，帮我解读一下对创作者收益可能产生的影响。'},
   {label:'活动跟进',text:'请帮我列出所有待发活动，按时间从近到远排序，并建议每个活动的下一步跟进动作。'}
 ];
 
@@ -2244,12 +2251,12 @@ function sendChatMessage(text){
   text=text.trim();
   if(!dsEnvConfigured && !dsState.apiKey){ toast('请先配置 DeepSeek 密钥（服务器环境变量或本地填写）'); switchTab('settings'); return; }
 
-  // 构建消息历史 + 系统提示 + 本地数据上下文 + 公示上下文
+  // 构建消息历史 + 系统提示 + 本地数据上下文 + 公告上下文
   var sysPrompt='你是创作者收益助手，帮助用户管理待发收益、整理催发话术、分析平台政策。\n\n【重要】以下是用户的本地数据摘要，回答时请直接引用这些数据，不要向用户索要已有数据。如果数据中没有相关信息，再请用户补充。';
   var dataCtx=buildDataContext();
   if(dataCtx) sysPrompt+='\n\n'+dataCtx;
   var notices=getNoticeContext();
-  if(notices) sysPrompt+='\n\n最近平台公示：\n'+notices;
+  if(notices) sysPrompt+='\n\n最近平台公告：\n'+notices;
 
   var messages=[{role:'system',content:sysPrompt}];
   dsState.messages.forEach(function(m){ messages.push({role:m.role,content:m.content}); });
@@ -2308,11 +2315,16 @@ chatForm.addEventListener('submit',function(ev){
   sendChatMessage(chatInput.value);
 });
 
-/* ---- 公示管理 ---- */
+/* ---- 公告管理 ---- */
 var NOTICE_KEY='creatorNoticesV2';
 var notices=[];
 function loadNotices(){ try{ var r=localStorage.getItem(NOTICE_KEY); notices=r?JSON.parse(r):[]; }catch(e){ notices=[]; } }
-function saveNotices(){ try{ localStorage.setItem(NOTICE_KEY,JSON.stringify(notices)); }catch(e){} }
+function saveNotices(){
+  try{ localStorage.setItem(NOTICE_KEY,JSON.stringify(notices)); }catch(e){}
+  // 同步进云端 state，与活动数据一起推送
+  try{ state.notices=notices; }catch(e){}
+  schedulePush();
+}
 function getNoticeContext(){
   if(!notices.length) return '';
   return notices.slice(0,5).map(function(n){ return '['+n.date+'] '+n.content; }).join('\n');
@@ -2323,7 +2335,7 @@ function renderNotice(){
   if(!list) return;
   list.innerHTML='';
   if(!notices.length){
-    list.innerHTML='<div class="notice-empty">暂无公示记录</div>';
+    list.innerHTML='<div class="notice-empty">暂无公告记录</div>';
     return;
   }
   notices.slice().reverse().forEach(function(n,idx){
@@ -2347,23 +2359,23 @@ noticeForm.addEventListener('submit',function(ev){
   ev.preventDefault();
   var content=String(noticeContent.value||'').trim();
   var date=String(noticeDate.value||'').trim();
-  if(!content){ toast('请输入公示内容'); return; }
+  if(!content){ toast('请输入公告内容'); return; }
   if(!date){ date=new Date().toISOString().slice(0,10); }
   notices.push({id:uid(),content:content,date:date,time:Date.now()});
   saveNotices();
   noticeForm.reset();
   noticeDate.value=new Date().toISOString().slice(0,10);
   renderNotice();
-  toast('公示已添加');
+  toast('公告已添加');
 });
 
-// 公示事件委托
+// 公告事件委托
 noticeList.addEventListener('click',function(ev){
   var btn=ev.target.closest('button');
   if(!btn) return;
   if(btn.dataset.delnotice){
     var idx=parseInt(btn.dataset.delnotice);
-    if(confirm('确定删除这条公示？')){
+    if(confirm('确定删除这条公告？')){
       notices.splice(idx,1);
       saveNotices();
       renderNotice();
@@ -2373,7 +2385,7 @@ noticeList.addEventListener('click',function(ev){
     var idx=parseInt(btn.dataset.editnotice);
     var n=notices[idx];
     if(!n) return;
-    var newContent=prompt('编辑公示内容',n.content);
+    var newContent=prompt('编辑公告内容',n.content);
     if(newContent===null) return;
     newContent=String(newContent).trim();
     if(!newContent){ toast('内容不能为空'); return; }
@@ -2390,8 +2402,9 @@ if(noticeDate) noticeDate.value=new Date().toISOString().slice(0,10);
 renderAll();
 initPlayer();
 setTimeout(pullCloud,120);
+// 页面初始化：等全部变量/函数定义就绪后再按 hash 切页（避免早期调用 renderChat/renderNotice 时依赖未初始化）
+(function(){ var n=(location.hash||'').replace('#','').trim(); if(n) switchTab(n); })();
 })();
 </script>
 </body>
 </html>
-<!-- （注：内容由AI生成） -->
