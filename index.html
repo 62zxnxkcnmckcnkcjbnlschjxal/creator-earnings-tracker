@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <title>创作者收益工作台</title>
 <script>
-(function(){try{var m=localStorage.getItem('themeMode')||'auto';var d=(m==='dark')||(m==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');var t=document.querySelector('meta[name=theme-color]');if(t)t.setAttribute('content',d?'#1a0f12':'#f8f9fc');}catch(e){}})();
+(function(){try{var tn=localStorage.getItem('themeName')||'crimson';document.documentElement.setAttribute('data-theme',tn);var m=localStorage.getItem('themeMode')||'auto';var d=(m==='dark')||(m==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');var t=document.querySelector('meta[name=theme-color]');if(t)t.setAttribute('content',d?'#121420':'#f8f9fc');}catch(e){}})();
 </script>
 <style>
 @font-face {
@@ -71,8 +71,105 @@
   --placeholder:#5a6172; --e-paid:#5a6172; --e-paid-note:#6a7182; --da-name:#6a7182;
 }
 :root.dark .mini-player.expanded{background:#161928}
+/* ===== 配色主题（浅色 + 深色适配） ===== */
+/* 青瓷 Mint */
+:root[data-theme="mint"]{
+  --primary:#0d9488; --primary2:#14b8a6; --primary-soft:#e6f7f4;
+  --bg-start:#f7fbf9; --bg-end:#edf5f1;
+  --focus:#99e0d6; --focus-ring:rgba(13,148,136,.14);
+  --btn-soft-bg:#e6f7f4; --btn-soft-border:#bfe8e0; --btn-soft-hover:#d5f0ea; --btn-soft-hover-border:#99d8cc;
+  --shadow-lg:0 12px 36px -12px rgba(13,148,136,.20);
+  --shadow-xl:0 20px 48px -16px rgba(13,148,136,.24);
+  --tabbar-bg:#ffffff; --tabbar-hover:#f0f8f5;
+}
+:root[data-theme="mint"].dark{
+  --primary:#2dd4bf; --primary2:#5eead4; --primary-soft:#0f2a27;
+  --bg-start:#0e1a18; --bg-end:#12201d;
+  --focus:#2f8f83; --focus-ring:rgba(45,212,191,.22);
+  --btn-soft-bg:#12302c; --btn-soft-border:#1d4d47; --btn-soft-hover:#173a35; --btn-soft-hover-border:#25635b;
+  --shadow-lg:0 12px 36px -12px rgba(0,0,0,.35);
+  --shadow-xl:0 20px 48px -16px rgba(0,0,0,.42);
+  --tabbar-bg:#141f1d; --tabbar-hover:#1a2b28;
+}
+/* 紫罗兰 Violet */
+:root[data-theme="violet"]{
+  --primary:#7c3aed; --primary2:#8b5cf6; --primary-soft:#f1eaff;
+  --bg-start:#f8f7fc; --bg-end:#f0edfb;
+  --focus:#c4b5fd; --focus-ring:rgba(124,58,237,.13);
+  --btn-soft-bg:#f1eaff; --btn-soft-border:#d8c9fa; --btn-soft-hover:#e6dcfc; --btn-soft-hover-border:#c4b0f7;
+  --shadow-lg:0 12px 36px -12px rgba(124,58,237,.20);
+  --shadow-xl:0 20px 48px -16px rgba(124,58,237,.24);
+  --tabbar-bg:#ffffff; --tabbar-hover:#f4f0fc;
+}
+:root[data-theme="violet"].dark{
+  --primary:#a78bfa; --primary2:#c4b5fd; --primary-soft:#241d38;
+  --bg-start:#161220; --bg-end:#1a1526;
+  --focus:#7c5cd6; --focus-ring:rgba(167,139,250,.22);
+  --btn-soft-bg:#2a2144; --btn-soft-border:#3d3160; --btn-soft-hover:#332a52; --btn-soft-hover-border:#4a3c72;
+  --shadow-lg:0 12px 36px -12px rgba(0,0,0,.35);
+  --shadow-xl:0 20px 48px -16px rgba(0,0,0,.42);
+  --tabbar-bg:#1d1830; --tabbar-hover:#262043;
+}
+/* 琥珀 Amber */
+:root[data-theme="amber"]{
+  --primary:#f59e0b; --primary2:#fbbf24; --primary-soft:#fdf3e3;
+  --bg-start:#fbf9f4; --bg-end:#f5efe3;
+  --focus:#fcd34d; --focus-ring:rgba(245,158,11,.16);
+  --btn-soft-bg:#fdf3e3; --btn-soft-border:#f6dfb8; --btn-soft-hover:#fae9c9; --btn-soft-hover-border:#f2cf92;
+  --shadow-lg:0 12px 36px -12px rgba(217,119,6,.22);
+  --shadow-xl:0 20px 48px -16px rgba(217,119,6,.26);
+  --tabbar-bg:#ffffff; --tabbar-hover:#faf5ea;
+}
+:root[data-theme="amber"].dark{
+  --primary:#fbbf24; --primary2:#fcd34d; --primary-soft:#2a2013;
+  --bg-start:#1c1810; --bg-end:#221c13;
+  --focus:#b8860b; --focus-ring:rgba(251,191,36,.22);
+  --btn-soft-bg:#332816; --btn-soft-border:#4a3a1d; --btn-soft-hover:#3d3020; --btn-soft-hover-border:#5a4828;
+  --shadow-lg:0 12px 36px -12px rgba(0,0,0,.35);
+  --shadow-xl:0 20px 48px -16px rgba(0,0,0,.42);
+  --tabbar-bg:#272012; --tabbar-hover:#332a19;
+}
+/* 海蓝 Ocean */
+:root[data-theme="ocean"]{
+  --primary:#2563eb; --primary2:#3b82f6; --primary-soft:#eaf1ff;
+  --bg-start:#f6f9fc; --bg-end:#edf2f9;
+  --focus:#bfdbfe; --focus-ring:rgba(37,99,235,.13);
+  --btn-soft-bg:#eaf1ff; --btn-soft-border:#c8dbff; --btn-soft-hover:#dbe7ff; --btn-soft-hover-border:#a9c8ff;
+  --shadow-lg:0 12px 36px -12px rgba(37,99,235,.20);
+  --shadow-xl:0 20px 48px -16px rgba(37,99,235,.24);
+  --tabbar-bg:#ffffff; --tabbar-hover:#f0f5fc;
+}
+:root[data-theme="ocean"].dark{
+  --primary:#60a5fa; --primary2:#93c5fd; --primary-soft:#101d33;
+  --bg-start:#0f1620; --bg-end:#131c2a;
+  --focus:#3b82f6; --focus-ring:rgba(96,165,250,.22);
+  --btn-soft-bg:#16263f; --btn-soft-border:#1e3554; --btn-soft-hover:#1b2e4a; --btn-soft-hover-border:#274566;
+  --shadow-lg:0 12px 36px -12px rgba(0,0,0,.35);
+  --shadow-xl:0 20px 48px -16px rgba(0,0,0,.42);
+  --tabbar-bg:#121c29; --tabbar-hover:#182538;
+}
+/* 樱粉 Sakura */
+:root[data-theme="sakura"]{
+  --primary:#ec4899; --primary2:#f472b6; --primary-soft:#fdeef5;
+  --bg-start:#fbf7f9; --bg-end:#f7eef3;
+  --focus:#fbcfe8; --focus-ring:rgba(236,72,153,.13);
+  --btn-soft-bg:#fdeef5; --btn-soft-border:#f8cde4; --btn-soft-hover:#f9dcec; --btn-soft-hover-border:#f2b3d6;
+  --shadow-lg:0 12px 36px -12px rgba(236,72,153,.20);
+  --shadow-xl:0 20px 48px -16px rgba(236,72,153,.24);
+  --tabbar-bg:#ffffff; --tabbar-hover:#faf1f6;
+}
+:root[data-theme="sakura"].dark{
+  --primary:#f472b6; --primary2:#f9a8d4; --primary-soft:#291422;
+  --bg-start:#1c1118; --bg-end:#221420;
+  --focus:#db2777; --focus-ring:rgba(244,114,182,.22);
+  --btn-soft-bg:#331a29; --btn-soft-border:#4a2538; --btn-soft-hover:#3d2030; --btn-soft-hover-border:#5a2e46;
+  --shadow-lg:0 12px 36px -12px rgba(0,0,0,.35);
+  --shadow-xl:0 20px 48px -16px rgba(0,0,0,.42);
+  --tabbar-bg:#271420; --tabbar-hover:#331a2a;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:linear-gradient(180deg,var(--bg-start) 0%,var(--bg-end) 100%);color:var(--text);
+html{background:var(--bg-start)}
+body{background:linear-gradient(180deg,var(--bg-start) 0%,var(--bg-end) 100%);color:var(--text);
   font-family:system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
   -webkit-font-smoothing:antialiased}
 body{min-height:100vh}
@@ -274,6 +371,14 @@ input, select, textarea { font-size: 16px !important; }
 .set-row input[type=checkbox]{width:22px;height:22px;accent-color:var(--primary)}
 .set-hint{font-size:12px;color:var(--muted);line-height:1.6}
 .set-actions{display:flex;gap:8px}
+/* ===== 主题色选择 ===== */
+.theme-color-seg{display:flex;flex-wrap:wrap;gap:6px}
+.theme-color-seg button{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border);background:var(--btn-bg);border-radius:9px;padding:5px 9px;cursor:pointer;transition:all .15s;min-height:30px}
+.theme-color-seg button i{width:14px;height:14px;border-radius:50%;display:inline-block;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.theme-color-seg button em{font-style:normal;font-size:12px;color:var(--muted);font-weight:600}
+.theme-color-seg button:hover{border-color:var(--btn-hover-border);background:var(--btn-hover)}
+.theme-color-seg button.active{border-color:var(--primary);background:var(--primary-soft)}
+.theme-color-seg button.active em{color:var(--primary)}
 .theme-seg{display:inline-flex;gap:4px;background:var(--soft);border-radius:11px;padding:4px}
 .theme-seg button{border:none;background:transparent;border-radius:8px;padding:7px 13px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;min-height:34px}
 .theme-seg button.active{background:var(--btn-bg);color:var(--text);box-shadow:var(--shadow-sm)}
@@ -489,6 +594,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 :root.dark .md-body pre{background:#1a1e2e;border-color:#2a2e3e}
 :root.dark .md-body code{background:#1a1e2e;border-color:#2a2e3e}
 .chat-bubble.md-body{white-space:normal}
+.md-body{font-family:'DouyinSansText',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif}
 
 </style>
 </head>
@@ -752,7 +858,17 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
                   <button type="button" data-mode="auto">跟随系统</button>
                 </div>
               </div>
-              <div class="set-hint">仅保存在本浏览器（localStorage），不进云端同步数据；「跟随系统」自动响应系统外观变化。头部「主题」按钮按 浅色 → 深色 → 跟随系统 轮换切换。</div>
+              <div class="set-row"><span>主题色</span>
+                <div class="theme-color-seg" id="themeColorSeg">
+                  <button type="button" data-name="crimson" title="绯红"><i style="background:#FF4757"></i><em>绯红</em></button>
+                  <button type="button" data-name="mint" title="青瓷"><i style="background:#0d9488"></i><em>青瓷</em></button>
+                  <button type="button" data-name="violet" title="紫罗兰"><i style="background:#7c3aed"></i><em>紫罗兰</em></button>
+                  <button type="button" data-name="amber" title="琥珀"><i style="background:#f59e0b"></i><em>琥珀</em></button>
+                  <button type="button" data-name="ocean" title="海蓝"><i style="background:#2563eb"></i><em>海蓝</em></button>
+                  <button type="button" data-name="sakura" title="樱粉"><i style="background:#ec4899"></i><em>樱粉</em></button>
+                </div>
+              </div>
+              <div class="set-hint">6 套配色主题（绯红/青瓷/紫罗兰/琥珀/海蓝/樱粉），深浅色模式均有对应配色。仅保存在本浏览器；「跟随系统」自动响应系统外观变化。头部「主题」按钮按 浅色 → 深色 → 跟随系统 轮换切换。</div>
             </div>
             <div class="set-group">
               <div class="set-title">网易云播放器</div>
@@ -864,17 +980,24 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 /* ===== v2.2 主题模式（浅色 / 深色 / 跟随系统），仅存 localStorage ===== */
 var themeMql=window.matchMedia('(prefers-color-scheme: dark)');
 var themeMode=(function(){ try{ var m=localStorage.getItem('themeMode'); return (m==='light'||m==='dark'||m==='auto')?m:'auto'; }catch(e){ return 'auto'; } })();
+var themeName=(function(){ try{ var n=localStorage.getItem('themeName'); return (n==='crimson'||n==='mint'||n==='violet'||n==='amber'||n==='ocean'||n==='sakura')?n:'crimson'; }catch(e){ return 'crimson'; } })();
+var THEME_COLORS={'crimson':'#FF4757','mint':'#0d9488','violet':'#7c3aed','amber':'#f59e0b','ocean':'#2563eb','sakura':'#ec4899'};
+var THEME_NAMES={'crimson':'绯红','mint':'青瓷','violet':'紫罗兰','amber':'琥珀','ocean':'海蓝','sakura':'樱粉'};
 function applyTheme(){
   var dark = themeMode==='dark' || (themeMode==='auto' && themeMql.matches);
   document.documentElement.classList.toggle('dark', dark);
+  document.documentElement.setAttribute('data-theme', themeName);
   var meta=document.getElementById('metaTheme');
   if(meta){ meta.setAttribute('content', dark?'#121420':'#f8f9fc'); }
   var seg=document.getElementById('themeSeg');
   if(seg){ seg.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-mode')===themeMode); }); }
   var labels={'light':'当前：浅色模式','dark':'当前：深色模式','auto':'当前：跟随系统'};
   document.querySelectorAll('.js-theme').forEach(function(b){ b.title=labels[themeMode]; b.setAttribute('aria-label',labels[themeMode]); });
+  var cs=document.getElementById('themeColorSeg');
+  if(cs){ cs.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-name')===themeName); }); }
 }
 function setThemeMode(m){ themeMode=m; try{ localStorage.setItem('themeMode', m); }catch(e){} applyTheme(); }
+function setThemeName(n){ themeName=n; try{ localStorage.setItem('themeName', n); }catch(e){} applyTheme(); }
 (function(){
   document.querySelectorAll('.js-theme').forEach(function(b){
     b.addEventListener('click', function(){
@@ -884,6 +1007,8 @@ function setThemeMode(m){ themeMode=m; try{ localStorage.setItem('themeMode', m)
   });
   var seg=document.getElementById('themeSeg');
   if(seg){ seg.addEventListener('click', function(ev){ var b=ev.target.closest('button[data-mode]'); if(b){ setThemeMode(b.getAttribute('data-mode')); } }); }
+  var cs=document.getElementById('themeColorSeg');
+  if(cs){ cs.addEventListener('click', function(ev){ var b=ev.target.closest('button[data-name]'); if(b){ setThemeName(b.getAttribute('data-name')); } }); }
   var onMql=function(){ if(themeMode==='auto'){ applyTheme(); } };
   if(themeMql.addEventListener){ themeMql.addEventListener('change', onMql); }
   else if(themeMql.addListener){ themeMql.addListener(onMql); }
