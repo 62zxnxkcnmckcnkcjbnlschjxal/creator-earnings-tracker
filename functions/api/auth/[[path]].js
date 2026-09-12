@@ -1,15 +1,14 @@
 /**
  * Cloudflare Pages Function —— 访问验证管理接口（catch-all：/api/auth/*）
- * 必须放在 functions/api/auth/[[path]].js，CF Pages 中匹配 /api/auth 及其全部子路径
- *
+ * 注意：必须放在 functions/api/auth/[[path]].js，CF Pages 中 auth.js 只匹配 /api/auth，不匹配子路径
  * POST /api/auth/login    {password}            登录（密码正确 → 下发 30 天会话 Cookie）
  * POST /api/auth/logout                          退出登录（删除会话）
  * GET  /api/auth/status                          查询验证状态（公开）
  * GET  /api/auth/config                          读取验证配置（需已授权）
- * POST /api/auth/config                          更新验证配置（需已授权，或首次启用 bootstrap）
+ * POST /api/auth/config                          更新验证配置（需已授权）
  * GET  /api/auth/privacy                         隐私政策文本页（公开）
  *
- * 配置存 KV（键 creator_auth_config）；密码可用 CF 加密密文 ACCESS_PASSWORD 覆盖（env 优先，仅运行时生效，不写入KV）
+ * 配置存 KV（键 creator_auth_config）；密码可用 CF 加密密文 ACCESS_PASSWORD 覆盖（env 优先）
  */
 
 const CFG_KEY = 'creator_auth_config';
@@ -25,11 +24,9 @@ async function getConfig(env) {
     const raw = await env.EARNINGS_KV.get(CFG_KEY);
     if (raw) Object.assign(cfg, JSON.parse(raw));
   } catch (e) { /* 忽略 */ }
-  // 环境变量密码仅内存覆盖，不持久化写入KV
   if (env.ACCESS_PASSWORD && typeof env.ACCESS_PASSWORD === 'string' && env.ACCESS_PASSWORD.trim()) {
     cfg.password = env.ACCESS_PASSWORD.trim();
   }
-  // 与 _middleware.js 保持一致：只有设置了密码或白名单，enabled 才生效
   cfg.enabled = !!(cfg.enabled && (cfg.password || (Array.isArray(cfg.ipWhitelist) && cfg.ipWhitelist.length > 0)));
   return cfg;
 }
@@ -61,7 +58,7 @@ async function isAuthed(env, req) {
 }
 
 /* ================= POST /api/auth/login ================= */
-async function handleLogin(ctx) {
+export async function onRequestPost(ctx) {
   try {
     const body = await ctx.request.json();
     const pwd = String(body.password || '').trim();
@@ -109,7 +106,7 @@ async function handleLogin(ctx) {
 }
 
 /* ================= POST /api/auth/logout ================= */
-async function handleLogout(ctx) {
+export async function onRequestPostLogout(ctx) {
   try {
     const token = getCookie(ctx.request, 'ce_auth');
     if (token) await ctx.env.EARNINGS_KV.delete(SESS_PREFIX + token);
@@ -127,7 +124,7 @@ async function handleLogout(ctx) {
 }
 
 /* ================= GET /api/auth/status（公开） ================= */
-async function handleGetStatus(ctx) {
+export async function onRequestGetStatus(ctx) {
   try {
     const cfg = await getConfig(ctx.env);
     const ip = getIP(ctx.request);
@@ -147,7 +144,7 @@ async function handleGetStatus(ctx) {
 }
 
 /* ================= GET /api/auth/config（需授权） ================= */
-async function handleGetConfig(ctx) {
+export async function onRequestGetConfig(ctx) {
   const authed = await isAuthed(ctx.env, ctx.request);
   if (!authed) return json({ error: '未授权' }, 401);
   const cfg = await getConfig(ctx.env);
@@ -162,10 +159,14 @@ async function handleGetConfig(ctx) {
 }
 
 /* ================= POST /api/auth/config（需授权，或首次启用 bootstrap） ================= */
-async function handlePostConfig(ctx) {
-  const cfg0 = await getConfig(ctx.env);
-  // bootstrap：验证从未启用（无密码且无白名单）时，允许直接写入初始配置，否则必须已授权
-  const neverEnabled = !cfg0.enabled && !cfg0.password && !(Array.isArray(cfg0.ipWhitelist) && cfg0.ipWhitelist.length > 0);
+export async function onRequestPostConfig(ctx) {
+  // bootstrap 判断基于 KV 原始配置（不受 env.ACCESS_PASSWORD 覆盖干扰）：
+  // 只要 KV 里从未配置过（无 enabled / 无密码 / 无白名单），就允许未授权首次启用
+  let raw0 = null;
+  try { raw0 = await ctx.env.EARNINGS_KV.get(CFG_KEY); } catch (e) {}
+  let c0 = {};
+  if (raw0) { try { c0 = JSON.parse(raw0); } catch (e) {} }
+  const neverEnabled = !c0.enabled && !c0.password && !(Array.isArray(c0.ipWhitelist) && c0.ipWhitelist.length > 0);
   if (!neverEnabled) {
     const authed = await isAuthed(ctx.env, ctx.request);
     if (!authed) return json({ error: '未授权' }, 401);
@@ -188,10 +189,9 @@ async function handlePostConfig(ctx) {
     }
     if (Array.isArray(body.devices)) cfg.devices = body.devices;
 
-    // 安全阀：未配置密码/白名单/env密文时，禁止启用
-    const hasEnvPwd = !!(ctx.env.ACCESS_PASSWORD && ctx.env.ACCESS_PASSWORD.trim());
-    if (cfg.enabled && !cfg.password && !(cfg.ipWhitelist && cfg.ipWhitelist.length > 0) && !hasEnvPwd) {
-      return json({ error: '启用访问验证前，请先设置访问密码、添加IP白名单，或者配置CF密文ACCESS_PASSWORD' }, 400);
+    // 安全阀：启用必须至少有一个凭据（密码或白名单），否则拒绝启用
+    if (cfg.enabled && !cfg.password && !(cfg.ipWhitelist && cfg.ipWhitelist.length > 0)) {
+      return json({ error: '启用访问验证前，请先设置访问密码或至少一个 IP 白名单' }, 400);
     }
 
     await ctx.env.EARNINGS_KV.put(CFG_KEY, JSON.stringify(cfg));
@@ -202,7 +202,7 @@ async function handlePostConfig(ctx) {
 }
 
 /* ================= GET /api/auth/privacy（公开） ================= */
-async function handleGetPrivacy(ctx) {
+export async function onRequestGetPrivacy(ctx) {
   const html = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>隐私政策与品牌声明 · 创作者收益工作台</title>
@@ -235,31 +235,29 @@ a{color:#FF4757}
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
 }
 
-/* ================= 路由分发（唯一导出入口） ================= */
-// 注意：catch-all 路由下不可导出 onRequestPost/onRequestGet 等方法专属处理器，
-// 否则 Cloudflare Pages 会把所有同方法请求直接路由到该方法，跳过本分发器。
-export async function onRequest(ctx) {
+/* ================= 路由分发 ================= */
+async function onRequestGet(ctx) {
   const url = new URL(ctx.request.url);
-  const action = url.pathname.split('/').pop() || '';
+  const action = url.pathname.split('/').pop(); // login/logout/status/config/privacy
+  if (action === 'status') return onRequestGetStatus(ctx);
+  if (action === 'config') return onRequestGetConfig(ctx);
+  if (action === 'privacy') return onRequestGetPrivacy(ctx);
+  return json({ error: '不支持的操作' }, 400);
+}
 
+export async function onRequest(ctx) {
   if (ctx.request.method === 'POST') {
-    if (action === 'login') return handleLogin(ctx);
-    if (action === 'logout') return handleLogout(ctx);
-    if (action === 'config') return handlePostConfig(ctx);
+    const url = new URL(ctx.request.url);
+    const action = url.pathname.split('/').pop();
+    if (action === 'login') return onRequestPost(ctx);
+    if (action === 'logout') return onRequestPostLogout(ctx);
+    if (action === 'config') return onRequestPostConfig(ctx);
     return json({ error: '不支持的操作' }, 400);
   }
-
-  if (ctx.request.method === 'GET') {
-    if (action === 'status') return handleGetStatus(ctx);
-    if (action === 'config') return handleGetConfig(ctx);
-    if (action === 'privacy') return handleGetPrivacy(ctx);
-    return json({ error: '不支持的操作' }, 400);
-  }
-
+  if (ctx.request.method === 'GET') return onRequestGet(ctx);
   if (ctx.request.method === 'OPTIONS') {
     return new Response(null, { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' } });
   }
-
   return json({ error: '不支持的方法' }, 405);
 }
 
@@ -269,3 +267,4 @@ function json(obj, status = 200) {
     headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' }
   });
 }
+//（注：内容由AI生成）
