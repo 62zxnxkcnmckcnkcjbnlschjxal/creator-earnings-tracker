@@ -1,4 +1,4 @@
-# 创作者收益工作台 v2.9
+# 创作者收益工作台 v2.8
 
 ## 部署说明（重要）
 
@@ -91,7 +91,7 @@ creator-earnings-tracker-v2.8/
 ├── functions/              # Cloudflare Pages Functions（必须通过 Git/CLI 部署）
 │   ├── _middleware.js      # 全站访问验证中间件（锁屏 + IP 白名单 + 会话校验）
 │   └── api/
-│       ├── auth.js         # 访问验证管理接口（登录/登出/状态/配置/隐私）
+│       ├── auth/[[path]].js  # 访问验证管理接口（catch-all：/api/auth/* 全部子路径）
 │       ├── deepseek.js     # DeepSeek API 代理（支持 Cloudflare 加密环境变量密钥）
 │       ├── state.js        # 云端同步（KV）
 │       └── music.js        # 网易云音乐代理（含 ncmFetch、needLogin 回退、Cookie 支持）
@@ -131,6 +131,10 @@ creator-earnings-tracker-v2.8/
 - 若同时清空密码与 IP 白名单，验证**自动关闭**（安全阀），防止把站点锁死；
 - 会话有效期 30 天，到期后需重新输入密码；
 - 请勿把访问密码与 DeepSeek 密钥写在代码或 README 中提交到公开仓库。
+
+### v2.9.1 更新内容（关键路由修复）
+1. **修复访问验证接口 404/返回首页问题**：CF Pages 路由规则中 `functions/api/auth.js` 只匹配 `/api/auth`，不匹配 `/api/auth/status` 等子路径。已改为 `functions/api/auth/[[path]].js`（catch-all），`/api/auth/*` 全部子路径均可正确路由。
+2. `_middleware.js` 放行条件补充 `/api/auth`（不带斜杠）路径。
 
 ### v2.9 更新内容
 1. 新增**访问验证模块**：`functions/_middleware.js` 全站服务端拦截 + `functions/api/auth.js` 管理接口；设置页新增「访问验证」组（启用开关、访问密码、IP 白名单、退出登录）；未授权返回 401 锁屏页；防爆破、会话 30 天。
