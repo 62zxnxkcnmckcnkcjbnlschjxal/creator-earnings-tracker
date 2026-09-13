@@ -2860,7 +2860,7 @@ function renderGuide(results){
     // 加载失败 → 回退直连原图（no-referrer 绕过防盗链）
     var fb=img.getAttribute('data-fb');
     if(fb) img.addEventListener('error',function(){
-      if(img.src.indexOf('/api/guide')>=0){ img.removeAttribute('referrerpolicy'); img.src=fb; }
+      if(img.src.indexOf('/api/guide')>=0){ img.setAttribute('referrerpolicy','no-referrer'); img.src=fb; }
     });
     var url=img.getAttribute('src');
     if(!url) return;
@@ -3055,7 +3055,7 @@ function loadSky(force){
     // 图片加载失败 → 回退直连原图（no-referrer 绕过防盗链）
     grid.querySelectorAll('img[data-fb]').forEach(function(img){
       img.addEventListener('error',function(){
-        if(img.src.indexOf('/api/guide')>=0){ img.removeAttribute('referrerpolicy'); img.src=img.getAttribute('data-fb'); }
+        if(img.src.indexOf('/api/guide')>=0){ img.setAttribute('referrerpolicy','no-referrer'); img.src=img.getAttribute('data-fb'); }
       });
     });
     if(note) note.textContent='已加载 '+okN+'/'+results.length+' 个模块 · 当日数据缓存 24 小时，每天首次打开自动拉取最新。';
