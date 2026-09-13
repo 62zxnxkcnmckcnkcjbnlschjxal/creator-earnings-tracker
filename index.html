@@ -2845,7 +2845,7 @@ function renderGuide(results){
         var src;
         if(it.isData) src=it.url;
         else src='/api/guide?url='+encodeURIComponent(it.url)+'&img=1';
-        html+='<figure class="guide-fig" data-src="'+esc(src)+'" data-title="'+esc(it.title)+'"><img loading="lazy" src="'+esc(src)+'" alt="'+esc(it.title)+'"><figcaption class="guide-fig-cap">'+esc(it.title||'')+'</figcaption></figure>';
+        html+='<figure class="guide-fig" data-src="'+esc(src)+'" data-title="'+esc(it.title)+'"><img loading="lazy" referrerpolicy="no-referrer" src="'+esc(src)+'" data-fb="'+esc(it.isData?'':it.url)+'" alt="'+esc(it.title)+'"><figcaption class="guide-fig-cap">'+esc(it.title||'')+'</figcaption></figure>';
       } else {
         html+='<div class="guide-text-card">'+esc(it.content)+'</div>';
       }
@@ -2857,6 +2857,11 @@ function renderGuide(results){
   // 图片：dataURL 直接用；代理图读 IndexedDB 缓存 → objectURL，无缓存则异步缓存（离线可看）
   var imgs=grid.querySelectorAll('.guide-fig img');
   imgs.forEach(function(img){
+    // 加载失败 → 回退直连原图（no-referrer 绕过防盗链）
+    var fb=img.getAttribute('data-fb');
+    if(fb) img.addEventListener('error',function(){
+      if(img.src.indexOf('/api/guide')>=0){ img.removeAttribute('referrerpolicy'); img.src=fb; }
+    });
     var url=img.getAttribute('src');
     if(!url) return;
     if(url.indexOf('data:')===0) return; // 云端 dataURL 无需本地缓存
@@ -3014,7 +3019,7 @@ function loadSky(force){
     var url=skyModURL(mod);
     if(mod.type==='img'){
       var src=skyImgSrc(url);
-      cache[mod.k]={ts:Date.now(),html:'<img loading="lazy" src="'+skyEsc(src)+'" alt="'+skyEsc(mod.name)+'">'};
+      cache[mod.k]={ts:Date.now(),html:'<img loading="lazy" referrerpolicy="no-referrer" src="'+skyEsc(src)+'" data-fb="'+skyEsc(url)+'" alt="'+skyEsc(mod.name)+'">'};
       try{ localStorage.setItem(SKY_CACHE_LS,JSON.stringify(cache)); }catch(e){}
       return Promise.resolve({mod:mod,ok:true,html:cache[mod.k].html});
     }
@@ -3027,7 +3032,7 @@ function loadSky(force){
       var html=fmtSky(mod,payload);
       if(mod.type==='images' && payload.data && Array.isArray(payload.data)){
         var imgs='<div class="sky-imgs">';
-        payload.data.forEach(function(u){ imgs+='<img loading="lazy" src="'+skyEsc(skyImgSrc(u))+'" alt="'+skyEsc(mod.name)+'">'; });
+        payload.data.forEach(function(u){ imgs+='<img loading="lazy" referrerpolicy="no-referrer" src="'+skyEsc(skyImgSrc(u))+'" data-fb="'+skyEsc(u)+'" alt="'+skyEsc(mod.name)+'">'; });
         imgs+='</div>';
         if(html.indexOf('接口提示')<0) html+=imgs;
       }
@@ -3047,6 +3052,12 @@ function loadSky(force){
       if(r.ok) okN++;
     });
     grid.innerHTML=html;
+    // 图片加载失败 → 回退直连原图（no-referrer 绕过防盗链）
+    grid.querySelectorAll('img[data-fb]').forEach(function(img){
+      img.addEventListener('error',function(){
+        if(img.src.indexOf('/api/guide')>=0){ img.removeAttribute('referrerpolicy'); img.src=img.getAttribute('data-fb'); }
+      });
+    });
     if(note) note.textContent='已加载 '+okN+'/'+results.length+' 个模块 · 当日数据缓存 24 小时，每天首次打开自动拉取最新。';
     grid.querySelectorAll('.sky-refresh').forEach(function(b){
       b.addEventListener('click',function(){
