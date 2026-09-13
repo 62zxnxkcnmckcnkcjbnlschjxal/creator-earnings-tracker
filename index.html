@@ -2965,6 +2965,9 @@ function fmtSky(mod,payload){
   if(payload.code!==undefined && Number(payload.code)!==200){
     return '<div class="sky-err">接口提示：'+skyEsc(payload.msg||('错误码 '+payload.code))+'</div>';
   }
+  if(payload.error){
+    return '<div class="sky-err">接口提示：'+skyEsc(payload.error)+'</div>';
+  }
   if(mod.type==='text'){
     if(mod.path==='gyrw'){
       var rw=payload.rw||[];
