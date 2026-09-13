@@ -637,7 +637,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .md-body{font-family:'DouyinSansText',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif}
 
 .sky-page{display:flex;flex-direction:column;gap:14px}
-.sky-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.sky-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));align-items:start;grid-auto-rows:auto}
+.sky-wide{grid-column:1/-1}
 .sky-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow-md)}
 .sky-card-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .sky-badge{width:26px;height:26px;border-radius:8px;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
@@ -647,13 +648,13 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .sky-line{padding:3px 0;line-height:1.65}
 .sky-err{color:#e5484d;font-size:12.5px;padding:6px 0;line-height:1.6}
 .sky-card-body img{width:100%;border-radius:10px;display:block}
-.sky-imgs{display:flex;flex-direction:column;gap:10px}
+.sky-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
 .sky-cache-note{font-size:12px;color:var(--muted);padding:0 2px}
 .sky-key-state{font-size:12.5px;color:var(--muted)}
 
 .cal-page{display:flex;flex-direction:column;gap:12px}
 .cal-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.cal-title{display:flex;align-items:baseline;gap:10px;min-width:0}
+.cal-title{display:flex;align-items:baseline;gap:10px;min-width:0;flex-wrap:wrap}
 .cal-month{font-size:23px;font-weight:800;letter-spacing:.5px;background:linear-gradient(135deg,var(--primary),var(--primary2));-webkit-background-clip:text;background-clip:text;color:transparent}
 .cal-month-sub{font-size:12px;color:var(--muted);white-space:nowrap}
 .cal-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -710,6 +711,14 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .cal-row{display:flex;align-items:center;gap:10px;margin:8px 0}
 .cal-row span{width:66px;font-size:13px;color:var(--muted);flex-shrink:0}
 .cal-row input,.cal-row select{flex:1;min-width:0;border:1px solid var(--border);border-radius:8px;padding:7px 9px;background:var(--bg);color:var(--text);font-size:13px;font-family:inherit}
+.cal-month-sub{white-space:normal}
+@media (max-width:560px){
+  .cal-month{font-size:19px}
+  .cal-cell{min-height:56px;padding:5px 5px}
+  .cal-tag{white-space:normal;word-break:break-all;font-size:9px;line-height:1.3;padding:1px 4px}
+  .cal-tag .tdot{display:none}
+  .cal-grid{padding:9px;gap:5px;border-radius:14px}
+}
 </style>
 </head>
 <body>
@@ -3045,11 +3054,19 @@ renderGuideApiList();
         if(a&&a.url&&!seen[a.url]){ guideApis.push({id:a.id||uid(),url:a.url}); seen[a.url]=true; changed=true; }
       });
       if(changed){ saveGuideApis(); try{ renderGuideApiList(); }catch(e){} }
+      /* 云端没有、本地有 → 把本地补推到云端（老数据也能同步） */
+      var localOnly=false;
+      guideApis.forEach(function(a){ if(a&&a.url&&!(d.guideApis||[]).some(function(x){return x&&x.url===a.url;})) localOnly=true; });
+      if((!d.guideApis || !d.guideApis.length) && guideApis.length){ localOnly=true; }
+      if(localOnly){ cloudPush(); }
       if(d.skyKey){
         var oldKey=localStorage.getItem('skyT1qqKeyV1')||'';
         if(oldKey!==d.skyKey){ localStorage.setItem('skyT1qqKeyV1',d.skyKey); try{ var ki=document.getElementById('skyT1qqKey'); if(ki) ki.value=d.skyKey; }catch(e){} }
       }
-    }).catch(function(){ /* 未登录/离线时忽略，本地模式照常 */ });
+    }).catch(function(){
+      /* 未登录/离线：15 秒后重试一次（解锁场景保险） */
+      if(!window._pullRetried){ window._pullRetried=true; setTimeout(cloudPull, 15000); }
+    });
   }
   function cloudPush(){
     try{
@@ -3162,7 +3179,7 @@ function loadSky(force){
     if(!grid) return;
     var html='', okN=0;
     results.forEach(function(r){
-      html+='<div class="sky-card"><div class="sky-card-head"><span class="sky-badge">'+skyEsc(r.mod.name.charAt(0))+'</span><span class="sky-card-name">'+skyEsc(r.mod.name)+'</span><button class="btn btn-soft sky-refresh" data-k="'+r.mod.k+'">刷新</button></div><div class="sky-card-body">'+r.html+'</div></div>';
+      html+='<div class="sky-card"'+(r.mod.type==='images'?' sky-wide':'')+'"><div class="sky-card-head"><span class="sky-badge">'+skyEsc(r.mod.name.charAt(0))+'</span><span class="sky-card-name">'+skyEsc(r.mod.name)+'</span><button class="btn btn-soft sky-refresh" data-k="'+r.mod.k+'">刷新</button></div><div class="sky-card-body">'+r.html+'</div></div>';
       if(r.ok) okN++;
     });
     grid.innerHTML=html;
@@ -3170,6 +3187,7 @@ function loadSky(force){
     grid.querySelectorAll('img[data-fb]').forEach(function(img){
       img.addEventListener('error',function(){
         if(img.src.indexOf('/api/guide')>=0){ img.setAttribute('referrerpolicy','no-referrer'); img.src=img.getAttribute('data-fb'); }
+        else{ var dd=document.createElement('div'); dd.className='sky-err'; dd.textContent='图片加载失败，可点「刷新」重试'; if(img.parentNode) img.parentNode.replaceChild(dd,img); }
       });
     });
     if(note) note.textContent='已加载 '+okN+'/'+results.length+' 个模块 · 当日数据缓存 24 小时，每天首次打开自动拉取最新。';
