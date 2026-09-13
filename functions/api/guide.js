@@ -92,7 +92,7 @@ export async function onRequestGet(ctx) {
       const dataUrl = await resolveImage(target, 0);
       if (!dataUrl) return json({ error: '无法解析为图片（多层链接均无效）' }, 400);
       try {
-        await ctx.env.EARNINGS_KV.put(key, dataUrl, { expirationTtl: 30 * 24 * 3600 });
+        await ctx.env.EARNINGS_KV.put(key, dataUrl, { expirationTtl: 3 * 24 * 3600 });
       } catch (e) { /* 缓存失败不影响返回 */ }
       return new Response(dataUrl, { headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public,max-age=86400', 'Access-Control-Allow-Origin': '*' } });
     }
