@@ -650,6 +650,40 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .sky-imgs{display:flex;flex-direction:column;gap:10px}
 .sky-cache-note{font-size:12px;color:var(--muted);padding:0 2px}
 .sky-key-state{font-size:12.5px;color:var(--muted)}
+
+.cal-page{display:flex;flex-direction:column;gap:14px}
+.cal-month{font-weight:700;min-width:96px;text-align:center;font-size:15px}
+.cal-meta{font-size:12px;color:var(--muted);padding:0 2px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px}
+.cal-dow{font-size:11px;color:var(--muted);text-align:center;padding:4px 0}
+.cal-cell{min-height:60px;border-radius:10px;background:var(--bg);border:1px solid var(--border);padding:5px 6px;cursor:pointer;transition:border-color .15s;overflow:hidden}
+.cal-cell:hover{border-color:var(--primary)}
+.cal-cell.today{box-shadow:inset 0 0 0 2px var(--primary)}
+.cal-cell.sel{border-color:var(--primary);background:var(--primary-soft)}
+.cal-cell.empty{background:transparent;border-color:transparent;cursor:default}
+.cal-day-num{font-size:12px;font-weight:600}
+.cal-other .cal-day-num{color:var(--muted);opacity:.6}
+.cal-tags{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+.cal-tag{font-size:10.5px;border-radius:5px;padding:1px 5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.5}
+.cal-tag.red{background:#e5484d}
+.cal-tag.black{background:#6e56cf}
+.cal-tag.more{background:var(--muted);opacity:.8}
+.cal-detail{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;font-size:13px}
+.cal-detail h4{margin:0 0 6px;font-size:14px}
+.cal-detail .times{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.cal-time{background:var(--primary-soft);color:var(--primary);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:600}
+.cal-fold{border:1px solid var(--border);border-radius:14px;background:var(--card)}
+.cal-fold-sum{padding:12px 14px;cursor:pointer;font-weight:600;font-size:13.5px;color:var(--text)}
+.cal-fold .guide-page{padding:0 14px 14px}
+.cal-dialog{border:none;border-radius:16px;padding:0;background:var(--card);color:var(--text);box-shadow:var(--shadow-lg);max-width:460px;width:92%;box-sizing:border-box}
+.cal-dialog::backdrop{background:rgba(15,17,26,.45)}
+.cal-dlg-form{padding:18px}
+.cal-dlg-form h4{margin:0 0 8px;font-size:15px}
+.cal-dlg-form textarea{width:100%;box-sizing:border-box;min-height:110px;border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--bg);color:var(--text);font-size:13px;resize:vertical;font-family:inherit}
+.cal-dlg-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.cal-row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.cal-row span{width:66px;font-size:13px;color:var(--muted);flex-shrink:0}
+.cal-row input,.cal-row select{flex:1;min-width:0;border:1px solid var(--border);border-radius:8px;padding:7px 9px;background:var(--bg);color:var(--text);font-size:13px;font-family:inherit}
 </style>
 </head>
 <body>
@@ -987,31 +1021,50 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
       <!-- DeepSeek 对话页 -->
       <div id="viewGuide" hidden>
-        <div class="guide-page">
+        <div class="cal-page">
           <div class="guide-bar">
-            <span class="guide-title">攻略</span>
-            <div class="guide-controls">
-              <label class="guide-ctl"><span>比例</span>
-                <select id="guideRatio" class="guide-sel">
-                  <option value="orig">原图</option>
-                  <option value="16x9">16:9</option>
-                  <option value="4x3">4:3</option>
-                  <option value="1x1">1:1</option>
-                  <option value="9x16">9:16</option>
-                </select>
-              </label>
-              <label class="guide-ctl"><span>大小</span>
-                <select id="guideSize" class="guide-sel">
-                  <option value="s">小</option>
-                  <option value="m" selected>中</option>
-                  <option value="l">大</option>
-                </select>
-              </label>
-              <button class="btn btn-soft" id="guideRefreshBtn">刷新</button>
+            <span class="guide-title">红石日历</span>
+            <div class="guide-controls" style="flex-wrap:wrap">
+              <button class="btn btn-soft" id="calPrev">◀ 上月</button>
+              <span class="cal-month" id="calMonth"></span>
+              <button class="btn btn-soft" id="calNext">下月 ▶</button>
+              <button class="btn btn-soft" id="calToday">今天</button>
+              <button class="btn btn-soft" id="calAdd">+ 添加</button>
+              <button class="btn btn-soft" id="calAi">AI 更新</button>
             </div>
           </div>
-          <div class="guide-cache-note" id="guideCacheNote"></div>
-          <div class="guide-grid" id="guideGrid"></div>
+          <div class="cal-meta" id="calMeta"></div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div class="cal-detail" id="calDetail" hidden></div>
+          <details class="cal-fold">
+            <summary class="cal-fold-sum">攻略 API（图片 / 文字展示）</summary>
+            <div class="guide-page">
+              <div class="guide-bar">
+                <span class="guide-title">攻略</span>
+                <div class="guide-controls">
+                  <label class="guide-ctl"><span>比例</span>
+                    <select id="guideRatio" class="guide-sel">
+                      <option value="orig">原图</option>
+                      <option value="16x9">16:9</option>
+                      <option value="4x3">4:3</option>
+                      <option value="1x1">1:1</option>
+                      <option value="9x16">9:16</option>
+                    </select>
+                  </label>
+                  <label class="guide-ctl"><span>大小</span>
+                    <select id="guideSize" class="guide-sel">
+                      <option value="s">小</option>
+                      <option value="m" selected>中</option>
+                      <option value="l">大</option>
+                    </select>
+                  </label>
+                  <button class="btn btn-soft" id="guideRefreshBtn">刷新</button>
+                </div>
+              </div>
+              <div class="guide-cache-note" id="guideCacheNote"></div>
+              <div class="guide-grid" id="guideGrid"></div>
+            </div>
+          </details>
         </div>
       </div>
       <div id="viewSky" hidden>
@@ -1303,7 +1356,7 @@ function switchTab(name){
   if(tb) tb.style.display=(name==='chat')?'none':'';
   if(name==='chat'){ try{ renderChat(); }catch(e){} }
   if(name==='notice'){ try{ renderNotice(); }catch(e){} }
-  if(name==='guide'){ try{ loadGuide(false); }catch(e){} }
+  if(name==='guide'){ try{ calLoad(); loadGuide(false); }catch(e){} }
   if(name==='sky'){ try{ loadSky(false); }catch(e){} }
 }
 // hash 路由：地址栏 #privacy 等可直接打开对应页，支持前进后退
@@ -3083,6 +3136,188 @@ function loadSky(force){
   var rf=document.getElementById('skyRefreshAll');
   if(rf) rf.addEventListener('click',function(){ toast('正在刷新…'); loadSky(true); });
 })();
+
+/* 全局 toast（原 toast 为局部函数，这里补全局版本，供日历等全局代码调用） */
+if(typeof window.toast!=='function'){
+  window.toast=function(msg){ var t=document.getElementById('toastEl'); if(!t) return; t.textContent=msg; t.hidden=false; clearTimeout(window._calToastT); window._calToastT=setTimeout(function(){ t.hidden=true; },2200); };
+}
+/* ================= 红石日历（/api/sky-schedule + KV） ================= */
+var CAL={year:new Date().getFullYear(),month:new Date().getMonth(),items:[],selected:null};
+var CAL_MONTHS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+function calFetch(){
+  return fetch('/api/sky-schedule',{cache:'no-store'}).then(function(r){
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  });
+}
+function calPost(body){
+  return fetch('/api/sky-schedule',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  });
+}
+function calFmtAgo(ts){
+  var s=Math.floor((Date.now()-ts)/1000);
+  if(s<60) return '刚刚';
+  if(s<3600) return Math.floor(s/60)+' 分钟前';
+  if(s<86400) return Math.floor(s/3600)+' 小时前';
+  return Math.floor(s/86400)+' 天前';
+}
+function calLoad(){
+  var grid=document.getElementById('calGrid');
+  calFetch().then(function(d){
+    if(d.ok){
+      CAL.items=d.items||[];
+      renderCal();
+      var meta=document.getElementById('calMeta');
+      if(!d.updated){ meta.textContent='暂无日程数据。点「AI 更新」粘贴播报文本自动解析，或「+ 添加」手动录入。'; return; }
+      var t=new Date(d.updated), p=function(n){return String(n).padStart(2,'0');};
+      meta.textContent='共 '+(d.items?d.items.length:0)+' 条碎石日程 · 上次更新：'+(t.getMonth()+1)+'-'+p(t.getDate())+' '+p(t.getHours())+':'+p(t.getMinutes())+'（'+calFmtAgo(d.updated)+'）';
+    } else { if(grid) grid.innerHTML='<div class="guide-empty">'+(d.error||'读取失败')+'</div>'; }
+  }).catch(function(e){
+    if(grid) grid.innerHTML='<div class="guide-empty">日历加载失败：'+skyEsc((e&&e.message)||e)+'</div>';
+  });
+}
+function renderCal(){
+  var grid=document.getElementById('calGrid');
+  if(!grid) return;
+  var y=CAL.year,m=CAL.month;
+  var monthEl=document.getElementById('calMonth');
+  if(monthEl) monthEl.textContent=y+'年'+CAL_MONTHS[m];
+  var first=new Date(y,m,1);
+  var startDow=(first.getDay()+6)%7;
+  var days=new Date(y,m+1,0).getDate();
+  var prevDays=new Date(y,m,0).getDate();
+  var now=new Date();
+  var html='';
+  ['一','二','三','四','五','六','日'].forEach(function(dw){ html+='<div class="cal-dow">'+dw+'</div>'; });
+  for(var i=0;i<startDow;i++){
+    var pd=prevDays-startDow+i+1;
+    html+='<div class="cal-cell empty cal-other"><span class="cal-day-num">'+pd+'</span></div>';
+  }
+  for(var d=1;d<=days;d++){
+    var dateStr=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var isToday=(y===now.getFullYear()&&m===now.getMonth()&&d===now.getDate());
+    var dayItems=CAL.items.filter(function(it){return it.date===dateStr;});
+    var sel=(CAL.selected===dateStr);
+    var tags='';
+    dayItems.forEach(function(it,i){
+      if(i<2) tags+='<div class="cal-tag '+(it.type==='黑石'?'black':'red')+'">'+(it.type==='黑石'?'⬛':'🔴')+' '+skyEsc(it.map)+'</div>';
+    });
+    if(dayItems.length>2) tags+='<div class="cal-tag more">+'+(dayItems.length-2)+'</div>';
+    html+='<div class="cal-cell'+(isToday?' today':'')+(sel?' sel':'')+'" data-date="'+dateStr+'"><span class="cal-day-num">'+d+'</span><div class="cal-tags">'+tags+'</div></div>';
+  }
+  var endDow=(startDow+days)%7;
+  for(var i=0;i<(7-endDow)%7;i++) html+='<div class="cal-cell empty"></div>';
+  grid.innerHTML=html;
+  grid.querySelectorAll('.cal-cell[data-date]').forEach(function(c){
+    c.addEventListener('click',function(){ CAL.selected=c.getAttribute('data-date'); renderCal(); renderDetail(); });
+  });
+  renderDetail();
+}
+function renderDetail(){
+  var el=document.getElementById('calDetail');
+  if(!el) return;
+  if(!CAL.selected || !CAL.items.some(function(it){return it.date===CAL.selected;})){
+    el.hidden=true; return;
+  }
+  var items=CAL.items.filter(function(it){return it.date===CAL.selected;});
+  var html='<h4>'+CAL.selected+' · '+items.length+' 场</h4>';
+  items.forEach(function(it){
+    html+='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:5px 0;border-top:1px solid var(--border)"><span class="cal-tag '+(it.type==='黑石'?'black':'red')+'" style="padding:3px 8px">'+skyEsc(it.type)+'</span><b>'+skyEsc(it.map)+'</b>';
+    if(it.times&&it.times.length){ html+='<span class="times">'+it.times.map(function(t){return '<span class="cal-time">'+skyEsc(t)+'</span>';}).join('')+'</span>'; }
+    if(it.note) html+='<span style="color:var(--muted);font-size:12px">'+skyEsc(it.note)+'</span>';
+    html+='<button class="btn btn-soft cal-del" data-key="'+skyEsc(it.date+'|'+it.type+'|'+it.map)+'" style="margin-left:auto;padding:2px 8px;font-size:11px">删除</button></div>';
+  });
+  el.innerHTML=html;
+  el.hidden=false;
+  el.querySelectorAll('.cal-del').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(!confirm('删除这条日程？')) return;
+      calPost({action:'del',key:b.getAttribute('data-key')}).then(function(d){
+        if(d.ok){ CAL.items=d.items||[]; toast('已删除'); renderCal(); }
+        else toast(d.error||'删除失败');
+      }).catch(function(e){ toast('删除失败：'+((e&&e.message)||e)); });
+    });
+  });
+}
+/* 弹窗交互 */
+function calOpenDlg(id){ var dlg=document.getElementById(id); if(dlg&&typeof dlg.showModal==='function') dlg.showModal(); }
+function calCloseDlg(id){ var dlg=document.getElementById(id); if(dlg) dlg.close(); }
+function calBindAll(){
+  var prev=document.getElementById('calPrev');
+  if(prev) prev.addEventListener('click',function(){ CAL.month--; if(CAL.month<0){CAL.month=11;CAL.year--;} CAL.selected=null; renderCal(); });
+  var next=document.getElementById('calNext');
+  if(next) next.addEventListener('click',function(){ CAL.month++; if(CAL.month>11){CAL.month=0;CAL.year++;} CAL.selected=null; renderCal(); });
+  var today=document.getElementById('calToday');
+  if(today) today.addEventListener('click',function(){ CAL.year=new Date().getFullYear(); CAL.month=new Date().getMonth(); CAL.selected=null; renderCal(); });
+  var add=document.getElementById('calAdd');
+  if(add) add.addEventListener('click',function(){
+    document.getElementById('calAddDate').value=new Date().toISOString().slice(0,10);
+    document.getElementById('calAddType').value='红石';
+    document.getElementById('calAddMap').value='';
+    document.getElementById('calAddTimes').value='';
+    document.getElementById('calAddNote').value='';
+    calOpenDlg('calAddDlg');
+  });
+  var ai=document.getElementById('calAi');
+  if(ai) ai.addEventListener('click',function(){ document.getElementById('calAiText').value=''; calOpenDlg('calAiDlg'); });
+
+  var aiOk=document.getElementById('calAiOk');
+  if(aiOk) aiOk.addEventListener('click',function(){
+    var text=document.getElementById('calAiText').value.trim();
+    if(!text){ toast('请先粘贴播报文本'); return; }
+    aiOk.disabled=true; aiOk.textContent='解析中…';
+    calPost({action:'ai',text:text}).then(function(d){
+      if(d.ok){ CAL.items=d.items||[]; CAL.selected=null; renderCal(); toast('解析成功，已保存 '+d.items.length+' 条日程'); calCloseDlg('calAiDlg'); }
+      else toast(d.error||'解析失败');
+    }).catch(function(e){ toast('解析失败：'+((e&&e.message)||e)); })
+    .finally(function(){ aiOk.disabled=false; aiOk.textContent='解析并保存'; });
+  });
+  var addOk=document.getElementById('calAddOk');
+  if(addOk) addOk.addEventListener('click',function(){
+    var date=document.getElementById('calAddDate').value;
+    var map=document.getElementById('calAddMap').value.trim();
+    var type=document.getElementById('calAddType').value;
+    var timesStr=document.getElementById('calAddTimes').value.trim();
+    if(!date||!map){ toast('日期和地图必填'); return; }
+    var times=timesStr?timesStr.split(/[,，、/\s]+/).filter(Boolean):[];
+    addOk.disabled=true;
+    calPost({action:'add',item:{date:date,map:map,type:type,times:times,note:document.getElementById('calAddNote').value.trim()}}).then(function(d){
+      if(d.ok){ CAL.items=d.items||[]; CAL.selected=date; renderCal(); toast('已添加'); calCloseDlg('calAddDlg'); }
+      else toast(d.error||'添加失败');
+    }).catch(function(e){ toast('添加失败：'+((e&&e.message)||e)); })
+    .finally(function(){ addOk.disabled=false; });
+  });
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ try{ calBindAll(); }catch(e){} });
+else { try{ calBindAll(); }catch(e){} }
+
 </script>
-</body>
+
+<dialog class="cal-dialog" id="calAiDlg">
+  <form method="dialog" class="cal-dlg-form">
+    <h4>AI 解析碎石播报</h4>
+    <div class="set-hint" style="margin-bottom:8px">粘贴本周/本月碎石播报文本（官方小精灵、微博博主等发布），AI 自动解析出：日期、红石/黑石、地图、场次时间。结果云端保存，全设备可见。</div>
+    <textarea id="calAiText" rows="6" placeholder="例如：本周红石预告：周一 云野圣岛 07:08 / 13:08 / 19:08；周二 雨林 …"></textarea>
+    <div class="cal-dlg-actions">
+      <button value="cancel" class="btn btn-soft">取消</button>
+      <button type="button" class="btn btn-primary" id="calAiOk">解析并保存</button>
+    </div>
+  </form>
+</dialog>
+<dialog class="cal-dialog" id="calAddDlg">
+  <form method="dialog" class="cal-dlg-form">
+    <h4>手动添加日程</h4>
+    <div class="cal-row"><span>日期</span><input type="date" id="calAddDate"></div>
+    <div class="cal-row"><span>类型</span><select id="calAddType"><option>红石</option><option>黑石</option></select></div>
+    <div class="cal-row"><span>地图</span><input type="text" id="calAddMap" placeholder="如 圣岛 / 雨林"></div>
+    <div class="cal-row"><span>场次时间</span><input type="text" id="calAddTimes" placeholder="07:08, 13:08, 19:08"></div>
+    <div class="cal-row"><span>备注</span><input type="text" id="calAddNote" placeholder="可选"></div>
+    <div class="cal-dlg-actions">
+      <button value="cancel" class="btn btn-soft">取消</button>
+      <button type="button" class="btn btn-primary" id="calAddOk">保存</button>
+    </div>
+  </form>
+</dialog></body>
 </html>
