@@ -64,7 +64,7 @@ export async function onRequestGet(ctx) {
         return json({ error: '目标不是图片资源（content-type: ' + ct + '）' }, 400);
       }
       const buf = await res.arrayBuffer();
-      const finalCt = (ct.indexOf('image/') === 0) ? ct : 'image/svg+xml';
+      const finalCt = (ct.indexOf('image/') === 0) ? ct.split(';')[0] : 'image/svg+xml';
       const dataUrl = 'data:' + finalCt + ';base64,' + b64FromBuffer(buf);
       try {
         await ctx.env.EARNINGS_KV.put(key, dataUrl, { expirationTtl: 30 * 24 * 3600 });
