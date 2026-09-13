@@ -1710,6 +1710,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .sky-card-body{font-size:13px;color:var(--text);display:flex;flex-direction:column;gap:10px}
 .sky-line{padding:3px 0;line-height:1.65}
 .sky-err{color:#e5484d;font-size:12.5px;padding:6px 0;line-height:1.6}
+.guide-err{color:#e5484d;font-size:13px;padding:14px;line-height:1.6;background:var(--danger-soft);border:1px dashed var(--danger-border);border-radius:var(--radius-md);margin:6px 0;text-align:center}
 .sky-card-body img{width:100%;border-radius:10px;display:block}
 .sky-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
 .sky-cache-note{font-size:12px;color:var(--muted);padding:0 2px}
@@ -4172,6 +4173,14 @@ function fetchGuideApi(api){
     }
     return r.text().then(function(text){
       var items=parseGuidePayload(text,ct);
+      // API 业务错误（如每日额度超限）：不覆盖旧缓存，回退显示上次缓存
+      var bizErr=items.some(function(it){ return it.type==='text' && /^接口提示[：:]/.test(it.content); });
+      if(bizErr){
+        var msg=(items[0]&&items[0].content||'').replace(/^接口提示[：:]/,'')||'接口错误';
+        var old=guideCache[api.url];
+        if(old && old.items && old.items.length){ throw new Error(msg); }
+        return items; // 无旧缓存 → 直接显示接口提示
+      }
       if(items && items.length){ guideCache[api.url]={ts:Date.now(),items:items,ct:ct}; }
       else{ delete guideCache[api.url]; }
       saveGuideCache();
@@ -4235,9 +4244,12 @@ function renderGuide(results){
   var imgs=grid.querySelectorAll('.guide-fig img');
   imgs.forEach(function(img){
     // 加载失败 → 回退直连原图（no-referrer 绕过防盗链）
-    var fb=img.getAttribute('data-fb');
-    if(fb) img.addEventListener('error',function(){
-      if(img.src.indexOf('/api/guide')>=0){ img.setAttribute('referrerpolicy','no-referrer'); img.src=fb; }
+    img.addEventListener('error',function(){
+      // 第1次：代理失败 → 回退直连原图（no-referrer 绕过防盗链）
+      if(img.src.indexOf('/api/guide')>=0 && img.getAttribute('data-fb')){ img.setAttribute('referrerpolicy','no-referrer'); img.src=img.getAttribute('data-fb'); return; }
+      // 第2次：直连也失败 → 明确提示
+      var fig=img.closest('.guide-fig')||img.parentNode;
+      if(fig){ var dd=document.createElement('div'); dd.className='guide-err'; dd.textContent='API 返回失败，图片无法加载'; fig.innerHTML=''; fig.appendChild(dd); }
     });
     var url=img.getAttribute('src');
     if(!url) return;
@@ -4472,7 +4484,7 @@ function loadSky(force){
     grid.querySelectorAll('img[data-fb]').forEach(function(img){
       img.addEventListener('error',function(){
         if(img.src.indexOf('/api/guide')>=0){ img.setAttribute('referrerpolicy','no-referrer'); img.src=img.getAttribute('data-fb'); }
-        else{ var dd=document.createElement('div'); dd.className='sky-err'; dd.textContent='图片加载失败，可点「刷新」重试'; if(img.parentNode) img.parentNode.replaceChild(dd,img); }
+        else{ var dd=document.createElement('div'); dd.className='sky-err'; dd.textContent='API 返回失败，图片无法加载（可点「刷新」重试）'; if(img.parentNode) img.parentNode.replaceChild(dd,img); }
       });
     });
     if(note) note.textContent='已加载 '+okN+'/'+results.length+' 个模块 · 当日数据缓存 24 小时，每天首次打开自动拉取最新。';
