@@ -9,6 +9,38 @@
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36';
 
+// 递归解析"套娃链接"：目标不是直接图片时，从 JSON/HTML 里提取下一层链接继续拉（最多 3 层）
+async function resolveImage(target, depth) {
+  if (depth > 3) return null;
+  let res;
+  try { res = await fetch(target, { headers: { 'User-Agent': UA, 'Accept': 'image/*,*/*;q=0.8' } }); }
+  catch (e) { return null; }
+  if (!res.ok) return null;
+  const ct = (res.headers.get('content-type') || '').toLowerCase();
+  if (ct.indexOf('image/') === 0 || ct.indexOf('svg') >= 0) {
+    const buf = await res.arrayBuffer();
+    const finalCt = (ct.indexOf('image/') === 0) ? ct.split(';')[0] : 'image/svg+xml';
+    return 'data:' + finalCt + ';base64,' + b64FromBuffer(buf);
+  }
+  const text = await res.text();
+  // 1) JSON：提取 url/image/img/data/pic 字段（字符串 URL）或数组第一项
+  try {
+    const j = JSON.parse(text);
+    const u = j.url || j.image || j.img || j.data || j.pic || j.thumb;
+    if (typeof u === 'string' && /^https?:\/\//i.test(u)) return resolveImage(u, depth + 1);
+    if (Array.isArray(u) && u.length) {
+      const f = u[0];
+      if (typeof f === 'string' && /^https?:\/\//i.test(f)) return resolveImage(f, depth + 1);
+    }
+  } catch (e) { /* 非 JSON */ }
+  // 2) HTML：og:image / <img src> / 图片扩展名链接
+  const m = text.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+    || text.match(/<img[^>]+src=["']([^"']+)["']/i)
+    || text.match(/https?:\/\/[^\s"'<>]+\.(?:jpg|jpeg|png|gif|webp)(?:\?[^\s"'<>]*)?/i);
+  if (m && m[1]) return resolveImage(m[1], depth + 1);
+  return null;
+}
+
 async function sha1Hex(str) {
   try {
     const data = new TextEncoder().encode(str);
@@ -57,15 +89,8 @@ export async function onRequestGet(ctx) {
         }
       } catch (e) { /* KV 不可用时直接拉源站 */ }
 
-      const res = await fetch(target, { headers: { 'User-Agent': UA, 'Accept': 'image/*,*/*;q=0.8' } });
-      if (!res.ok) return json({ error: '上游图片拉取失败 HTTP ' + res.status }, 502);
-      const ct = (res.headers.get('content-type') || '').toLowerCase();
-      if (ct.indexOf('image/') !== 0 && ct.indexOf('svg') < 0) {
-        return json({ error: '目标不是图片资源（content-type: ' + ct + '）' }, 400);
-      }
-      const buf = await res.arrayBuffer();
-      const finalCt = (ct.indexOf('image/') === 0) ? ct.split(';')[0] : 'image/svg+xml';
-      const dataUrl = 'data:' + finalCt + ';base64,' + b64FromBuffer(buf);
+      const dataUrl = await resolveImage(target, 0);
+      if (!dataUrl) return json({ error: '无法解析为图片（多层链接均无效）' }, 400);
       try {
         await ctx.env.EARNINGS_KV.put(key, dataUrl, { expirationTtl: 30 * 24 * 3600 });
       } catch (e) { /* 缓存失败不影响返回 */ }
