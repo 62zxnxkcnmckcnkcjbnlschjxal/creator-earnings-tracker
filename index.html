@@ -2705,14 +2705,18 @@ function parseGuidePayload(text, ct){
     var pushed={};
     (function walk(o){
       if(items.length>120) return;
+      if(typeof o==='string'){ var s=o.trim(); if(!s) return;
+        if(/^https?:/i.test(s)||s.indexOf('/')===0) items.push({type:'img',url:absUrl(s),title:''});
+        else items.push({type:'text',content:s});
+        return; }
       if(Array.isArray(o)){ o.forEach(walk); return; }
       if(!o||typeof o!=='object') return;
       var u=o.url||o.src||o.image||o.img||o.link||o.pic||o.cover||o.thumb;
       if(typeof u==='string' && u.trim() && !/^(data:|javascript:)/i.test(u) && !pushed[u]){ var au=absUrl(u.trim()); pushed[au]=1; items.push({type:'img',url:au,title:String(o.title||o.name||o.alt||'')}); }
-      var t=o.text||o.content||o.desc||o.description;
+      var t=o.text||o.content||o.desc||o.description||o.data;
       if(typeof t==='string' && t.trim()){ items.push({type:'text',content:t}); }
       Object.keys(o).forEach(function(k){
-        if(k==='images'||k==='imgs'||k==='urls'||k==='data'||k==='list'||k==='items'||k==='results'||k==='rows'||k==='pic'||k==='pics') walk(o[k]);
+        if(k==='images'||k==='imgs'||k==='urls'||k==='data'||k==='list'||k==='items'||k==='results'||k==='rows'||k==='pic'||k==='pics'||k==='image') walk(o[k]);
       });
     })(data);
     if(!items.length && Array.isArray(data)){
@@ -2729,18 +2733,22 @@ function parseGuidePayload(text, ct){
   return items;
 }
 
-/* 拉取单个 API（成功更新缓存） */
+/* 拉取单个 API（经 CF 代理 /api/guide 绕过 CORS；成功更新缓存） */
 function fetchGuideApi(api){
-  return fetch(api.url,{cache:'no-store'}).then(function(r){
+  var proxy='/api/guide?url='+encodeURIComponent(api.url);
+  return fetch(proxy,{cache:'no-store'}).then(function(r){
     if(!r.ok) throw new Error('HTTP '+r.status);
     var ct=r.headers.get('content-type')||'';
     if(ct.indexOf('image')>=0){
-      return r.blob().then(function(blob){
-        imgDBPut(api.url,blob);
-        var items=[{type:'img',url:api.url,title:'',blobCached:true}];
-        guideCache[api.url]={ts:Date.now(),items:items,ct:ct};
-        saveGuideCache();
-        return items;
+      // 源是图片 → 走 img=1 代理，返回云端缓存的 dataURL
+      return fetch(proxy+'&img=1',{cache:'no-store'}).then(function(r2){
+        if(!r2.ok) throw new Error('图片代理 HTTP '+r2.status);
+        return r2.text().then(function(text){
+          var items=[{type:'img',url:text,title:'',isData:true}];
+          guideCache[api.url]={ts:Date.now(),items:items,ct:ct};
+          saveGuideCache();
+          return items;
+        });
       });
     }
     return r.text().then(function(text){
@@ -2791,8 +2799,10 @@ function renderGuide(results){
     if(r.items) r.items.forEach(function(it){
       if(it.type==='img'){
         imgCount++;
-        if(it.blobCached){ html+='<figure class="guide-fig" data-blobkey="'+esc(it.url)+'" data-title="'+esc(it.title)+'"><img loading="lazy" alt="'+esc(it.title)+'"><figcaption class="guide-fig-cap">'+esc(it.title||'')+'</figcaption></figure>'; }
-        else{ html+='<figure class="guide-fig" data-url="'+esc(it.url)+'" data-title="'+esc(it.title)+'"><img loading="lazy" src="'+esc(it.url)+'" alt="'+esc(it.title)+'" referrerpolicy="no-referrer"><figcaption class="guide-fig-cap">'+esc(it.title||'')+'</figcaption></figure>'; }
+        var src;
+        if(it.isData) src=it.url;
+        else src='/api/guide?url='+encodeURIComponent(it.url)+'&img=1';
+        html+='<figure class="guide-fig" data-src="'+esc(src)+'" data-title="'+esc(it.title)+'"><img loading="lazy" src="'+esc(src)+'" alt="'+esc(it.title)+'"><figcaption class="guide-fig-cap">'+esc(it.title||'')+'</figcaption></figure>';
       } else {
         html+='<div class="guide-text-card">'+esc(it.content)+'</div>';
       }
@@ -2801,16 +2811,12 @@ function renderGuide(results){
   if(!html) html='<div class="guide-empty">该 API 未返回可展示的图片或文字</div>';
   grid.innerHTML=html;
   if(note) note.textContent=(hasErr?'部分接口拉取失败，已尝试显示缓存；':'')+'共 '+imgCount+' 张图片 · 本地缓存 24 小时，每天首次打开自动拉取最新内容。';
-  // 图片：读 IndexedDB 缓存 → objectURL；无缓存则网络图并异步缓存
+  // 图片：dataURL 直接用；代理图读 IndexedDB 缓存 → objectURL，无缓存则异步缓存（离线可看）
   var imgs=grid.querySelectorAll('.guide-fig img');
   imgs.forEach(function(img){
-    var fig=img.closest('.guide-fig');
-    var url=img.getAttribute('src')||fig.getAttribute('data-blobkey');
+    var url=img.getAttribute('src');
     if(!url) return;
-    if(fig.getAttribute('data-blobkey')){
-      imgDBGet(url).then(function(blob){ if(blob) img.src=URL.createObjectURL(blob); });
-      return;
-    }
+    if(url.indexOf('data:')===0) return; // 云端 dataURL 无需本地缓存
     if(img.getAttribute('data-cache-done')) return;
     img.setAttribute('data-cache-done','1');
     imgDBGet(url).then(function(blob){
