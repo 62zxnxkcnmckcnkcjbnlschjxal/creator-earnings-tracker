@@ -651,28 +651,54 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .sky-cache-note{font-size:12px;color:var(--muted);padding:0 2px}
 .sky-key-state{font-size:12.5px;color:var(--muted)}
 
-.cal-page{display:flex;flex-direction:column;gap:14px}
-.cal-month{font-weight:700;min-width:96px;text-align:center;font-size:15px}
+.cal-page{display:flex;flex-direction:column;gap:12px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.cal-title{display:flex;align-items:baseline;gap:10px;min-width:0}
+.cal-month{font-size:23px;font-weight:800;letter-spacing:.5px;background:linear-gradient(135deg,var(--primary),var(--primary2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cal-month-sub{font-size:12px;color:var(--muted);white-space:nowrap}
+.cal-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cal-nav{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:3px}
+.cal-nav .btn{border:none;background:transparent;padding:5px 10px;font-size:12.5px}
+.cal-nav .btn:hover{background:var(--primary-soft);color:var(--primary)}
 .cal-meta{font-size:12px;color:var(--muted);padding:0 2px}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px}
-.cal-dow{font-size:11px;color:var(--muted);text-align:center;padding:4px 0}
-.cal-cell{min-height:60px;border-radius:10px;background:var(--bg);border:1px solid var(--border);padding:5px 6px;cursor:pointer;transition:border-color .15s;overflow:hidden}
-.cal-cell:hover{border-color:var(--primary)}
-.cal-cell.today{box-shadow:inset 0 0 0 2px var(--primary)}
-.cal-cell.sel{border-color:var(--primary);background:var(--primary-soft)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:var(--shadow-sm)}
+.cal-dow{font-size:11px;color:var(--muted);text-align:center;padding:4px 0 8px;font-weight:600}
+.cal-dow.we{color:var(--primary)}
+.cal-cell{position:relative;min-height:66px;border-radius:12px;background:var(--bg);border:1px solid var(--border);padding:6px 8px;cursor:pointer;transition:all .18s;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start}
+.cal-cell:hover{border-color:var(--primary);background:var(--primary-soft)}
+.cal-cell.sel{border-color:var(--primary);background:var(--primary-soft);box-shadow:0 0 0 1px var(--primary)}
 .cal-cell.empty{background:transparent;border-color:transparent;cursor:default}
-.cal-day-num{font-size:12px;font-weight:600}
-.cal-other .cal-day-num{color:var(--muted);opacity:.6}
-.cal-tags{display:flex;flex-direction:column;gap:3px;margin-top:4px}
-.cal-tag{font-size:10.5px;border-radius:5px;padding:1px 5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.5}
-.cal-tag.red{background:#e5484d}
-.cal-tag.black{background:#6e56cf}
-.cal-tag.more{background:var(--muted);opacity:.8}
-.cal-detail{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;font-size:13px}
-.cal-detail h4{margin:0 0 6px;font-size:14px}
-.cal-detail .times{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
-.cal-time{background:var(--primary-soft);color:var(--primary);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:600}
-.cal-fold{border:1px solid var(--border);border-radius:14px;background:var(--card)}
+.cal-day-num{font-size:12.5px;font-weight:700;width:25px;height:25px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.cal-cell.today .cal-day-num{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 3px 10px -3px var(--primary)}
+.cal-cell.has-event::before{content:'';position:absolute;top:8px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 16%,transparent)}
+.cal-other .cal-day-num{opacity:.45}
+.cal-tags{display:flex;flex-direction:column;gap:4px;margin-top:4px;width:100%}
+.cal-tag{font-size:10.5px;border-radius:7px;padding:2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.5;display:flex;align-items:center;gap:4px;width:100%;box-sizing:border-box;border:1px solid transparent}
+.cal-tag .tdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cal-tag.red{background:rgba(229,72,77,.1);border-color:rgba(229,72,77,.28);color:#e5484d}
+.cal-tag.red .tdot{background:#e5484d}
+.cal-tag.black{background:rgba(124,106,201,.1);border-color:rgba(124,106,201,.3);color:#7c6ac9}
+.cal-tag.black .tdot{background:#7c6ac9}
+.cal-tag.more{background:var(--bg);border-style:dashed;color:var(--muted)}
+.cal-detail{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;font-size:13px;box-shadow:var(--shadow-sm)}
+.cal-detail h4{margin:0 0 6px;font-size:14.5px;display:flex;align-items:center;gap:8px}
+.cal-detail .d-hd-dot{width:8px;height:8px;border-radius:50%}
+.cal-detail .d-hd-dot.red{background:#e5484d}
+.cal-detail .d-hd-dot.black{background:#7c6ac9}
+.cal-detail .d-hd-dot.mix{background:linear-gradient(135deg,#e5484d 50%,#7c6ac9 50%)}
+.cal-detail .d-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px dashed var(--border);flex-wrap:wrap}
+.cal-detail .d-bar{width:4px;height:32px;border-radius:3px;flex-shrink:0}
+.cal-detail .d-bar.red{background:linear-gradient(180deg,#ff7a7a,#e5484d)}
+.cal-detail .d-bar.black{background:linear-gradient(180deg,#b39dff,#7c6ac9)}
+.cal-detail .d-map{font-weight:700;font-size:13.5px}
+.cal-detail .d-type{font-size:10.5px;padding:2px 9px;border-radius:20px;font-weight:700}
+.cal-detail .d-type.red{background:rgba(229,72,77,.12);color:#e5484d}
+.cal-detail .d-type.black{background:rgba(124,106,201,.12);color:#7c6ac9}
+.cal-detail .times{display:flex;gap:6px;flex-wrap:wrap}
+.cal-time{background:var(--primary-soft);color:var(--primary);border-radius:8px;padding:3px 9px;font-size:12px;font-weight:700}
+.cal-detail .d-note{width:100%;color:var(--muted);font-size:12px;padding-left:14px}
+.cal-detail .cal-del{margin-left:auto}
+.cal-fold{border:1px solid var(--border);border-radius:16px;background:var(--card)}
 .cal-fold-sum{padding:12px 14px;cursor:pointer;font-weight:600;font-size:13.5px;color:var(--text)}
 .cal-fold .guide-page{padding:0 14px 14px}
 .cal-dialog{border:none;border-radius:16px;padding:0;background:var(--card);color:var(--text);box-shadow:var(--shadow-lg);max-width:460px;width:92%;box-sizing:border-box}
@@ -1022,15 +1048,19 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       <!-- DeepSeek 对话页 -->
       <div id="viewGuide" hidden>
         <div class="cal-page">
-          <div class="guide-bar">
-            <span class="guide-title">红石日历</span>
-            <div class="guide-controls" style="flex-wrap:wrap">
-              <button class="btn btn-soft" id="calPrev">◀ 上月</button>
+          <div class="cal-head">
+            <div class="cal-title">
               <span class="cal-month" id="calMonth"></span>
-              <button class="btn btn-soft" id="calNext">下月 ▶</button>
-              <button class="btn btn-soft" id="calToday">今天</button>
-              <button class="btn btn-soft" id="calAdd">+ 添加</button>
-              <button class="btn btn-soft" id="calAi">AI 更新</button>
+              <span class="cal-month-sub" id="calMonthSub"></span>
+            </div>
+            <div class="cal-actions">
+              <div class="cal-nav">
+                <button class="btn" id="calPrev">◀</button>
+                <button class="btn" id="calToday">今天</button>
+                <button class="btn" id="calNext">▶</button>
+              </div>
+              <button class="btn btn-soft" id="calAdd">＋ 添加</button>
+              <button class="btn btn-primary" id="calAi">AI 更新</button>
             </div>
           </div>
           <div class="cal-meta" id="calMeta"></div>
@@ -2966,6 +2996,7 @@ function renderGuideApiList(){
     if(!/^https?:/i.test(u)){ toast('请输入以 http(s):// 开头的 API 地址'); return; }
     guideApis.push({id:uid(),url:u});
     saveGuideApis(); urlInput.value=''; renderGuideApiList(); toast('已添加 API');
+    try{ window.cloudPush(); }catch(e){}
   }); }
   var list=document.getElementById('guideApiList');
   if(list){ list.addEventListener('click',function(ev){
@@ -2977,6 +3008,7 @@ function renderGuideApiList(){
     if(b.dataset.gdel){
       if(!confirm('删除该攻略 API？')) return;
       guideApis.splice(idx,1); saveGuideApis(); renderGuideApiList(); toast('已删除');
+      try{ window.cloudPush(); }catch(e){}
     } else {
       var api=guideApis[idx];
       fetchGuideApi(api).then(function(){ renderGuideApiList(); toast('已刷新缓存'); })
@@ -2998,6 +3030,35 @@ function renderGuideApiList(){
 })();
 loadGuideApis(); loadGuideCache();
 renderGuideApiList();
+/* 云端配置同步：启动时拉取合并（攻略 API + 应天 key） */
+(function(){
+  function cloudPull(){
+    fetch('/api/settings',{cache:'no-store',credentials:'same-origin'}).then(function(r){
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.json();
+    }).then(function(d){
+      if(!d || !d.ok) return;
+      var seen={};
+      guideApis.forEach(function(a){ if(a&&a.url) seen[a.url]=true; });
+      var changed=false;
+      (d.guideApis||[]).forEach(function(a){
+        if(a&&a.url&&!seen[a.url]){ guideApis.push({id:a.id||uid(),url:a.url}); seen[a.url]=true; changed=true; }
+      });
+      if(changed){ saveGuideApis(); try{ renderGuideApiList(); }catch(e){} }
+      if(d.skyKey){
+        var oldKey=localStorage.getItem('skyT1qqKeyV1')||'';
+        if(oldKey!==d.skyKey){ localStorage.setItem('skyT1qqKeyV1',d.skyKey); try{ var ki=document.getElementById('skyT1qqKey'); if(ki) ki.value=d.skyKey; }catch(e){} }
+      }
+    }).catch(function(){ /* 未登录/离线时忽略，本地模式照常 */ });
+  }
+  function cloudPush(){
+    try{
+      fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({guideApis:guideApis,skyKey:localStorage.getItem('skyT1qqKeyV1')||''})}).catch(function(){});
+    }catch(e){}
+  }
+  window.cloudPush=cloudPush; window.cloudPull=cloudPull;
+  cloudPull();
+})();
 
 (function(){ var n=(location.hash||'').replace('#','').trim(); if(n) switchTab(n); })();
 })();
@@ -3130,7 +3191,8 @@ function loadSky(force){
   if(saveBtn) saveBtn.addEventListener('click',function(){
     localStorage.setItem(SKY_KEY_LS,(keyInp.value||'').trim());
     toast('应天API Key 已保存');
-    switchTab('sky');
+    try{ window.cloudPush(); }catch(e){}
+    try{ location.hash='#sky'; }catch(e){}
     loadSky(true);
   });
   var rf=document.getElementById('skyRefreshAll');
@@ -3183,14 +3245,20 @@ function renderCal(){
   if(!grid) return;
   var y=CAL.year,m=CAL.month;
   var monthEl=document.getElementById('calMonth');
-  if(monthEl) monthEl.textContent=y+'年'+CAL_MONTHS[m];
+  if(monthEl) monthEl.textContent=y+'年 '+(m+1)+'月';
+  var sub=document.getElementById('calMonthSub');
+  if(sub){
+    var nn=new Date();
+    var wd=['日','一','二','三','四','五','六'][nn.getDay()];
+    sub.textContent='今天 '+nn.getFullYear()+'-'+String(nn.getMonth()+1).padStart(2,'0')+'-'+String(nn.getDate()).padStart(2,'0')+' 周'+wd;
+  }
   var first=new Date(y,m,1);
   var startDow=(first.getDay()+6)%7;
   var days=new Date(y,m+1,0).getDate();
   var prevDays=new Date(y,m,0).getDate();
   var now=new Date();
   var html='';
-  ['一','二','三','四','五','六','日'].forEach(function(dw){ html+='<div class="cal-dow">'+dw+'</div>'; });
+  ['一','二','三','四','五','六','日'].forEach(function(dw,di){ html+='<div class="cal-dow'+(di>=5?' we':'')+'">'+dw+'</div>'; });
   for(var i=0;i<startDow;i++){
     var pd=prevDays-startDow+i+1;
     html+='<div class="cal-cell empty cal-other"><span class="cal-day-num">'+pd+'</span></div>';
@@ -3202,10 +3270,10 @@ function renderCal(){
     var sel=(CAL.selected===dateStr);
     var tags='';
     dayItems.forEach(function(it,i){
-      if(i<2) tags+='<div class="cal-tag '+(it.type==='黑石'?'black':'red')+'">'+(it.type==='黑石'?'⬛':'🔴')+' '+skyEsc(it.map)+'</div>';
+      if(i<2) tags+='<div class="cal-tag '+(it.type==='黑石'?'black':'red')+'"><span class="tdot"></span>'+skyEsc(it.map)+'</div>';
     });
-    if(dayItems.length>2) tags+='<div class="cal-tag more">+'+(dayItems.length-2)+'</div>';
-    html+='<div class="cal-cell'+(isToday?' today':'')+(sel?' sel':'')+'" data-date="'+dateStr+'"><span class="cal-day-num">'+d+'</span><div class="cal-tags">'+tags+'</div></div>';
+    if(dayItems.length>2) tags+='<div class="cal-tag more">+ '+(dayItems.length-2)+' 场</div>';
+    html+='<div class="cal-cell'+(isToday?' today':'')+(sel?' sel':'')+(dayItems.length?' has-event':'')+'" data-date="'+dateStr+'"><span class="cal-day-num">'+d+'</span><div class="cal-tags">'+tags+'</div></div>';
   }
   var endDow=(startDow+days)%7;
   for(var i=0;i<(7-endDow)%7;i++) html+='<div class="cal-cell empty"></div>';
@@ -3222,12 +3290,16 @@ function renderDetail(){
     el.hidden=true; return;
   }
   var items=CAL.items.filter(function(it){return it.date===CAL.selected;});
-  var html='<h4>'+CAL.selected+' · '+items.length+' 场</h4>';
+  var hasRed=items.some(function(it){return it.type!=='黑石';});
+  var hasBlack=items.some(function(it){return it.type==='黑石';});
+  var hdDot=hasRed&&hasBlack?'mix':(hasBlack?'black':'red');
+  var html='<h4><span class="d-hd-dot '+hdDot+'"></span>'+CAL.selected+' · '+items.length+' 场碎石</h4>';
   items.forEach(function(it){
-    html+='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:5px 0;border-top:1px solid var(--border)"><span class="cal-tag '+(it.type==='黑石'?'black':'red')+'" style="padding:3px 8px">'+skyEsc(it.type)+'</span><b>'+skyEsc(it.map)+'</b>';
+    var cls=(it.type==='黑石'?'black':'red');
+    html+='<div class="d-item"><span class="d-bar '+cls+'"></span><span class="d-type '+cls+'">'+skyEsc(it.type)+'</span><span class="d-map">'+skyEsc(it.map)+'</span>';
     if(it.times&&it.times.length){ html+='<span class="times">'+it.times.map(function(t){return '<span class="cal-time">'+skyEsc(t)+'</span>';}).join('')+'</span>'; }
-    if(it.note) html+='<span style="color:var(--muted);font-size:12px">'+skyEsc(it.note)+'</span>';
-    html+='<button class="btn btn-soft cal-del" data-key="'+skyEsc(it.date+'|'+it.type+'|'+it.map)+'" style="margin-left:auto;padding:2px 8px;font-size:11px">删除</button></div>';
+    if(it.note) html+='<span class="d-note">'+skyEsc(it.note)+'</span>';
+    html+='<button class="btn btn-soft cal-del" data-key="'+skyEsc(it.date+'|'+it.type+'|'+it.map)+'" style="padding:3px 10px;font-size:11.5px">删除</button></div>';
   });
   el.innerHTML=html;
   el.hidden=false;
