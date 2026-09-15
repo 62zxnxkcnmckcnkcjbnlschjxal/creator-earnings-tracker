@@ -2468,7 +2468,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
               <div class="blog-manage-empty" id="blogManageEmpty">
                 暂无文章，点击「写文章」创建第一篇。
               </div>
-              <div class="set-hint">文章数据保存在浏览器本地（localStorage），备份与恢复随主数据一起导出/导入。仅支持通过图片 URL 插入图片。</div>
+              <div class="set-hint">文章自动云端同步（Cloudflare KV），换设备也能看；离线时存本地，联网后自动同步。仅支持通过图片 URL 插入图片。</div>
             </div>
             </div>
           </div>
@@ -2688,8 +2688,57 @@ function setThemeName(n){ themeName=n; try{ localStorage.setItem('themeName', n)
   if(themeMql.addEventListener){ themeMql.addEventListener('change', onMql); }
   else if(themeMql.addListener){ themeMql.addListener(onMql); }
   applyTheme();
+
 })();
 </script>
+<dialog class="blog-editor-dialog" id="blogEditorDlg">
+  <form method="dialog" class="blog-editor-form" onsubmit="return false;">
+    <div class="blog-editor-head">
+      <h4 id="blogEditorTitle">写文章</h4>
+      <button type="button" class="icon-btn" id="blogEditorClose" title="关闭">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="blog-editor-field">
+      <input type="text" id="blogEditTitleInput" placeholder="文章标题" class="blog-editor-title-input">
+    </div>
+    <div class="blog-editor-toolbar" id="blogEditorToolbar">
+      <button type="button" data-cmd="bold" title="加粗"><b>B</b></button>
+      <button type="button" data-cmd="italic" title="斜体"><i>I</i></button>
+      <button type="button" data-cmd="h2" title="标题">H2</button>
+      <button type="button" data-cmd="h3" title="小标题">H3</button>
+      <button type="button" data-cmd="quote" title="引用">&#x275D;</button>
+      <button type="button" data-cmd="link" title="链接">&#x1F517;</button>
+      <button type="button" data-cmd="image" title="图片 URL">&#x1F5BC;</button>
+      <button type="button" data-cmd="code" title="代码">&lt;/&gt;</button>
+      <button type="button" data-cmd="ul" title="无序列表">&#x2022; 列表</button>
+      <button type="button" data-cmd="ol" title="有序列表">1. 列表</button>
+      <button type="button" data-cmd="hr" title="分割线">&#x2014;</button>
+      <div class="blog-editor-toolbar-gap"></div>
+      <button type="button" class="blog-editor-preview-toggle" id="blogPreviewToggle" title="预览">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        预览
+      </button>
+    </div>
+    <div class="blog-editor-body">
+      <div class="blog-editor-pane" id="blogEditorPane">
+        <textarea id="blogEditTextarea" placeholder="开始写作… 支持 Markdown 语法"></textarea>
+      </div>
+      <div class="blog-preview-pane" id="blogPreviewPane" hidden>
+        <div class="blog-preview-label">实时预览</div>
+        <div class="blog-preview-content" id="blogPreviewContent"></div>
+      </div>
+    </div>
+    <div class="blog-editor-actions">
+      <div class="blog-editor-status" id="blogEditorStatus"></div>
+      <div class="blog-editor-btns">
+        <button type="button" class="btn" id="blogDraftBtn">保存草稿</button>
+        <button type="button" class="btn btn-primary" id="blogPublishBtn">发布文章</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
 <script>
 (function(){
 'use strict';
@@ -2867,6 +2916,8 @@ function switchTab(name){
   if(name==='notice'){ try{ renderNotice(); }catch(e){} }
   if(name==='guide'){ try{ calLoad(); loadGuide(false); }catch(e){} }
   if(name==='sky'){ try{ loadSky(false); }catch(e){} }
+  if(name==='blog'){ try{ renderBlogList(); }catch(e){} }
+  if(name==='settings'){ try{ renderBlogManage(); }catch(e){} }
 }
 // hash 路由：地址栏 #privacy 等可直接打开对应页，支持前进后退
 window.addEventListener('hashchange',function(){
@@ -4587,6 +4638,283 @@ renderGuideApiList();
 })();
 
 (function(){ var n=(location.hash||'').replace('#','').trim(); if(n) switchTab(n); })();
+/* ================= 博客模块 ================= */
+var BLOG_KEY='blogArticlesV1';
+var blogArticles=[];
+function loadBlogArticles(){ try{ var raw=localStorage.getItem(BLOG_KEY); if(raw) blogArticles=JSON.parse(raw); }catch(e){ blogArticles=[]; } }
+function saveBlogArticles(){ try{ localStorage.setItem(BLOG_KEY,JSON.stringify(blogArticles)); }catch(e){} }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function fmtDate(ts){ var d=new Date(ts); return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0'); }
+function makeSummary(content){ var t=String(content||'').replace(/[#*`\[\]\(\)]/g,'').trim(); return t.slice(0,120)+(t.length>120?'…':''); }
+
+function renderBlogList(){
+  var list=document.getElementById('blogList');
+  var empty=document.getElementById('blogEmpty');
+  var skel=document.getElementById('blogSkeleton');
+  var countEl=document.getElementById('blogArticleCount');
+  var lastEl=document.getElementById('blogLastUpdate');
+  if(skel) skel.hidden=true;
+  var pub=blogArticles.filter(function(a){ return a.status==='published'; });
+  pub.sort(function(a,b){ if(a.pinned!==b.pinned) return a.pinned?-1:1; return (b.updatedAt||0)-(a.updatedAt||0); });
+  if(countEl) countEl.textContent=pub.length;
+  if(lastEl){ var lu=pub.length?pub[0].updatedAt:0; lastEl.textContent=lu?fmtDate(lu):'—'; }
+  if(!pub.length){ if(list) list.innerHTML=''; if(empty) empty.hidden=false; return; }
+  if(empty) empty.hidden=true;
+  if(!list) return;
+  list.innerHTML=pub.map(function(a){
+    return '<div class="blog-card" data-blog-id="'+esc(a.id)+'">'+
+      '<div class="blog-card-title">'+esc(a.title)+'</div>'+
+      '<div class="blog-card-meta">'+
+        '<span class="blog-card-date">'+fmtDate(a.updatedAt)+'</span>'+
+        (a.status==='published'?'<span class="blog-card-status blog-status-published">已发布</span>':'<span class="blog-card-status blog-status-draft">草稿</span>')+
+      '</div>'+
+      '<div class="blog-card-excerpt">'+esc(makeSummary(a.content))+'</div>'+
+      '<div class="blog-card-readmore">阅读全文 →</div>'+
+    '</div>';
+  }).join('');
+  list.querySelectorAll('.blog-card').forEach(function(c){
+    c.addEventListener('click',function(){ openBlogDetail(c.dataset.blogId); });
+  });
+}
+
+function openBlogDetail(id){
+  var a=blogArticles.find(function(x){ return x.id===id; });
+  if(!a) return;
+  document.getElementById('blogListView').hidden=true;
+  document.getElementById('blogDetailView').hidden=false;
+  document.getElementById('blogDetailTitle').textContent=a.title;
+  document.getElementById('blogDetailDate').textContent=fmtDate(a.updatedAt);
+  var st=document.getElementById('blogDetailStatus');
+  st.textContent=a.status==='published'?'已发布':'草稿';
+  st.className='blog-detail-status '+(a.status==='published'?'blog-status-published':'blog-status-draft');
+  document.getElementById('blogDetailBody').innerHTML=markdownToHtml(a.content);
+}
+
+function backToBlogList(){
+  document.getElementById('blogDetailView').hidden=true;
+  document.getElementById('blogListView').hidden=false;
+}
+
+function renderBlogManage(){
+  var list=document.getElementById('blogManageList');
+  var empty=document.getElementById('blogManageEmpty');
+  var countEl=document.getElementById('blogManageCount');
+  if(countEl) countEl.textContent=blogArticles.length;
+  if(!blogArticles.length){ if(list) list.innerHTML=''; if(empty) empty.style.display=''; return; }
+  if(empty) empty.style.display='none';
+  if(!list) return;
+  list.innerHTML=blogArticles.map(function(a){
+    return '<div class="blog-manage-item">'+
+      '<div class="blog-manage-info">'+
+        '<div class="blog-manage-title">'+esc(a.title)+'</div>'+
+        '<div class="blog-manage-sub">'+fmtDate(a.updatedAt)+' · '+(a.status==='published'?'已发布':'草稿')+'</div>'+
+      '</div>'+
+      '<div class="blog-manage-actions">'+
+        '<button class="icon-btn" data-blog-edit="'+esc(a.id)+'" title="编辑">✎</button>'+
+        '<button class="icon-btn" data-blog-del="'+esc(a.id)+'" title="删除">🗑</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  list.querySelectorAll('[data-blog-edit]').forEach(function(b){
+    b.addEventListener('click',function(){ openBlogEditor(b.dataset.blogEdit); });
+  });
+  list.querySelectorAll('[data-blog-del]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var id=b.dataset.blogDel;
+      var a=blogArticles.find(function(x){ return x.id===id; });
+      if(!a) return;
+      if(!confirm('删除「'+a.title+'」？此操作不可恢复。')) return;
+      blogArticles=blogArticles.filter(function(x){ return x.id!==id; });
+      saveBlogArticles();
+      renderBlogManage();
+      renderBlogList();
+      toast('已删除');
+      try{ blogDeleteOne(id); }catch(e){}
+    });
+  });
+}
+
+var blogEditingId=null;
+function openBlogEditor(id){
+  blogEditingId=id || null;
+  var dlg=document.getElementById('blogEditorDlg');
+  var titleEl=document.getElementById('blogEditorTitle');
+  var ti=document.getElementById('blogEditTitleInput');
+  var ta=document.getElementById('blogEditTextarea');
+  var statusEl=document.getElementById('blogEditorStatus');
+  if(statusEl) statusEl.textContent='';
+  if(id){
+    var a=blogArticles.find(function(x){ return x.id===id; });
+    if(!a) return;
+    if(titleEl) titleEl.textContent='编辑文章';
+    if(ti) ti.value=a.title;
+    if(ta) ta.value=a.content;
+  } else {
+    if(titleEl) titleEl.textContent='写文章';
+    if(ti) ti.value='';
+    if(ta) ta.value='';
+  }
+  document.getElementById('blogPreviewPane').hidden=true;
+  document.querySelector('.blog-editor-body').classList.remove('blog-preview-active');
+  document.getElementById('blogPreviewToggle').classList.remove('active');
+  if(dlg) dlg.showModal();
+}
+
+function closeBlogEditor(){
+  var dlg=document.getElementById('blogEditorDlg');
+  if(dlg) dlg.close();
+  blogEditingId=null;
+}
+
+function saveBlogArticle(status){
+  var ti=document.getElementById('blogEditTitleInput');
+  var ta=document.getElementById('blogEditTextarea');
+  var title=String(ti?ti.value:'').trim();
+  var content=String(ta?ta.value:'').trim();
+  if(!title){ toast('请输入标题'); return; }
+  var now=Date.now();
+  var id=blogEditingId || uid();
+  var idx=blogArticles.findIndex(function(x){ return x.id===id; });
+  var article={
+    id:id,title:title,content:content,status:status,
+    pinned:false,hidden:false,
+    createdAt:idx>=0?blogArticles[idx].createdAt:now,
+    updatedAt:now
+  };
+  if(idx>=0){ blogArticles[idx]=article; } else { blogArticles.unshift(article); }
+  saveBlogArticles();
+  renderBlogList();
+  renderBlogManage();
+  closeBlogEditor();
+  toast(status==='published'?'已发布':'已保存为草稿');
+  try{ blogPushOne(article); }catch(e){}
+}
+
+/* ===== 博客云端同步（v3.24.1 接入 /api/blog，Cloudflare KV 多设备共享） ===== */
+function blogPull(){
+  fetch('/api/blog?size=50',{credentials:'same-origin'})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(d){
+      if(!d || !d.ok) return;
+      var list=d.articles||[];
+      if(!list.length) return;
+      var need=[];
+      list.forEach(function(c){
+        var i=blogArticles.findIndex(function(x){ return x.id===c.id; });
+        if(i<0 || (c.updatedAt||0)>(blogArticles[i].updatedAt||0)) need.push(c.id);
+      });
+      if(!need.length) return;
+      var done=0, changed=false;
+      need.forEach(function(id){
+        fetch('/api/blog/'+encodeURIComponent(id),{credentials:'same-origin'})
+          .then(function(r){ return r.json(); })
+          .then(function(dd){
+            done++;
+            if(dd && dd.ok && dd.article){
+              var a=dd.article;
+              var i=blogArticles.findIndex(function(x){ return x.id===a.id; });
+              if(i>=0){ blogArticles[i]=a; } else { blogArticles.push(a); }
+              changed=true;
+            }
+            if(done>=need.length && changed){ saveBlogArticles(); renderBlogList(); renderBlogManage(); }
+          })
+          .catch(function(){});
+      });
+    })
+    .catch(function(){});
+}
+function blogPushOne(article){
+  fetch('/api/blog',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',
+    body:JSON.stringify({id:article.id,title:article.title,summary:makeSummary(article.content),content:article.content,status:article.status,pinned:article.pinned,hidden:article.hidden})})
+    .then(function(r){ return r.json(); })
+    .then(function(d){ if(!d || !d.ok) toast('云端同步失败：'+(d&&d.error||'未知错误')); })
+    .catch(function(){ toast('云端同步失败：网络异常'); });
+}
+function blogDeleteOne(id){
+  fetch('/api/blog/'+encodeURIComponent(id),{method:'DELETE',credentials:'same-origin'})
+    .then(function(r){ return r.json(); })
+    .then(function(d){ if(!d || !d.ok) toast('云端删除失败：'+(d&&d.error||'未知错误')); })
+    .catch(function(){});
+}
+
+/* 博客编辑器事件绑定 */
+(function(){
+  var dlg=document.getElementById('blogEditorDlg');
+  var closeBtn=document.getElementById('blogEditorClose');
+  var draftBtn=document.getElementById('blogDraftBtn');
+  var pubBtn=document.getElementById('blogPublishBtn');
+  var previewBtn=document.getElementById('blogPreviewToggle');
+  var toolbar=document.getElementById('blogEditorToolbar');
+  var ta=document.getElementById('blogEditTextarea');
+  var backBtn=document.getElementById('blogBackBtn');
+  var writeBtn=document.getElementById('blogWriteBtn');
+
+  if(closeBtn) closeBtn.addEventListener('click',closeBlogEditor);
+  if(draftBtn) draftBtn.addEventListener('click',function(){ saveBlogArticle('draft'); });
+  if(pubBtn) pubBtn.addEventListener('click',function(){ saveBlogArticle('published'); });
+  if(backBtn) backBtn.addEventListener('click',backToBlogList);
+  if(writeBtn) writeBtn.addEventListener('click',function(){ openBlogEditor(); });
+
+  if(previewBtn){
+    previewBtn.addEventListener('click',function(){
+      var pane=document.getElementById('blogPreviewPane');
+      var body=document.querySelector('.blog-editor-body');
+      var content=document.getElementById('blogPreviewContent');
+      var isHidden=pane.hidden;
+      pane.hidden=!isHidden;
+      body.classList.toggle('blog-preview-active',isHidden);
+      previewBtn.classList.toggle('active',isHidden);
+      if(isHidden && content) content.innerHTML=markdownToHtml(ta?ta.value:'');
+    });
+  }
+
+  if(toolbar){
+    toolbar.addEventListener('click',function(ev){
+      var btn=ev.target.closest('button[data-cmd]'); if(!btn) return;
+      var cmd=btn.dataset.cmd;
+      if(!ta) return;
+      var start=ta.selectionStart, end=ta.selectionEnd;
+      var val=ta.value, sel=val.slice(start,end);
+      var before=val.slice(0,start), after=val.slice(end);
+      var insert='';
+      switch(cmd){
+        case 'bold': insert='**'+(sel||'加粗文本')+'**'; break;
+        case 'italic': insert='*'+(sel||'斜体文本')+'*'; break;
+        case 'h2': insert='\n## '+(sel||'标题')+'\n'; break;
+        case 'h3': insert='\n### '+(sel||'小标题')+'\n'; break;
+        case 'quote': insert='\n> '+(sel||'引用内容')+'\n'; break;
+        case 'link': insert='['+(sel||'链接文本')+'](https://)'; break;
+        case 'image': insert='\n![图片描述]('+(sel||'https://')+')\n'; break;
+        case 'code': insert='`'+(sel||'code')+'`'; break;
+        case 'ul': insert='\n- '+(sel||'列表项')+'\n'; break;
+        case 'ol': insert='\n1. '+(sel||'列表项')+'\n'; break;
+        case 'hr': insert='\n---\n'; break;
+      }
+      ta.value=before+insert+after;
+      ta.focus();
+      ta.selectionStart=ta.selectionEnd=start+insert.length;
+    });
+  }
+
+  if(ta){
+    ta.addEventListener('input',function(){
+      var pane=document.getElementById('blogPreviewPane');
+      var content=document.getElementById('blogPreviewContent');
+      if(!pane.hidden && content) content.innerHTML=markdownToHtml(ta.value);
+    });
+  }
+
+  /* data-tab-trigger for blog empty state */
+  document.querySelectorAll('[data-tab-trigger]').forEach(function(el){
+    el.addEventListener('click',function(){ switchTab(el.dataset.tabTrigger); });
+  });
+})();
+
+loadBlogArticles();
+renderBlogList();
+renderBlogManage();
+blogPull();
+
 })();
 
 /* ================= 光遇数据（应天API）模块 ================= */
@@ -4892,238 +5220,6 @@ function calBindAll(){
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ try{ calBindAll(); }catch(e){} });
 else { try{ calBindAll(); }catch(e){} }
 
-
-/* ================= 博客模块 ================= */
-var BLOG_KEY='blogArticlesV1';
-var blogArticles=[];
-function loadBlogArticles(){ try{ var raw=localStorage.getItem(BLOG_KEY); if(raw) blogArticles=JSON.parse(raw); }catch(e){ blogArticles=[]; } }
-function saveBlogArticles(){ try{ localStorage.setItem(BLOG_KEY,JSON.stringify(blogArticles)); }catch(e){} }
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function fmtDate(ts){ var d=new Date(ts); return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0'); }
-function makeSummary(content){ var t=String(content||'').replace(/[#*`\[\]\(\)]/g,'').trim(); return t.slice(0,120)+(t.length>120?'…':''); }
-
-function renderBlogList(){
-  var list=document.getElementById('blogList');
-  var empty=document.getElementById('blogEmpty');
-  var skel=document.getElementById('blogSkeleton');
-  var countEl=document.getElementById('blogArticleCount');
-  var lastEl=document.getElementById('blogLastUpdate');
-  if(skel) skel.hidden=true;
-  var pub=blogArticles.filter(function(a){ return a.status==='published'; });
-  pub.sort(function(a,b){ if(a.pinned!==b.pinned) return a.pinned?-1:1; return (b.updatedAt||0)-(a.updatedAt||0); });
-  if(countEl) countEl.textContent=pub.length;
-  if(lastEl){ var lu=pub.length?pub[0].updatedAt:0; lastEl.textContent=lu?fmtDate(lu):'—'; }
-  if(!pub.length){ if(list) list.innerHTML=''; if(empty) empty.hidden=false; return; }
-  if(empty) empty.hidden=true;
-  if(!list) return;
-  list.innerHTML=pub.map(function(a){
-    return '<div class="blog-card" data-blog-id="'+esc(a.id)+'">'+
-      '<div class="blog-card-title">'+esc(a.title)+'</div>'+
-      '<div class="blog-card-meta">'+
-        '<span class="blog-card-date">'+fmtDate(a.updatedAt)+'</span>'+
-        (a.status==='published'?'<span class="blog-card-status blog-status-published">已发布</span>':'<span class="blog-card-status blog-status-draft">草稿</span>')+
-      '</div>'+
-      '<div class="blog-card-excerpt">'+esc(makeSummary(a.content))+'</div>'+
-      '<div class="blog-card-readmore">阅读全文 →</div>'+
-    '</div>';
-  }).join('');
-  list.querySelectorAll('.blog-card').forEach(function(c){
-    c.addEventListener('click',function(){ openBlogDetail(c.dataset.blogId); });
-  });
-}
-
-function openBlogDetail(id){
-  var a=blogArticles.find(function(x){ return x.id===id; });
-  if(!a) return;
-  document.getElementById('blogListView').hidden=true;
-  document.getElementById('blogDetailView').hidden=false;
-  document.getElementById('blogDetailTitle').textContent=a.title;
-  document.getElementById('blogDetailDate').textContent=fmtDate(a.updatedAt);
-  var st=document.getElementById('blogDetailStatus');
-  st.textContent=a.status==='published'?'已发布':'草稿';
-  st.className='blog-detail-status '+(a.status==='published'?'blog-status-published':'blog-status-draft');
-  document.getElementById('blogDetailBody').innerHTML=markdownToHtml(a.content);
-}
-
-function backToBlogList(){
-  document.getElementById('blogDetailView').hidden=true;
-  document.getElementById('blogListView').hidden=false;
-}
-
-function renderBlogManage(){
-  var list=document.getElementById('blogManageList');
-  var empty=document.getElementById('blogManageEmpty');
-  var countEl=document.getElementById('blogManageCount');
-  if(countEl) countEl.textContent=blogArticles.length;
-  if(!blogArticles.length){ if(list) list.innerHTML=''; if(empty) empty.style.display=''; return; }
-  if(empty) empty.style.display='none';
-  if(!list) return;
-  list.innerHTML=blogArticles.map(function(a){
-    return '<div class="blog-manage-item">'+
-      '<div class="blog-manage-info">'+
-        '<div class="blog-manage-title">'+esc(a.title)+'</div>'+
-        '<div class="blog-manage-sub">'+fmtDate(a.updatedAt)+' · '+(a.status==='published'?'已发布':'草稿')+'</div>'+
-      '</div>'+
-      '<div class="blog-manage-actions">'+
-        '<button class="icon-btn" data-blog-edit="'+esc(a.id)+'" title="编辑">✎</button>'+
-        '<button class="icon-btn" data-blog-del="'+esc(a.id)+'" title="删除">🗑</button>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-  list.querySelectorAll('[data-blog-edit]').forEach(function(b){
-    b.addEventListener('click',function(){ openBlogEditor(b.dataset.blogEdit); });
-  });
-  list.querySelectorAll('[data-blog-del]').forEach(function(b){
-    b.addEventListener('click',function(){
-      var id=b.dataset.blogDel;
-      var a=blogArticles.find(function(x){ return x.id===id; });
-      if(!a) return;
-      if(!confirm('删除「'+a.title+'」？此操作不可恢复。')) return;
-      blogArticles=blogArticles.filter(function(x){ return x.id!==id; });
-      saveBlogArticles();
-      renderBlogManage();
-      renderBlogList();
-      toast('已删除');
-      try{ syncBlogCloud(); }catch(e){}
-    });
-  });
-}
-
-var blogEditingId=null;
-function openBlogEditor(id){
-  blogEditingId=id || null;
-  var dlg=document.getElementById('blogEditorDlg');
-  var titleEl=document.getElementById('blogEditorTitle');
-  var ti=document.getElementById('blogEditTitleInput');
-  var ta=document.getElementById('blogEditTextarea');
-  var statusEl=document.getElementById('blogEditorStatus');
-  if(statusEl) statusEl.textContent='';
-  if(id){
-    var a=blogArticles.find(function(x){ return x.id===id; });
-    if(!a) return;
-    if(titleEl) titleEl.textContent='编辑文章';
-    if(ti) ti.value=a.title;
-    if(ta) ta.value=a.content;
-  } else {
-    if(titleEl) titleEl.textContent='写文章';
-    if(ti) ti.value='';
-    if(ta) ta.value='';
-  }
-  document.getElementById('blogPreviewPane').hidden=true;
-  document.querySelector('.blog-editor-body').classList.remove('blog-preview-active');
-  document.getElementById('blogPreviewToggle').classList.remove('active');
-  if(dlg) dlg.showModal();
-}
-
-function closeBlogEditor(){
-  var dlg=document.getElementById('blogEditorDlg');
-  if(dlg) dlg.close();
-  blogEditingId=null;
-}
-
-function saveBlogArticle(status){
-  var ti=document.getElementById('blogEditTitleInput');
-  var ta=document.getElementById('blogEditTextarea');
-  var title=String(ti?ti.value:'').trim();
-  var content=String(ta?ta.value:'').trim();
-  if(!title){ toast('请输入标题'); return; }
-  var now=Date.now();
-  var id=blogEditingId || uid();
-  var idx=blogArticles.findIndex(function(x){ return x.id===id; });
-  var article={
-    id:id,title:title,content:content,status:status,
-    pinned:false,hidden:false,
-    createdAt:idx>=0?blogArticles[idx].createdAt:now,
-    updatedAt:now
-  };
-  if(idx>=0){ blogArticles[idx]=article; } else { blogArticles.unshift(article); }
-  saveBlogArticles();
-  renderBlogList();
-  renderBlogManage();
-  closeBlogEditor();
-  toast(status==='published'?'已发布':'已保存为草稿');
-  try{ syncBlogCloud(); }catch(e){}
-}
-
-function syncBlogCloud(){
-  if(typeof window.cloudPush==='function') window.cloudPush();
-}
-
-/* 博客编辑器事件绑定 */
-(function(){
-  var dlg=document.getElementById('blogEditorDlg');
-  var closeBtn=document.getElementById('blogEditorClose');
-  var draftBtn=document.getElementById('blogDraftBtn');
-  var pubBtn=document.getElementById('blogPublishBtn');
-  var previewBtn=document.getElementById('blogPreviewToggle');
-  var toolbar=document.getElementById('blogEditorToolbar');
-  var ta=document.getElementById('blogEditTextarea');
-  var backBtn=document.getElementById('blogBackBtn');
-  var writeBtn=document.getElementById('blogWriteBtn');
-
-  if(closeBtn) closeBtn.addEventListener('click',closeBlogEditor);
-  if(draftBtn) draftBtn.addEventListener('click',function(){ saveBlogArticle('draft'); });
-  if(pubBtn) pubBtn.addEventListener('click',function(){ saveBlogArticle('published'); });
-  if(backBtn) backBtn.addEventListener('click',backToBlogList);
-  if(writeBtn) writeBtn.addEventListener('click',function(){ openBlogEditor(); });
-
-  if(previewBtn){
-    previewBtn.addEventListener('click',function(){
-      var pane=document.getElementById('blogPreviewPane');
-      var body=document.querySelector('.blog-editor-body');
-      var content=document.getElementById('blogPreviewContent');
-      var isHidden=pane.hidden;
-      pane.hidden=!isHidden;
-      body.classList.toggle('blog-preview-active',isHidden);
-      previewBtn.classList.toggle('active',isHidden);
-      if(isHidden && content) content.innerHTML=markdownToHtml(ta?ta.value:'');
-    });
-  }
-
-  if(toolbar){
-    toolbar.addEventListener('click',function(ev){
-      var btn=ev.target.closest('button[data-cmd]'); if(!btn) return;
-      var cmd=btn.dataset.cmd;
-      if(!ta) return;
-      var start=ta.selectionStart, end=ta.selectionEnd;
-      var val=ta.value, sel=val.slice(start,end);
-      var before=val.slice(0,start), after=val.slice(end);
-      var insert='';
-      switch(cmd){
-        case 'bold': insert='**'+(sel||'加粗文本')+'**'; break;
-        case 'italic': insert='*'+(sel||'斜体文本')+'*'; break;
-        case 'h2': insert='\n## '+(sel||'标题')+'\n'; break;
-        case 'h3': insert='\n### '+(sel||'小标题')+'\n'; break;
-        case 'quote': insert='\n> '+(sel||'引用内容')+'\n'; break;
-        case 'link': insert='['+(sel||'链接文本')+'](https://)'; break;
-        case 'image': insert='\n![图片描述]('+(sel||'https://')+')\n'; break;
-        case 'code': insert='`'+(sel||'code')+'`'; break;
-        case 'ul': insert='\n- '+(sel||'列表项')+'\n'; break;
-        case 'ol': insert='\n1. '+(sel||'列表项')+'\n'; break;
-        case 'hr': insert='\n---\n'; break;
-      }
-      ta.value=before+insert+after;
-      ta.focus();
-      ta.selectionStart=ta.selectionEnd=start+insert.length;
-    });
-  }
-
-  if(ta){
-    ta.addEventListener('input',function(){
-      var pane=document.getElementById('blogPreviewPane');
-      var content=document.getElementById('blogPreviewContent');
-      if(!pane.hidden && content) content.innerHTML=markdownToHtml(ta.value);
-    });
-  }
-
-  /* data-tab-trigger for blog empty state */
-  document.querySelectorAll('[data-tab-trigger]').forEach(function(el){
-    el.addEventListener('click',function(){ switchTab(el.dataset.tabTrigger); });
-  });
-})();
-
-loadBlogArticles();
-
 </script>
 
 <dialog class="cal-dialog" id="calAiDlg">
@@ -5134,53 +5230,6 @@ loadBlogArticles();
     <div class="cal-dlg-actions">
       <button value="cancel" class="btn btn-soft">取消</button>
       <button type="button" class="btn btn-primary" id="calAiOk">解析并保存</button>
-    </div>
-  </form>
-</dialog>
-<dialog class="blog-editor-dialog" id="blogEditorDlg">
-  <form method="dialog" class="blog-editor-form" onsubmit="return false;">
-    <div class="blog-editor-head">
-      <h4 id="blogEditorTitle">写文章</h4>
-      <button type="button" class="icon-btn" id="blogEditorClose" title="关闭">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="blog-editor-field">
-      <input type="text" id="blogEditTitleInput" placeholder="文章标题" class="blog-editor-title-input">
-    </div>
-    <div class="blog-editor-toolbar" id="blogEditorToolbar">
-      <button type="button" data-cmd="bold" title="加粗"><b>B</b></button>
-      <button type="button" data-cmd="italic" title="斜体"><i>I</i></button>
-      <button type="button" data-cmd="h2" title="标题">H2</button>
-      <button type="button" data-cmd="h3" title="小标题">H3</button>
-      <button type="button" data-cmd="quote" title="引用">&#x275D;</button>
-      <button type="button" data-cmd="link" title="链接">&#x1F517;</button>
-      <button type="button" data-cmd="image" title="图片 URL">&#x1F5BC;</button>
-      <button type="button" data-cmd="code" title="代码">&lt;/&gt;</button>
-      <button type="button" data-cmd="ul" title="无序列表">&#x2022; 列表</button>
-      <button type="button" data-cmd="ol" title="有序列表">1. 列表</button>
-      <button type="button" data-cmd="hr" title="分割线">&#x2014;</button>
-      <div class="blog-editor-toolbar-gap"></div>
-      <button type="button" class="blog-editor-preview-toggle" id="blogPreviewToggle" title="预览">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        预览
-      </button>
-    </div>
-    <div class="blog-editor-body">
-      <div class="blog-editor-pane" id="blogEditorPane">
-        <textarea id="blogEditTextarea" placeholder="开始写作… 支持 Markdown 语法"></textarea>
-      </div>
-      <div class="blog-preview-pane" id="blogPreviewPane" hidden>
-        <div class="blog-preview-label">实时预览</div>
-        <div class="blog-preview-content" id="blogPreviewContent"></div>
-      </div>
-    </div>
-    <div class="blog-editor-actions">
-      <div class="blog-editor-status" id="blogEditorStatus"></div>
-      <div class="blog-editor-btns">
-        <button type="button" class="btn" id="blogDraftBtn">保存草稿</button>
-        <button type="button" class="btn btn-primary" id="blogPublishBtn">发布文章</button>
-      </div>
     </div>
   </form>
 </dialog>
@@ -5197,5 +5246,6 @@ loadBlogArticles();
       <button type="button" class="btn btn-primary" id="calAddOk">保存</button>
     </div>
   </form>
+
 </dialog></body>
 </html>
