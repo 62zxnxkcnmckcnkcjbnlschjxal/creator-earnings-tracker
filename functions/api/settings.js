@@ -1,13 +1,13 @@
 /**
- * Cloudflare Pages Function —— 界面配置云端同步（攻略 API 列表 + 光遇应天 Key）
+ * Cloudflare Pages Function —— 界面配置云端同步（攻略 API 列表 + 光遇 Key）
  * GET  /api/settings  读取云端配置（需已授权）
  * POST /api/settings  写入云端配置（需已授权）
  *
  * 绑定：EARNINGS_KV（与业务数据共用）
  * 存储键：creator_ui_settings
- * 数据格式：{ "t": 时间戳, "guideApis": [{id,url}...], "skyKey": "..." }
+ * 数据格式：{ "t": 时间戳, "v": 版本, "guideApis": [{id,url}...], "skyKey": "..." }
  *
- * 鉴权规则与 /api/state 一致：访问验证启用时要求已授权（middleware 已做外层拦截，本接口做纵深防御）
+ * v3.24: 修复删除同步问题，采用 Last-Write-Wins + clientT 校验
  */
 const KV_KEY = 'creator_ui_settings';
 const MAX_BYTES = 64 * 1024;
@@ -58,14 +58,15 @@ async function isAuthed(env, req) {
 async function readSettings(env) {
   try {
     const raw = await env.EARNINGS_KV.get(KV_KEY);
-    if (!raw) return { t: 0, guideApis: [], skyKey: '' };
+    if (!raw) return { t: 0, v: 2, guideApis: [], skyKey: '' };
     const d = JSON.parse(raw);
     return {
       t: d.t || 0,
+      v: d.v || 1,
       guideApis: Array.isArray(d.guideApis) ? d.guideApis : [],
       skyKey: typeof d.skyKey === 'string' ? d.skyKey : ''
     };
-  } catch (e) { return { t: 0, guideApis: [], skyKey: '' }; }
+  } catch (e) { return { t: 0, v: 2, guideApis: [], skyKey: '' }; }
 }
 
 function json(obj, status) {
@@ -80,7 +81,7 @@ export async function onRequestGet(ctx) {
     const authed = await isAuthed(ctx.env, ctx.request);
     if (!authed) return json({ ok: false, error: '未授权' }, 401);
     const d = await readSettings(ctx.env);
-    return json({ ok: true, t: d.t, guideApis: d.guideApis, skyKey: d.skyKey });
+    return json({ ok: true, t: d.t, v: d.v || 1, guideApis: d.guideApis, skyKey: d.skyKey });
   } catch (e) {
     return json({ ok: false, error: '读取异常：' + e.message }, 500);
   }
@@ -90,32 +91,64 @@ export async function onRequestPost(ctx) {
   try {
     const authed = await isAuthed(ctx.env, ctx.request);
     if (!authed) return json({ ok: false, error: '未授权' }, 401);
+
     const body = await ctx.request.json();
     const prev = await readSettings(ctx.env);
 
-    // guideApis：合并去重（按 url，云端保留已存在的）
-    const cloud = Array.isArray(body.guideApis) ? body.guideApis : prev.guideApis;
-    const seen = {};
-    const merged = [];
-    prev.guideApis.forEach(function (a) {
-      if (a && a.url) { seen[a.url] = true; merged.push(a); }
-    });
-    cloud.forEach(function (a) {
-      if (a && a.url && !seen[a.url]) {
-        seen[a.url] = true;
-        merged.push({ id: a.id || (Date.now() + '-' + Math.random().toString(36).slice(2, 7)), url: a.url });
-      }
-    });
+    // 兼容旧客户端：未传 clientT 时回退到旧合并逻辑
+    if (body.clientT === undefined) {
+      const cloud = Array.isArray(body.guideApis) ? body.guideApis : prev.guideApis;
+      const seen = {};
+      const merged = [];
+      prev.guideApis.forEach(function (a) {
+        if (a && a.url) { seen[a.url] = true; merged.push(a); }
+      });
+      cloud.forEach(function (a) {
+        if (a && a.url && !seen[a.url]) {
+          seen[a.url] = true;
+          merged.push({ id: a.id || (Date.now() + '-' + Math.random().toString(36).slice(2, 7)), url: a.url });
+        }
+      });
+      const next = {
+        t: Date.now(),
+        v: 2,
+        guideApis: merged.slice(0, 100),
+        skyKey: typeof body.skyKey === 'string' ? body.skyKey.slice(0, 500) : prev.skyKey
+      };
+      const payload = JSON.stringify(next);
+      if (payload.length > MAX_BYTES) return json({ ok: false, error: '配置过大' }, 400);
+      await ctx.env.EARNINGS_KV.put(KV_KEY, payload);
+      return json({ ok: true, t: next.t, v: next.v, guideApis: next.guideApis, skyKey: next.skyKey });
+    }
+
+    // 新客户端：Last-Write-Wins
+    const clientT = Number(body.clientT) || 0;
+    if (clientT !== 0 && clientT < prev.t) {
+      return json({
+        ok: false,
+        error: 'conflict',
+        serverT: prev.t,
+        guideApis: prev.guideApis,
+        skyKey: prev.skyKey
+      }, 409);
+    }
 
     const next = {
       t: Date.now(),
-      guideApis: merged.slice(0, 100),
+      v: 2,
+      guideApis: Array.isArray(body.guideApis)
+        ? body.guideApis.filter(function (a) { return a && typeof a.url === 'string'; }).slice(0, 100)
+        : prev.guideApis,
       skyKey: typeof body.skyKey === 'string' ? body.skyKey.slice(0, 500) : prev.skyKey
     };
+    next.guideApis.forEach(function (a) {
+      if (!a.id) a.id = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+    });
+
     const payload = JSON.stringify(next);
     if (payload.length > MAX_BYTES) return json({ ok: false, error: '配置过大' }, 400);
     await ctx.env.EARNINGS_KV.put(KV_KEY, payload);
-    return json({ ok: true, t: next.t, guideApis: next.guideApis, skyKey: next.skyKey });
+    return json({ ok: true, t: next.t, v: next.v, guideApis: next.guideApis, skyKey: next.skyKey });
   } catch (e) {
     return json({ ok: false, error: '保存异常：' + e.message }, 500);
   }
