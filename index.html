@@ -2028,7 +2028,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .blog-empty-icon{margin-bottom:14px;opacity:.6}
 .blog-empty-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px}
 .blog-empty-desc{font-size:13px;margin-bottom:4px}
-.blog-skeleton{display:flex;flex-direction:column;gap:14px}
+.blog-skeleton{display:none}
+.blog-skeleton:not([hidden]){display:flex;flex-direction:column;gap:14px}
 .blog-skel-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),var(--shadow-sm)}
 .blog-skel-title{height:18px;width:55%;border-radius:6px;background:linear-gradient(90deg,var(--line) 25%,var(--soft) 50%,var(--line) 75%);background-size:200% 100%;animation:blog-skel-pulse 1.4s ease-in-out infinite;margin-bottom:14px}
 .blog-skel-line{height:12px;width:88%;border-radius:6px;background:linear-gradient(90deg,var(--line) 25%,var(--soft) 50%,var(--line) 75%);background-size:200% 100%;animation:blog-skel-pulse 1.4s ease-in-out infinite;margin-bottom:10px}
@@ -2126,7 +2127,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 :root.dark .blog-skel-card{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),var(--shadow-sm)}
 :root.dark .blog-skel-title,:root.dark .blog-skel-line{background:linear-gradient(90deg,var(--line) 25%,var(--chip) 50%,var(--line) 75%);background-size:200% 100%}
 @media (max-width:759px){.blog-editor-dialog{width:96vw;max-height:90vh;border-radius:var(--radius-lg)}.blog-editor-body{grid-template-columns:1fr}.blog-editor-body.blog-preview-active .blog-editor-pane{display:none}.blog-editor-body.blog-preview-active .blog-preview-pane{display:flex;border-left:none}.blog-preview-pane{display:none;border-left:none}.blog-preview-pane[hidden]{display:none !important}.blog-hero{padding:22px 18px}.blog-hero-title{font-size:20px}.blog-detail{padding:18px}.blog-detail-title{font-size:19px}.blog-card{padding:16px}.blog-card-title{font-size:15px}}
-@media (min-width:760px){.blog-editor-body.blog-preview-active .blog-editor-pane,.blog-editor-body.blog-preview-active .blog-preview-pane{display:flex}.blog-preview-pane[hidden]{display:none !important}}
+@media (min-width:760px){.blog-preview-pane{display:flex}.blog-preview-pane[hidden]{display:none !important}}
 
 </style>
 </head>
@@ -4754,9 +4755,12 @@ function openBlogEditor(id){
     if(ti) ti.value='';
     if(ta) ta.value='';
   }
-  document.getElementById('blogPreviewPane').hidden=true;
-  document.querySelector('.blog-editor-body').classList.remove('blog-preview-active');
-  document.getElementById('blogPreviewToggle').classList.remove('active');
+  var isWide=window.innerWidth>=760;
+  document.getElementById('blogPreviewPane').hidden=!isWide;
+  document.querySelector('.blog-editor-body').classList.toggle('blog-preview-active',isWide);
+  document.getElementById('blogPreviewToggle').classList.toggle('active',isWide);
+  var pc=document.getElementById('blogPreviewContent');
+  if(isWide && pc && ta) pc.innerHTML=markdownToHtml(ta.value);
   if(dlg) dlg.showModal();
 }
 
@@ -4868,35 +4872,49 @@ function blogDeleteOne(id){
     });
   }
 
+  function blogToolbarCmd(cmd){
+    if(!ta) return;
+    var start=ta.selectionStart, end=ta.selectionEnd;
+    var val=ta.value, sel=val.slice(start,end);
+    var before=val.slice(0,start), after=val.slice(end);
+    var insert='';
+    switch(cmd){
+      case 'bold': insert='**'+(sel||'加粗文本')+'**'; break;
+      case 'italic': insert='*'+(sel||'斜体文本')+'*'; break;
+      case 'h2': insert='\n## '+(sel||'标题')+'\n'; break;
+      case 'h3': insert='\n### '+(sel||'小标题')+'\n'; break;
+      case 'quote': insert='\n> '+(sel||'引用内容')+'\n'; break;
+      case 'link': insert='['+(sel||'链接文本')+'](https://)'; break;
+      case 'image': insert='\n![图片描述]('+(sel||'https://')+')\n'; break;
+      case 'code': insert='`'+(sel||'code')+'`'; break;
+      case 'ul': insert='\n- '+(sel||'列表项')+'\n'; break;
+      case 'ol': insert='\n1. '+(sel||'列表项')+'\n'; break;
+      case 'hr': insert='\n---\n'; break;
+    }
+    ta.value=before+insert+after;
+    ta.focus();
+    ta.selectionStart=ta.selectionEnd=start+insert.length;
+    var pane=document.getElementById('blogPreviewPane');
+    var content=document.getElementById('blogPreviewContent');
+    if(!pane.hidden && content) content.innerHTML=markdownToHtml(ta.value);
+  }
+
   if(toolbar){
     toolbar.addEventListener('click',function(ev){
       var btn=ev.target.closest('button[data-cmd]'); if(!btn) return;
-      var cmd=btn.dataset.cmd;
-      if(!ta) return;
-      var start=ta.selectionStart, end=ta.selectionEnd;
-      var val=ta.value, sel=val.slice(start,end);
-      var before=val.slice(0,start), after=val.slice(end);
-      var insert='';
-      switch(cmd){
-        case 'bold': insert='**'+(sel||'加粗文本')+'**'; break;
-        case 'italic': insert='*'+(sel||'斜体文本')+'*'; break;
-        case 'h2': insert='\n## '+(sel||'标题')+'\n'; break;
-        case 'h3': insert='\n### '+(sel||'小标题')+'\n'; break;
-        case 'quote': insert='\n> '+(sel||'引用内容')+'\n'; break;
-        case 'link': insert='['+(sel||'链接文本')+'](https://)'; break;
-        case 'image': insert='\n![图片描述]('+(sel||'https://')+')\n'; break;
-        case 'code': insert='`'+(sel||'code')+'`'; break;
-        case 'ul': insert='\n- '+(sel||'列表项')+'\n'; break;
-        case 'ol': insert='\n1. '+(sel||'列表项')+'\n'; break;
-        case 'hr': insert='\n---\n'; break;
-      }
-      ta.value=before+insert+after;
-      ta.focus();
-      ta.selectionStart=ta.selectionEnd=start+insert.length;
+      blogToolbarCmd(btn.dataset.cmd);
     });
   }
 
   if(ta){
+    ta.addEventListener('keydown',function(ev){
+      if(!(ev.ctrlKey||ev.metaKey)) return;
+      var k=String(ev.key||'').toLowerCase();
+      if(k==='b'){ ev.preventDefault(); blogToolbarCmd('bold'); }
+      else if(k==='i'){ ev.preventDefault(); blogToolbarCmd('italic'); }
+      else if(k==='k'){ ev.preventDefault(); blogToolbarCmd('link'); }
+      else if(k==='e'){ ev.preventDefault(); blogToolbarCmd('code'); }
+    });
     ta.addEventListener('input',function(){
       var pane=document.getElementById('blogPreviewPane');
       var content=document.getElementById('blogPreviewContent');
