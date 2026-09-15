@@ -266,4 +266,3 @@ function json(obj, status = 200) {
     headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' }
   });
 }
-//（注：内容由AI生成）
