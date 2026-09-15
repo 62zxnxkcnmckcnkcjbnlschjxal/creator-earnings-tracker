@@ -1710,7 +1710,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .sky-card-body{font-size:13px;color:var(--text);display:flex;flex-direction:column;gap:10px}
 .sky-line{padding:3px 0;line-height:1.65}
 .sky-err{color:#e5484d;font-size:12.5px;padding:6px 0;line-height:1.6}
-.guide-err{color:#e5484d;font-size:13px;padding:14px;line-height:1.6;background:var(--danger-soft);border:1px dashed var(--danger-border);border-radius:var(--radius-md);margin:6px 0;text-align:center}
 .sky-card-body img{width:100%;border-radius:10px;display:block}
 .sky-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
 .sky-cache-note{font-size:12px;color:var(--muted);padding:0 2px}
@@ -2004,6 +2003,131 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   .cal-tag .tdot{display:none}
   .cal-grid{padding:9px;gap:5px;border-radius:14px}
 }
+/* ===== 博客页 ===== */
+.blog-hero{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-xl);padding:28px 24px;margin-bottom:18px;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),var(--shadow-sm),var(--shadow-lg)}
+.blog-hero-title{font-size:22px;font-weight:800;letter-spacing:.3px;margin-bottom:6px}
+.blog-hero-desc{font-size:13.5px;color:var(--muted);margin-bottom:14px}
+.blog-hero-meta{display:inline-flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.blog-hero-stat{font-size:12.5px;color:var(--muted);background:var(--chip);padding:5px 14px;border-radius:999px}
+.blog-hero-stat b{color:var(--text);font-weight:700}
+.blog-list{display:flex;flex-direction:column;gap:14px}
+.blog-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;cursor:pointer;transition:var(--transition);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),var(--shadow-sm)}
+.blog-card:hover{transform:translateY(-2px);border-color:var(--btn-hover-border);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45),var(--shadow-md)}
+.blog-card:active{transform:translateY(0);box-shadow:inset 0 2px 4px rgba(0,0,0,0.04)}
+.blog-card:focus-visible{outline:none;box-shadow:var(--ring),inset 0 1px 0 rgba(255,255,255,0.35)}
+.blog-card-title{font-size:16px;font-weight:700;line-height:1.4;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.blog-card-meta{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.blog-card-date{font-size:12px;color:var(--muted);background:var(--chip);padding:3px 10px;border-radius:999px}
+.blog-card-status{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
+.blog-status-published{color:var(--green);background:var(--green-soft);border:1px solid var(--green-border)}
+.blog-status-draft{color:var(--muted);background:var(--chip);border:1px solid var(--border)}
+.blog-card-excerpt{font-size:13.5px;line-height:1.7;color:var(--muted);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.blog-card-readmore{display:inline-flex;align-items:center;gap:4px;margin-top:10px;font-size:13px;font-weight:600;color:var(--primary);transition:all .15s}
+.blog-card:hover .blog-card-readmore{gap:8px}
+.blog-empty{text-align:center;padding:56px 20px;color:var(--muted)}
+.blog-empty-icon{margin-bottom:14px;opacity:.6}
+.blog-empty-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px}
+.blog-empty-desc{font-size:13px;margin-bottom:4px}
+.blog-skeleton{display:flex;flex-direction:column;gap:14px}
+.blog-skel-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),var(--shadow-sm)}
+.blog-skel-title{height:18px;width:55%;border-radius:6px;background:linear-gradient(90deg,var(--line) 25%,var(--soft) 50%,var(--line) 75%);background-size:200% 100%;animation:blog-skel-pulse 1.4s ease-in-out infinite;margin-bottom:14px}
+.blog-skel-line{height:12px;width:88%;border-radius:6px;background:linear-gradient(90deg,var(--line) 25%,var(--soft) 50%,var(--line) 75%);background-size:200% 100%;animation:blog-skel-pulse 1.4s ease-in-out infinite;margin-bottom:10px}
+@keyframes blog-skel-pulse{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.blog-detail{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-xl);padding:24px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),var(--shadow-sm),var(--shadow-lg)}
+.blog-detail-back{margin-bottom:16px}
+.blog-detail-header{padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.blog-detail-title{font-size:22px;font-weight:800;line-height:1.35;letter-spacing:.2px;margin-bottom:10px;word-break:break-word}
+.blog-detail-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.blog-detail-date{font-size:12.5px;color:var(--muted)}
+.blog-detail-body{font-size:15px;line-height:1.85;color:var(--text);word-break:break-word}
+.blog-detail-body h1,.blog-detail-body h2,.blog-detail-body h3,.blog-detail-body h4{font-weight:700;line-height:1.35;margin:28px 0 12px;color:var(--text)}
+.blog-detail-body h1{font-size:20px}.blog-detail-body h2{font-size:18px}.blog-detail-body h3{font-size:16px}.blog-detail-body h4{font-size:15px}
+.blog-detail-body p{margin-bottom:14px}.blog-detail-body p:last-child{margin-bottom:0}
+.blog-detail-body blockquote{border-left:3px solid var(--primary);background:var(--soft);padding:12px 16px;margin:16px 0;border-radius:0 var(--radius-sm) var(--radius-sm) 0;color:var(--muted);font-size:14px}
+.blog-detail-body blockquote p{margin-bottom:0}
+.blog-detail-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:13px;background:var(--chip);padding:2px 6px;border-radius:6px;color:var(--primary)}
+.blog-detail-body pre{background:var(--act-bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;overflow-x:auto;margin:16px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35)}
+.blog-detail-body pre code{background:transparent;padding:0;color:var(--text);font-size:13px;line-height:1.6}
+.blog-detail-body img{max-width:100%;border-radius:var(--radius-md);margin:16px 0;display:block;box-shadow:var(--shadow-sm)}
+.blog-detail-body ul,.blog-detail-body ol{padding-left:22px;margin-bottom:14px}
+.blog-detail-body li{margin-bottom:6px}
+.blog-detail-body a{color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+.blog-detail-body a:hover{filter:brightness(1.15)}
+.blog-detail-body hr{border:none;height:1px;background:var(--line);margin:24px 0}
+.blog-detail-body strong{font-weight:700}.blog-detail-body em{font-style:italic}
+.blog-detail-body table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+.blog-detail-body th,.blog-detail-body td{border:1px solid var(--border);padding:8px 12px;text-align:left}
+.blog-detail-body th{background:var(--soft);font-weight:600}
+.blog-manage-list{display:flex;flex-direction:column;gap:8px}
+.blog-manage-item{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--act-bg);transition:all .15s;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35)}
+.blog-manage-item:hover{border-color:var(--btn-hover-border);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45),var(--shadow-sm)}
+.blog-manage-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.blog-manage-title{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.blog-manage-sub{font-size:12px;color:var(--muted)}
+.blog-manage-actions{display:flex;gap:5px;flex-shrink:0}
+.blog-manage-actions .icon-btn{width:28px;height:28px;font-size:12px;border-radius:8px}
+.blog-manage-empty{font-size:13px;color:var(--muted);padding:14px 4px;text-align:center}
+.blog-editor-dialog{border:none;border-radius:var(--radius-xl);background:var(--card);padding:0;width:min(920px,96vw);max-height:92vh;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),var(--shadow-lg)}
+.blog-editor-dialog::backdrop{background:rgba(15,17,26,0.45);backdrop-filter:blur(2px)}
+.blog-editor-form{display:flex;flex-direction:column;height:100%;max-height:92vh}
+.blog-editor-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);flex-shrink:0}
+.blog-editor-head h4{font-size:15px;font-weight:700}
+.blog-editor-field{padding:14px 20px 0;flex-shrink:0}
+.blog-editor-title-input{width:100%;height:44px;border:1px solid var(--border);border-radius:11px;padding:0 14px;font-size:16px;font-weight:600;background:var(--btn-bg);color:var(--text);outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.40);transition:all .15s}
+.blog-editor-title-input:hover{border-color:var(--btn-hover-border);box-shadow:inset 0 1px 0 rgba(255,255,255,0.50),var(--shadow-sm)}
+.blog-editor-title-input:focus,.blog-editor-title-input:focus-visible{border-color:var(--focus);box-shadow:0 0 0 3px var(--focus-ring),inset 0 1px 0 rgba(255,255,255,0.40)}
+.blog-editor-title-input::placeholder{color:var(--placeholder)}
+.blog-editor-toolbar{display:flex;align-items:center;gap:3px;flex-wrap:wrap;padding:10px 20px;border-bottom:1px solid var(--line);flex-shrink:0}
+.blog-editor-toolbar button{height:32px;min-width:32px;padding:0 8px;border:1px solid transparent;background:transparent;border-radius:8px;color:var(--muted);font-size:13px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;justify-content:center}
+.blog-editor-toolbar button:hover{background:var(--soft);color:var(--text);border-color:var(--border)}
+.blog-editor-toolbar button:active{background:var(--chip)}
+.blog-editor-toolbar button:focus-visible{outline:none;box-shadow:var(--ring)}
+.blog-editor-toolbar-gap{flex:1;min-width:8px}
+.blog-editor-preview-toggle{gap:5px !important;font-size:12.5px !important;font-weight:500 !important}
+.blog-editor-preview-toggle.active{background:var(--btn-soft-bg) !important;color:var(--primary) !important;border-color:var(--btn-soft-border) !important;font-weight:600 !important}
+.blog-editor-body{display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;min-height:0;overflow:hidden}
+.blog-editor-pane{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.blog-editor-pane textarea{width:100%;height:100%;border:none;outline:none;resize:none;padding:16px 20px;font-size:14.5px;line-height:1.75;color:var(--text);background:transparent;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+.blog-preview-pane{display:flex;flex-direction:column;min-height:0;overflow:hidden;border-left:1px solid var(--line);background:var(--act-bg)}
+.blog-preview-label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:10px 16px;border-bottom:1px solid var(--line);flex-shrink:0}
+.blog-preview-content{flex:1;overflow-y:auto;padding:16px 20px;font-size:14.5px;line-height:1.75;color:var(--text);word-break:break-word}
+.blog-preview-content h1,.blog-preview-content h2,.blog-preview-content h3,.blog-preview-content h4{font-weight:700;line-height:1.35;margin:20px 0 10px;color:var(--text)}
+.blog-preview-content h1{font-size:18px}.blog-preview-content h2{font-size:16px}.blog-preview-content h3{font-size:15px}.blog-preview-content h4{font-size:14px}
+.blog-preview-content p{margin-bottom:12px}.blog-preview-content p:last-child{margin-bottom:0}
+.blog-preview-content blockquote{border-left:3px solid var(--primary);background:var(--soft);padding:10px 14px;margin:12px 0;border-radius:0 var(--radius-sm) var(--radius-sm) 0;color:var(--muted);font-size:13.5px}
+.blog-preview-content blockquote p{margin-bottom:0}
+.blog-preview-content code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:13px;background:var(--chip);padding:2px 6px;border-radius:6px;color:var(--primary)}
+.blog-preview-content pre{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;overflow-x:auto;margin:12px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35)}
+.blog-preview-content pre code{background:transparent;padding:0;color:var(--text);font-size:13px;line-height:1.6}
+.blog-preview-content img{max-width:100%;border-radius:var(--radius-md);margin:12px 0;display:block;box-shadow:var(--shadow-sm)}
+.blog-preview-content ul,.blog-preview-content ol{padding-left:20px;margin-bottom:12px}
+.blog-preview-content li{margin-bottom:5px}
+.blog-preview-content a{color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+.blog-preview-content a:hover{filter:brightness(1.15)}
+.blog-preview-content hr{border:none;height:1px;background:var(--line);margin:20px 0}
+.blog-preview-content strong{font-weight:700}.blog-preview-content em{font-style:italic}
+.blog-editor-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;border-top:1px solid var(--line);flex-shrink:0;flex-wrap:wrap}
+.blog-editor-status{font-size:12px;color:var(--muted);min-height:18px}
+.blog-editor-btns{display:flex;gap:8px;flex-shrink:0}
+:root.dark .blog-hero{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),var(--shadow-sm),var(--shadow-lg)}
+:root.dark .blog-card{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),var(--shadow-sm)}
+:root.dark .blog-card:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,0.07),var(--shadow-md)}
+:root.dark .blog-card:active{box-shadow:inset 0 2px 4px rgba(0,0,0,0.20)}
+:root.dark .blog-detail{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),var(--shadow-sm),var(--shadow-lg)}
+:root.dark .blog-detail-body pre{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04)}
+:root.dark .blog-manage-item{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04)}
+:root.dark .blog-manage-item:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,0.07),var(--shadow-sm)}
+:root.dark .blog-editor-dialog{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),var(--shadow-lg)}
+:root.dark .blog-editor-title-input{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04)}
+:root.dark .blog-editor-title-input:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,0.07),var(--shadow-sm)}
+:root.dark .blog-editor-title-input:focus,:root.dark .blog-editor-title-input:focus-visible{box-shadow:0 0 0 3px var(--focus-ring),inset 0 1px 0 rgba(255,255,255,0.04)}
+:root.dark .blog-preview-pane{background:var(--soft)}
+:root.dark .blog-preview-content pre{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04)}
+:root.dark .blog-skel-card{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),var(--shadow-sm)}
+:root.dark .blog-skel-title,:root.dark .blog-skel-line{background:linear-gradient(90deg,var(--line) 25%,var(--chip) 50%,var(--line) 75%);background-size:200% 100%}
+@media (max-width:759px){.blog-editor-dialog{width:96vw;max-height:90vh;border-radius:var(--radius-lg)}.blog-editor-body{grid-template-columns:1fr}.blog-editor-body.blog-preview-active .blog-editor-pane{display:none}.blog-editor-body.blog-preview-active .blog-preview-pane{display:flex;border-left:none}.blog-preview-pane{display:none;border-left:none}.blog-preview-pane[hidden]{display:none !important}.blog-hero{padding:22px 18px}.blog-hero-title{font-size:20px}.blog-detail{padding:18px}.blog-detail-title{font-size:19px}.blog-card{padding:16px}.blog-card-title{font-size:15px}}
+@media (min-width:760px){.blog-editor-body.blog-preview-active .blog-editor-pane,.blog-editor-body.blog-preview-active .blog-preview-pane{display:flex}.blog-preview-pane[hidden]{display:none !important}}
+
 </style>
 </head>
 <body>
@@ -2037,6 +2161,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     <button class="tab active" data-tab="home">待发放<span class="cnt" id="tabHomeCount">0</span></button>
     <button class="tab" data-tab="done">已发放<span class="cnt" id="tabDoneCount">0</span></button>
     <button class="tab" data-tab="guide">攻略</button>
+    <button class="tab" data-tab="blog">博客</button>
     <button class="tab" data-tab="sky">光遇</button>
     <button class="tab" data-tab="chat">DeepSeek</button>
     <button class="tab" data-tab="notice">公告</button>
@@ -2055,6 +2180,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         <button class="tab active" data-tab="home">待发放收益<span class="cnt" id="railHomeCount">0</span></button>
         <button class="tab" data-tab="done">已发放<span class="cnt" id="railDoneCount">0</span></button>
         <button class="tab" data-tab="guide">攻略</button>
+        <button class="tab" data-tab="blog">博客</button>
     <button class="tab" data-tab="sky">光遇</button>
         <button class="tab" data-tab="chat">DeepSeek</button>
         <button class="tab" data-tab="notice">公告</button>
@@ -2332,11 +2458,68 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
               <div class="set-hint" id="dsDeployHint" style="display:none;margin-top:6px;padding:8px 10px;border-radius:8px;font-size:12px;background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border);">
                 <strong>接口未部署</strong>：当前环境无法调用 /api/deepseek。若使用 Cloudflare Pages，请通过 Git 集成或 Wrangler CLI 部署（Dashboard 直接上传 zip 不会部署 functions/ 目录）。<a href="#privacy" style="color:var(--danger);text-decoration:underline;">查看部署说明</a>
               </div>
+            <div class="set-group">
+              <div class="set-title">博客管理</div>
+              <div class="set-row" style="justify-content:flex-start;gap:10px;margin-bottom:4px;">
+                <button class="btn btn-primary" id="blogWriteBtn">＋ 写文章</button>
+                <span style="font-size:12px;color:var(--muted);">共 <b id="blogManageCount" style="color:var(--text);">0</b> 篇</span>
+              </div>
+              <div class="blog-manage-list" id="blogManageList"></div>
+              <div class="blog-manage-empty" id="blogManageEmpty">
+                暂无文章，点击「写文章」创建第一篇。
+              </div>
+              <div class="set-hint">文章数据保存在浏览器本地（localStorage），备份与恢复随主数据一起导出/导入。仅支持通过图片 URL 插入图片。</div>
+            </div>
             </div>
           </div>
         </section>
       </div>
 
+      <!-- 博客页（前台） -->
+      <div id="viewBlog" hidden>
+        <div id="blogListView">
+          <div class="blog-hero">
+            <div class="blog-hero-title">创作博客</div>
+            <div class="blog-hero-desc">记录创作路上的思考与复盘</div>
+            <div class="blog-hero-meta">
+              <span class="blog-hero-stat"><b id="blogArticleCount">0</b> 篇文章</span>
+              <span class="blog-hero-stat"><b id="blogLastUpdate">—</b> 最近更新</span>
+            </div>
+          </div>
+          <div class="blog-skeleton" id="blogSkeleton">
+            <div class="blog-skel-card"><div class="blog-skel-title"></div><div class="blog-skel-line"></div><div class="blog-skel-line" style="width:66%"></div></div>
+            <div class="blog-skel-card"><div class="blog-skel-title"></div><div class="blog-skel-line"></div><div class="blog-skel-line" style="width:55%"></div></div>
+            <div class="blog-skel-card"><div class="blog-skel-title"></div><div class="blog-skel-line"></div><div class="blog-skel-line" style="width:72%"></div></div>
+          </div>
+          <div class="blog-list" id="blogList"></div>
+          <div class="blog-empty" id="blogEmpty" hidden>
+            <div class="blog-empty-icon">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+            </div>
+            <div class="blog-empty-title">还没有文章</div>
+            <div class="blog-empty-desc">去「设置 → 博客管理」写下第一篇文章吧</div>
+            <button class="btn btn-soft" data-tab-trigger="settings" style="margin-top:12px">前往设置</button>
+          </div>
+        </div>
+        <div id="blogDetailView" hidden>
+          <div class="blog-detail">
+            <div class="blog-detail-back">
+              <button class="btn" id="blogBackBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                返回列表
+              </button>
+            </div>
+            <div class="blog-detail-header">
+              <h1 class="blog-detail-title" id="blogDetailTitle">文章标题</h1>
+              <div class="blog-detail-meta">
+                <span class="blog-detail-date" id="blogDetailDate">2026-01-01</span>
+                <span class="blog-detail-status blog-status-published" id="blogDetailStatus">已发布</span>
+              </div>
+            </div>
+            <div class="blog-detail-body" id="blogDetailBody"></div>
+          </div>
+        </div>
+      </div>
       <!-- 攻略页（日历 + 攻略 API） -->
       <div id="viewGuide" hidden>
         <div class="cal-page">
@@ -2664,6 +2847,7 @@ function switchTab(name){
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active',t.dataset.tab===name); });
   document.getElementById('viewHome').hidden=(name!=='home');
   document.getElementById('viewDone').hidden=(name!=='done');
+  document.getElementById('viewBlog').hidden=(name!=='blog');
   document.getElementById('viewGuide').hidden=(name!=='guide');
   document.getElementById('viewSky').hidden=(name!=='sky');
   document.getElementById('viewChat').hidden=(name!=='chat');
@@ -2671,7 +2855,7 @@ function switchTab(name){
   document.getElementById('viewPrivacy').hidden=(name!=='privacy');
   document.getElementById('viewSettings').hidden=(name!=='settings');
   var tt=document.getElementById('toolbarTitle');
-  var titles={home:'待发放收益',done:'已发放',guide:'攻略',sky:'光遇数据',chat:'DeepSeek 助手',notice:'公告管理',privacy:'隐私政策与品牌声明',settings:'设置'};
+  var titles={home:'待发放收益',done:'已发放',blog:'博客',guide:'攻略',sky:'光遇数据',chat:'DeepSeek 助手',notice:'公告管理',privacy:'隐私政策与品牌声明',settings:'设置'};
   if(tt) tt.textContent=(titles[name]||'待发放收益');
   // 底部工具条：仅首页与设置页显示（DeepSeek 助手等全屏页不显示）
   var gf=document.getElementById('globalFooter');
@@ -2687,7 +2871,7 @@ function switchTab(name){
 // hash 路由：地址栏 #privacy 等可直接打开对应页，支持前进后退
 window.addEventListener('hashchange',function(){
   var n=(location.hash||'').replace('#','').trim();
-  var views=['home','done','guide','sky','chat','notice','privacy','settings'];
+  var views=['home','done','blog','guide','sky','chat','notice','privacy','settings'];
   if(n && views.indexOf(n)>=0) switchTab(n);
 });
 
@@ -3458,7 +3642,18 @@ function markdownToHtml(raw){
     str=str.replace(/\*\*\*(.*?)\*\*\*/g,'<strong><em>$1</em></strong>');
     str=str.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
     str=str.replace(/\*(.*?)\*/g,'<em>$1</em>');
-    str=str.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+    str=str.replace(/\[([^\]]+)\]\(([^)]+)\)/g,function(m,text,href){
+      var safe=href.trim();
+      var allowed=/^(https?:|mailto:|#)/i.test(safe);
+      if(!allowed) safe='#';
+      return '<a href="'+esc(safe)+'" target="_blank" rel="noopener">'+text+'</a>';
+    });
+    str=str.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,function(m,alt,src){
+      var safe=src.trim();
+      var allowed=/^https?:/i.test(safe);
+      if(!allowed) return '<span>[图片链接不安全]</span>';
+      return '<img src="'+esc(safe)+'" alt="'+esc(alt)+'" loading="lazy" referrerpolicy="no-referrer" style="max-width:100%">';
+    });
     inlineCodes.forEach(function(code,idx){
       str=str.replace('INLINECODE_'+idx+'_','<code>'+code+'</code>');
     });
@@ -4173,14 +4368,6 @@ function fetchGuideApi(api){
     }
     return r.text().then(function(text){
       var items=parseGuidePayload(text,ct);
-      // API 业务错误（如每日额度超限）：不覆盖旧缓存，回退显示上次缓存
-      var bizErr=items.some(function(it){ return it.type==='text' && /^接口提示[：:]/.test(it.content); });
-      if(bizErr){
-        var msg=(items[0]&&items[0].content||'').replace(/^接口提示[：:]/,'')||'接口错误';
-        var old=guideCache[api.url];
-        if(old && old.items && old.items.length){ throw new Error(msg); }
-        return items; // 无旧缓存 → 直接显示接口提示
-      }
       if(items && items.length){ guideCache[api.url]={ts:Date.now(),items:items,ct:ct}; }
       else{ delete guideCache[api.url]; }
       saveGuideCache();
@@ -4244,12 +4431,9 @@ function renderGuide(results){
   var imgs=grid.querySelectorAll('.guide-fig img');
   imgs.forEach(function(img){
     // 加载失败 → 回退直连原图（no-referrer 绕过防盗链）
-    img.addEventListener('error',function(){
-      // 第1次：代理失败 → 回退直连原图（no-referrer 绕过防盗链）
-      if(img.src.indexOf('/api/guide')>=0 && img.getAttribute('data-fb')){ img.setAttribute('referrerpolicy','no-referrer'); img.src=img.getAttribute('data-fb'); return; }
-      // 第2次：直连也失败 → 明确提示
-      var fig=img.closest('.guide-fig')||img.parentNode;
-      if(fig){ var dd=document.createElement('div'); dd.className='guide-err'; dd.textContent='API 返回失败，图片无法加载'; fig.innerHTML=''; fig.appendChild(dd); }
+    var fb=img.getAttribute('data-fb');
+    if(fb) img.addEventListener('error',function(){
+      if(img.src.indexOf('/api/guide')>=0){ img.setAttribute('referrerpolicy','no-referrer'); img.src=fb; }
     });
     var url=img.getAttribute('src');
     if(!url) return;
@@ -4338,37 +4522,65 @@ loadGuideApis(); loadGuideCache();
 renderGuideApiList();
 /* 云端配置同步：启动时拉取合并（攻略 API + 应天 key） */
 (function(){
+    var settingsSyncedT=0;
+  var settingsSyncPending=false;
   function cloudPull(){
     fetch('/api/settings',{cache:'no-store',credentials:'same-origin'}).then(function(r){
       if(!r.ok) throw new Error('HTTP '+r.status);
       return r.json();
     }).then(function(d){
-      if(!d || !d.ok) return;
-      var seen={};
-      guideApis.forEach(function(a){ if(a&&a.url) seen[a.url]=true; });
+      if(!d || !d.ok) {
+        if(d && d.error==='未授权'){ toast('云端同步需要登录，请先解锁'); }
+        return;
+      }
+      settingsSyncedT=d.t || 0;
       var changed=false;
-      (d.guideApis||[]).forEach(function(a){
-        if(a&&a.url&&!seen[a.url]){ guideApis.push({id:a.id||uid(),url:a.url}); seen[a.url]=true; changed=true; }
-      });
-      if(changed){ saveGuideApis(); try{ renderGuideApiList(); }catch(e){} }
-      /* 云端没有、本地有 → 把本地补推到云端（老数据也能同步） */
-      var localOnly=false;
-      guideApis.forEach(function(a){ if(a&&a.url&&!(d.guideApis||[]).some(function(x){return x&&x.url===a.url;})) localOnly=true; });
-      if((!d.guideApis || !d.guideApis.length) && guideApis.length){ localOnly=true; }
-      if(localOnly){ cloudPush(); }
+      if(d.guideApis){
+        var newApis=d.guideApis.filter(function(a){ return a && a.url; });
+        if(JSON.stringify(guideApis.map(function(a){return a.id+':'+a.url;})) !==
+           JSON.stringify(newApis.map(function(a){return a.id+':'+a.url;}))){
+          guideApis=newApis;
+          saveGuideApis();
+          changed=true;
+        }
+      }
       if(d.skyKey){
         var oldKey=localStorage.getItem('skyT1qqKeyV1')||'';
         if(oldKey!==d.skyKey){ localStorage.setItem('skyT1qqKeyV1',d.skyKey); try{ var ki=document.getElementById('skyT1qqKey'); if(ki) ki.value=d.skyKey; }catch(e){} }
       }
-    }).catch(function(){
-      /* 未登录/离线：15 秒后重试一次（解锁场景保险） */
-      if(!window._pullRetried){ window._pullRetried=true; setTimeout(cloudPull, 15000); }
+      if(changed){ try{ renderGuideApiList(); }catch(e){} }
+    }).catch(function(err){
+      console.warn('cloudPull 失败',err);
+      if(!window._pullRetried){ window._pullRetried=true; setTimeout(cloudPull,15000); }
     });
   }
   function cloudPush(){
-    try{
-      fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({guideApis:guideApis,skyKey:localStorage.getItem('skyT1qqKeyV1')||''})}).catch(function(){});
-    }catch(e){}
+    if(settingsSyncPending) return;
+    settingsSyncPending=true;
+    var payload={clientT:settingsSyncedT,guideApis:guideApis,skyKey:localStorage.getItem('skyT1qqKeyV1')||''};
+    fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(payload)})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(function(d){
+        settingsSyncPending=false;
+        if(!d || !d.ok){
+          if(d && d.error==='conflict'){
+            settingsSyncedT=d.serverT || 0;
+            toast('检测到云端新版本，正在强制同步本地更改…');
+            setTimeout(cloudPush,500);
+          } else if(d && d.error==='未授权'){
+            toast('同步失败：登录已过期，请重新解锁');
+          } else {
+            toast('同步失败：'+(d.error || '未知错误'));
+          }
+          return;
+        }
+        settingsSyncedT=d.t || 0;
+      })
+      .catch(function(err){
+        settingsSyncPending=false;
+        console.warn('cloudPush 失败',err);
+        toast('同步失败：网络异常，请检查连接');
+      });
   }
   window.cloudPush=cloudPush; window.cloudPull=cloudPull;
   cloudPull();
@@ -4484,7 +4696,7 @@ function loadSky(force){
     grid.querySelectorAll('img[data-fb]').forEach(function(img){
       img.addEventListener('error',function(){
         if(img.src.indexOf('/api/guide')>=0){ img.setAttribute('referrerpolicy','no-referrer'); img.src=img.getAttribute('data-fb'); }
-        else{ var dd=document.createElement('div'); dd.className='sky-err'; dd.textContent='API 返回失败，图片无法加载（可点「刷新」重试）'; if(img.parentNode) img.parentNode.replaceChild(dd,img); }
+        else{ var dd=document.createElement('div'); dd.className='sky-err'; dd.textContent='图片加载失败，可点「刷新」重试'; if(img.parentNode) img.parentNode.replaceChild(dd,img); }
       });
     });
     if(note) note.textContent='已加载 '+okN+'/'+results.length+' 个模块 · 当日数据缓存 24 小时，每天首次打开自动拉取最新。';
@@ -4680,6 +4892,238 @@ function calBindAll(){
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ try{ calBindAll(); }catch(e){} });
 else { try{ calBindAll(); }catch(e){} }
 
+
+/* ================= 博客模块 ================= */
+var BLOG_KEY='blogArticlesV1';
+var blogArticles=[];
+function loadBlogArticles(){ try{ var raw=localStorage.getItem(BLOG_KEY); if(raw) blogArticles=JSON.parse(raw); }catch(e){ blogArticles=[]; } }
+function saveBlogArticles(){ try{ localStorage.setItem(BLOG_KEY,JSON.stringify(blogArticles)); }catch(e){} }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function fmtDate(ts){ var d=new Date(ts); return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0'); }
+function makeSummary(content){ var t=String(content||'').replace(/[#*`\[\]\(\)]/g,'').trim(); return t.slice(0,120)+(t.length>120?'…':''); }
+
+function renderBlogList(){
+  var list=document.getElementById('blogList');
+  var empty=document.getElementById('blogEmpty');
+  var skel=document.getElementById('blogSkeleton');
+  var countEl=document.getElementById('blogArticleCount');
+  var lastEl=document.getElementById('blogLastUpdate');
+  if(skel) skel.hidden=true;
+  var pub=blogArticles.filter(function(a){ return a.status==='published'; });
+  pub.sort(function(a,b){ if(a.pinned!==b.pinned) return a.pinned?-1:1; return (b.updatedAt||0)-(a.updatedAt||0); });
+  if(countEl) countEl.textContent=pub.length;
+  if(lastEl){ var lu=pub.length?pub[0].updatedAt:0; lastEl.textContent=lu?fmtDate(lu):'—'; }
+  if(!pub.length){ if(list) list.innerHTML=''; if(empty) empty.hidden=false; return; }
+  if(empty) empty.hidden=true;
+  if(!list) return;
+  list.innerHTML=pub.map(function(a){
+    return '<div class="blog-card" data-blog-id="'+esc(a.id)+'">'+
+      '<div class="blog-card-title">'+esc(a.title)+'</div>'+
+      '<div class="blog-card-meta">'+
+        '<span class="blog-card-date">'+fmtDate(a.updatedAt)+'</span>'+
+        (a.status==='published'?'<span class="blog-card-status blog-status-published">已发布</span>':'<span class="blog-card-status blog-status-draft">草稿</span>')+
+      '</div>'+
+      '<div class="blog-card-excerpt">'+esc(makeSummary(a.content))+'</div>'+
+      '<div class="blog-card-readmore">阅读全文 →</div>'+
+    '</div>';
+  }).join('');
+  list.querySelectorAll('.blog-card').forEach(function(c){
+    c.addEventListener('click',function(){ openBlogDetail(c.dataset.blogId); });
+  });
+}
+
+function openBlogDetail(id){
+  var a=blogArticles.find(function(x){ return x.id===id; });
+  if(!a) return;
+  document.getElementById('blogListView').hidden=true;
+  document.getElementById('blogDetailView').hidden=false;
+  document.getElementById('blogDetailTitle').textContent=a.title;
+  document.getElementById('blogDetailDate').textContent=fmtDate(a.updatedAt);
+  var st=document.getElementById('blogDetailStatus');
+  st.textContent=a.status==='published'?'已发布':'草稿';
+  st.className='blog-detail-status '+(a.status==='published'?'blog-status-published':'blog-status-draft');
+  document.getElementById('blogDetailBody').innerHTML=markdownToHtml(a.content);
+}
+
+function backToBlogList(){
+  document.getElementById('blogDetailView').hidden=true;
+  document.getElementById('blogListView').hidden=false;
+}
+
+function renderBlogManage(){
+  var list=document.getElementById('blogManageList');
+  var empty=document.getElementById('blogManageEmpty');
+  var countEl=document.getElementById('blogManageCount');
+  if(countEl) countEl.textContent=blogArticles.length;
+  if(!blogArticles.length){ if(list) list.innerHTML=''; if(empty) empty.style.display=''; return; }
+  if(empty) empty.style.display='none';
+  if(!list) return;
+  list.innerHTML=blogArticles.map(function(a){
+    return '<div class="blog-manage-item">'+
+      '<div class="blog-manage-info">'+
+        '<div class="blog-manage-title">'+esc(a.title)+'</div>'+
+        '<div class="blog-manage-sub">'+fmtDate(a.updatedAt)+' · '+(a.status==='published'?'已发布':'草稿')+'</div>'+
+      '</div>'+
+      '<div class="blog-manage-actions">'+
+        '<button class="icon-btn" data-blog-edit="'+esc(a.id)+'" title="编辑">✎</button>'+
+        '<button class="icon-btn" data-blog-del="'+esc(a.id)+'" title="删除">🗑</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  list.querySelectorAll('[data-blog-edit]').forEach(function(b){
+    b.addEventListener('click',function(){ openBlogEditor(b.dataset.blogEdit); });
+  });
+  list.querySelectorAll('[data-blog-del]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var id=b.dataset.blogDel;
+      var a=blogArticles.find(function(x){ return x.id===id; });
+      if(!a) return;
+      if(!confirm('删除「'+a.title+'」？此操作不可恢复。')) return;
+      blogArticles=blogArticles.filter(function(x){ return x.id!==id; });
+      saveBlogArticles();
+      renderBlogManage();
+      renderBlogList();
+      toast('已删除');
+      try{ syncBlogCloud(); }catch(e){}
+    });
+  });
+}
+
+var blogEditingId=null;
+function openBlogEditor(id){
+  blogEditingId=id || null;
+  var dlg=document.getElementById('blogEditorDlg');
+  var titleEl=document.getElementById('blogEditorTitle');
+  var ti=document.getElementById('blogEditTitleInput');
+  var ta=document.getElementById('blogEditTextarea');
+  var statusEl=document.getElementById('blogEditorStatus');
+  if(statusEl) statusEl.textContent='';
+  if(id){
+    var a=blogArticles.find(function(x){ return x.id===id; });
+    if(!a) return;
+    if(titleEl) titleEl.textContent='编辑文章';
+    if(ti) ti.value=a.title;
+    if(ta) ta.value=a.content;
+  } else {
+    if(titleEl) titleEl.textContent='写文章';
+    if(ti) ti.value='';
+    if(ta) ta.value='';
+  }
+  document.getElementById('blogPreviewPane').hidden=true;
+  document.querySelector('.blog-editor-body').classList.remove('blog-preview-active');
+  document.getElementById('blogPreviewToggle').classList.remove('active');
+  if(dlg) dlg.showModal();
+}
+
+function closeBlogEditor(){
+  var dlg=document.getElementById('blogEditorDlg');
+  if(dlg) dlg.close();
+  blogEditingId=null;
+}
+
+function saveBlogArticle(status){
+  var ti=document.getElementById('blogEditTitleInput');
+  var ta=document.getElementById('blogEditTextarea');
+  var title=String(ti?ti.value:'').trim();
+  var content=String(ta?ta.value:'').trim();
+  if(!title){ toast('请输入标题'); return; }
+  var now=Date.now();
+  var id=blogEditingId || uid();
+  var idx=blogArticles.findIndex(function(x){ return x.id===id; });
+  var article={
+    id:id,title:title,content:content,status:status,
+    pinned:false,hidden:false,
+    createdAt:idx>=0?blogArticles[idx].createdAt:now,
+    updatedAt:now
+  };
+  if(idx>=0){ blogArticles[idx]=article; } else { blogArticles.unshift(article); }
+  saveBlogArticles();
+  renderBlogList();
+  renderBlogManage();
+  closeBlogEditor();
+  toast(status==='published'?'已发布':'已保存为草稿');
+  try{ syncBlogCloud(); }catch(e){}
+}
+
+function syncBlogCloud(){
+  if(typeof window.cloudPush==='function') window.cloudPush();
+}
+
+/* 博客编辑器事件绑定 */
+(function(){
+  var dlg=document.getElementById('blogEditorDlg');
+  var closeBtn=document.getElementById('blogEditorClose');
+  var draftBtn=document.getElementById('blogDraftBtn');
+  var pubBtn=document.getElementById('blogPublishBtn');
+  var previewBtn=document.getElementById('blogPreviewToggle');
+  var toolbar=document.getElementById('blogEditorToolbar');
+  var ta=document.getElementById('blogEditTextarea');
+  var backBtn=document.getElementById('blogBackBtn');
+  var writeBtn=document.getElementById('blogWriteBtn');
+
+  if(closeBtn) closeBtn.addEventListener('click',closeBlogEditor);
+  if(draftBtn) draftBtn.addEventListener('click',function(){ saveBlogArticle('draft'); });
+  if(pubBtn) pubBtn.addEventListener('click',function(){ saveBlogArticle('published'); });
+  if(backBtn) backBtn.addEventListener('click',backToBlogList);
+  if(writeBtn) writeBtn.addEventListener('click',function(){ openBlogEditor(); });
+
+  if(previewBtn){
+    previewBtn.addEventListener('click',function(){
+      var pane=document.getElementById('blogPreviewPane');
+      var body=document.querySelector('.blog-editor-body');
+      var content=document.getElementById('blogPreviewContent');
+      var isHidden=pane.hidden;
+      pane.hidden=!isHidden;
+      body.classList.toggle('blog-preview-active',isHidden);
+      previewBtn.classList.toggle('active',isHidden);
+      if(isHidden && content) content.innerHTML=markdownToHtml(ta?ta.value:'');
+    });
+  }
+
+  if(toolbar){
+    toolbar.addEventListener('click',function(ev){
+      var btn=ev.target.closest('button[data-cmd]'); if(!btn) return;
+      var cmd=btn.dataset.cmd;
+      if(!ta) return;
+      var start=ta.selectionStart, end=ta.selectionEnd;
+      var val=ta.value, sel=val.slice(start,end);
+      var before=val.slice(0,start), after=val.slice(end);
+      var insert='';
+      switch(cmd){
+        case 'bold': insert='**'+(sel||'加粗文本')+'**'; break;
+        case 'italic': insert='*'+(sel||'斜体文本')+'*'; break;
+        case 'h2': insert='\n## '+(sel||'标题')+'\n'; break;
+        case 'h3': insert='\n### '+(sel||'小标题')+'\n'; break;
+        case 'quote': insert='\n> '+(sel||'引用内容')+'\n'; break;
+        case 'link': insert='['+(sel||'链接文本')+'](https://)'; break;
+        case 'image': insert='\n![图片描述]('+(sel||'https://')+')\n'; break;
+        case 'code': insert='`'+(sel||'code')+'`'; break;
+        case 'ul': insert='\n- '+(sel||'列表项')+'\n'; break;
+        case 'ol': insert='\n1. '+(sel||'列表项')+'\n'; break;
+        case 'hr': insert='\n---\n'; break;
+      }
+      ta.value=before+insert+after;
+      ta.focus();
+      ta.selectionStart=ta.selectionEnd=start+insert.length;
+    });
+  }
+
+  if(ta){
+    ta.addEventListener('input',function(){
+      var pane=document.getElementById('blogPreviewPane');
+      var content=document.getElementById('blogPreviewContent');
+      if(!pane.hidden && content) content.innerHTML=markdownToHtml(ta.value);
+    });
+  }
+
+  /* data-tab-trigger for blog empty state */
+  document.querySelectorAll('[data-tab-trigger]').forEach(function(el){
+    el.addEventListener('click',function(){ switchTab(el.dataset.tabTrigger); });
+  });
+})();
+
+loadBlogArticles();
+
 </script>
 
 <dialog class="cal-dialog" id="calAiDlg">
@@ -4690,6 +5134,53 @@ else { try{ calBindAll(); }catch(e){} }
     <div class="cal-dlg-actions">
       <button value="cancel" class="btn btn-soft">取消</button>
       <button type="button" class="btn btn-primary" id="calAiOk">解析并保存</button>
+    </div>
+  </form>
+</dialog>
+<dialog class="blog-editor-dialog" id="blogEditorDlg">
+  <form method="dialog" class="blog-editor-form" onsubmit="return false;">
+    <div class="blog-editor-head">
+      <h4 id="blogEditorTitle">写文章</h4>
+      <button type="button" class="icon-btn" id="blogEditorClose" title="关闭">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="blog-editor-field">
+      <input type="text" id="blogEditTitleInput" placeholder="文章标题" class="blog-editor-title-input">
+    </div>
+    <div class="blog-editor-toolbar" id="blogEditorToolbar">
+      <button type="button" data-cmd="bold" title="加粗"><b>B</b></button>
+      <button type="button" data-cmd="italic" title="斜体"><i>I</i></button>
+      <button type="button" data-cmd="h2" title="标题">H2</button>
+      <button type="button" data-cmd="h3" title="小标题">H3</button>
+      <button type="button" data-cmd="quote" title="引用">&#x275D;</button>
+      <button type="button" data-cmd="link" title="链接">&#x1F517;</button>
+      <button type="button" data-cmd="image" title="图片 URL">&#x1F5BC;</button>
+      <button type="button" data-cmd="code" title="代码">&lt;/&gt;</button>
+      <button type="button" data-cmd="ul" title="无序列表">&#x2022; 列表</button>
+      <button type="button" data-cmd="ol" title="有序列表">1. 列表</button>
+      <button type="button" data-cmd="hr" title="分割线">&#x2014;</button>
+      <div class="blog-editor-toolbar-gap"></div>
+      <button type="button" class="blog-editor-preview-toggle" id="blogPreviewToggle" title="预览">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        预览
+      </button>
+    </div>
+    <div class="blog-editor-body">
+      <div class="blog-editor-pane" id="blogEditorPane">
+        <textarea id="blogEditTextarea" placeholder="开始写作… 支持 Markdown 语法"></textarea>
+      </div>
+      <div class="blog-preview-pane" id="blogPreviewPane" hidden>
+        <div class="blog-preview-label">实时预览</div>
+        <div class="blog-preview-content" id="blogPreviewContent"></div>
+      </div>
+    </div>
+    <div class="blog-editor-actions">
+      <div class="blog-editor-status" id="blogEditorStatus"></div>
+      <div class="blog-editor-btns">
+        <button type="button" class="btn" id="blogDraftBtn">保存草稿</button>
+        <button type="button" class="btn btn-primary" id="blogPublishBtn">发布文章</button>
+      </div>
     </div>
   </form>
 </dialog>
