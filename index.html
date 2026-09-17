@@ -2204,10 +2204,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     <button class="tab active" data-tab="home">待发放<span class="cnt" id="tabHomeCount">0</span></button>
     <button class="tab" data-tab="done">已发放<span class="cnt" id="tabDoneCount">0</span></button>
     <button class="tab" data-tab="guide">攻略</button>
-    <button class="tab" data-tab="blog">博客</button>
-    <button class="tab" data-tab="blogmanage">博客管理</button>
-    <button class="tab" data-tab="links">友链</button>
-    <button class="tab" data-tab="announce">更新公告</button>
     <button class="tab" data-tab="sky">光遇</button>
     <button class="tab" data-tab="chat">DeepSeek</button>
     <button class="tab" data-tab="notice">公告</button>
@@ -2226,11 +2222,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         <button class="tab active" data-tab="home">待发放收益<span class="cnt" id="railHomeCount">0</span></button>
         <button class="tab" data-tab="done">已发放<span class="cnt" id="railDoneCount">0</span></button>
         <button class="tab" data-tab="guide">攻略</button>
-        <button class="tab" data-tab="blog">博客</button>
-    <button class="tab" data-tab="blogmanage">博客管理</button>
-    <button class="tab" data-tab="links">友链</button>
-    <button class="tab" data-tab="announce">更新公告</button>
-        <button class="tab" data-tab="sky">光遇</button>
+            <button class="tab" data-tab="sky">光遇</button>
         <button class="tab" data-tab="chat">DeepSeek</button>
         <button class="tab" data-tab="notice">公告</button>
         <button class="tab" data-tab="privacy">隐私政策</button>
@@ -2507,118 +2499,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
               <div class="set-hint" id="dsDeployHint" style="display:none;margin-top:6px;padding:8px 10px;border-radius:8px;font-size:12px;background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border);">
                 <strong>接口未部署</strong>：当前环境无法调用 /api/deepseek。若使用 Cloudflare Pages，请通过 Git 集成或 Wrangler CLI 部署（Dashboard 直接上传 zip 不会部署 functions/ 目录）。<a href="#privacy" style="color:var(--danger);text-decoration:underline;">查看部署说明</a>
               </div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- 博客页（前台） -->
-      <div id="viewBlog" hidden>
-        <div id="blogListView">
-          <div class="blog-hero">
-            <div class="blog-hero-title">创作博客</div>
-            <div class="blog-hero-desc">记录创作路上的思考与复盘</div>
-            <div class="blog-hero-meta">
-              <span class="blog-hero-stat"><b id="blogArticleCount">0</b> 篇文章</span>
-              <span class="blog-hero-stat"><b id="blogLastUpdate">—</b> 最近更新</span>
-            </div>
-          </div>
-          <div class="blog-skeleton" id="blogSkeleton">
-            <div class="blog-skel-card"><div class="blog-skel-title"></div><div class="blog-skel-line"></div><div class="blog-skel-line" style="width:66%"></div></div>
-            <div class="blog-skel-card"><div class="blog-skel-title"></div><div class="blog-skel-line"></div><div class="blog-skel-line" style="width:55%"></div></div>
-            <div class="blog-skel-card"><div class="blog-skel-title"></div><div class="blog-skel-line"></div><div class="blog-skel-line" style="width:72%"></div></div>
-          </div>
-          <div class="blog-list" id="blogList"></div>
-          <div class="blog-empty" id="blogEmpty" hidden>
-            <div class="blog-empty-icon">
-              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-            </div>
-            <div class="blog-empty-title">还没有文章</div>
-            <div class="blog-empty-desc">去「设置 → 博客管理」写下第一篇文章吧</div>
-            <button class="btn btn-soft" data-tab-trigger="settings" style="margin-top:12px">前往设置</button>
-          </div>
-        </div>
-        <div id="blogDetailView" hidden>
-          <div class="blog-detail">
-            <div class="blog-detail-back">
-              <button class="btn" id="blogBackBtn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                返回列表
-              </button>
-            </div>
-            <div class="blog-detail-header">
-              <h1 class="blog-detail-title" id="blogDetailTitle">文章标题</h1>
-              <div class="blog-detail-meta">
-                <span class="blog-detail-date" id="blogDetailDate">2026-01-01</span>
-                <span class="blog-detail-status blog-status-published" id="blogDetailStatus">已发布</span>
-              </div>
-            </div>
-            <div class="blog-detail-body" id="blogDetailBody"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 博客管理页 -->
-      <div id="viewBlogmanage" hidden>
-        <section class="card">
-          <div class="card-head"><h2>博客管理</h2></div>
-          <div class="settings">
-            <div class="set-group">
-              <div class="set-row" style="justify-content:flex-start;gap:10px;margin-bottom:4px;">
-                <button class="btn btn-primary" id="blogWriteBtn">＋ 写文章</button>
-                <span style="font-size:12px;color:var(--muted);">共 <b id="blogManageCount" style="color:var(--text);">0</b> 篇</span>
-              </div>
-              <div class="blog-manage-list" id="blogManageList"></div>
-              <div class="blog-manage-empty" id="blogManageEmpty">
-                暂无文章，点击「写文章」创建第一篇。
-              </div>
-              <div class="set-hint">文章自动云端同步（Cloudflare KV），换设备也能看；离线时存本地，联网后自动同步。勾选「作为弹窗公告使用」发布后，打开网站会自动弹出该文章。</div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- 友链页 -->
-      <div id="viewLinks" hidden>
-        <section class="card">
-          <div class="card-head"><h2>友链</h2></div>
-          <div class="settings">
-            <div class="set-group">
-              <div class="set-row" style="flex-wrap:wrap"><span style="flex:1;min-width:200px">添加你的常用网站（标题 + 链接），点击卡片直接跳转；自动拉取网站 Logo 显示在名称前。</span></div>
-              <form class="guide-api-add" id="myLinkForm">
-                <input type="text" id="myLinkTitle" placeholder="网站名称" style="flex:1;min-width:130px">
-                <input type="url" id="myLinkUrl" placeholder="https://..." style="flex:1;min-width:200px">
-                <button type="submit" class="btn btn-primary">添加</button>
-              </form>
-              <div id="myLinkList" class="mylink-list"></div>
-              <div class="set-hint" id="myLinkEmpty" style="display:block;">暂无友链，添加后显示在这里。</div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- 更新公告页 -->
-      <div id="viewAnnounce" hidden>
-        <section class="card">
-          <div class="card-head"><h2>更新公告</h2></div>
-          <div class="settings">
-            <div class="set-group">
-              <div class="set-title">当前弹窗公告</div>
-              <div id="announceCurWrap">
-                <div class="announce-cur-card" id="announceCurCard">
-                  <div class="announce-cur-title" id="announceCurTitle">暂无公告</div>
-                  <div class="announce-cur-meta" id="announceCurMeta"></div>
-                  <div class="announce-cur-body" id="announceCurBody"></div>
-                </div>
-              </div>
-              <div class="set-row" style="justify-content:flex-start;gap:10px;margin-top:12px;flex-wrap:wrap">
-                <button class="btn btn-primary" id="announceWriteBtn">＋ 写更新公告</button>
-                <button class="btn btn-soft" id="announceViewBtn">预览当前公告弹窗</button>
-              </div>
-              <div class="set-row" style="justify-content:flex-start;gap:10px;margin-top:8px">
-                <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:var(--text)"><input type="checkbox" id="announceNotifyToggle" style="width:16px;height:16px;accent-color:var(--primary)">发布新版本后提醒我</label>
-              </div>
-              <div class="set-hint">公告即文章：在博客编辑器里写内容，勾选「作为弹窗公告使用」后发布，打开网站时自动弹出。勾选提醒后，每次公告更新（新增或修改）都会弹窗；不勾选则每篇只提示一次。已读记录保存在本设备浏览器。</div>
             </div>
           </div>
         </section>
@@ -3006,10 +2886,6 @@ function switchTab(name){
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active',t.dataset.tab===name); });
   document.getElementById('viewHome').hidden=(name!=='home');
   document.getElementById('viewDone').hidden=(name!=='done');
-  document.getElementById('viewBlog').hidden=(name!=='blog');
-  document.getElementById('viewBlogmanage').hidden=(name!=='blogmanage');
-  document.getElementById('viewLinks').hidden=(name!=='links');
-  document.getElementById('viewAnnounce').hidden=(name!=='announce');
   document.getElementById('viewGuide').hidden=(name!=='guide');
   document.getElementById('viewSky').hidden=(name!=='sky');
   document.getElementById('viewChat').hidden=(name!=='chat');
@@ -3017,7 +2893,7 @@ function switchTab(name){
   document.getElementById('viewPrivacy').hidden=(name!=='privacy');
   document.getElementById('viewSettings').hidden=(name!=='settings');
   var tt=document.getElementById('toolbarTitle');
-  var titles={home:'待发放收益',done:'已发放',blog:'博客',blogmanage:'博客管理',links:'友链',announce:'更新公告',guide:'攻略',sky:'光遇数据',chat:'DeepSeek 助手',notice:'公告管理',privacy:'隐私政策与品牌声明',settings:'设置'};
+  var titles={home:'待发放收益',done:'已发放',guide:'攻略',sky:'光遇数据',chat:'DeepSeek 助手',notice:'公告管理',privacy:'隐私政策与品牌声明',settings:'设置'};
   if(tt) tt.textContent=(titles[name]||'待发放收益');
   // 底部工具条：内容页显示
   var gf=document.getElementById('globalFooter');
@@ -3029,9 +2905,6 @@ function switchTab(name){
   if(name==='notice'){ try{ renderNotice(); }catch(e){} }
   if(name==='guide'){ try{ calLoad(); loadGuide(false); }catch(e){} }
   if(name==='sky'){ try{ loadSky(false); }catch(e){} }
-  if(name==='blog'){ try{ renderBlogList(); }catch(e){} }
-  if(name==='blogmanage'){ try{ renderBlogManage(); }catch(e){} }
-  if(name==='links'){ try{ renderMyLinks(); }catch(e){} try{ window.linksPull && window.linksPull(); }catch(e){} }
   if(name==='announce'){ try{ renderAnnounceCur(); }catch(e){} }
 }
 // hash 路由：地址栏 #privacy 等可直接打开对应页，支持前进后退
@@ -4753,311 +4626,6 @@ renderGuideApiList();
 })();
 
 (function(){ var n=(location.hash||'').replace('#','').trim(); if(n) switchTab(n); })();
-/* ================= 博客模块 ================= */
-var BLOG_KEY='blogArticlesV1';
-var blogArticles=[];
-function loadBlogArticles(){ try{ var raw=localStorage.getItem(BLOG_KEY); if(raw) blogArticles=JSON.parse(raw); }catch(e){ blogArticles=[]; } }
-function saveBlogArticles(){ try{ localStorage.setItem(BLOG_KEY,JSON.stringify(blogArticles)); }catch(e){} }
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function fmtDate(ts){ var d=new Date(ts); return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0'); }
-function makeSummary(content){ var t=String(content||'').replace(/[#*`\[\]\(\)]/g,'').trim(); return t.slice(0,120)+(t.length>120?'…':''); }
-
-function renderBlogList(){
-  var list=document.getElementById('blogList');
-  var empty=document.getElementById('blogEmpty');
-  var skel=document.getElementById('blogSkeleton');
-  var countEl=document.getElementById('blogArticleCount');
-  var lastEl=document.getElementById('blogLastUpdate');
-  if(skel) skel.hidden=true;
-  var pub=blogArticles.filter(function(a){ return a.status==='published'; });
-  pub.sort(function(a,b){ if(a.pinned!==b.pinned) return a.pinned?-1:1; return (b.updatedAt||0)-(a.updatedAt||0); });
-  if(countEl) countEl.textContent=pub.length;
-  if(lastEl){ var lu=pub.length?pub[0].updatedAt:0; lastEl.textContent=lu?fmtDate(lu):'—'; }
-  if(!pub.length){ if(list) list.innerHTML=''; if(empty) empty.hidden=false; return; }
-  if(empty) empty.hidden=true;
-  if(!list) return;
-  list.innerHTML=pub.map(function(a){
-    return '<div class="blog-card" data-blog-id="'+esc(a.id)+'">'+
-      '<div class="blog-card-title">'+esc(a.title)+'</div>'+
-      '<div class="blog-card-meta">'+
-        '<span class="blog-card-date">'+fmtDate(a.updatedAt)+'</span>'+
-        (a.status==='published'?'<span class="blog-card-status blog-status-published">已发布</span>':'<span class="blog-card-status blog-status-draft">草稿</span>')+
-      '</div>'+
-      '<div class="blog-card-excerpt">'+esc(makeSummary(a.content))+'</div>'+
-      '<div class="blog-card-readmore">阅读全文 →</div>'+
-    '</div>';
-  }).join('');
-  list.querySelectorAll('.blog-card').forEach(function(c){
-    c.addEventListener('click',function(){ openBlogDetail(c.dataset.blogId); });
-  });
-}
-
-function openBlogDetail(id){
-  var a=blogArticles.find(function(x){ return x.id===id; });
-  if(!a) return;
-  document.getElementById('blogListView').hidden=true;
-  document.getElementById('blogDetailView').hidden=false;
-  document.getElementById('blogDetailTitle').textContent=a.title;
-  document.getElementById('blogDetailDate').textContent=fmtDate(a.updatedAt);
-  var st=document.getElementById('blogDetailStatus');
-  st.textContent=a.status==='published'?'已发布':'草稿';
-  st.className='blog-detail-status '+(a.status==='published'?'blog-status-published':'blog-status-draft');
-  document.getElementById('blogDetailBody').innerHTML=markdownToHtml(a.content);
-}
-
-function backToBlogList(){
-  document.getElementById('blogDetailView').hidden=true;
-  document.getElementById('blogListView').hidden=false;
-}
-
-function renderBlogManage(){
-  var list=document.getElementById('blogManageList');
-  var empty=document.getElementById('blogManageEmpty');
-  var countEl=document.getElementById('blogManageCount');
-  if(countEl) countEl.textContent=blogArticles.length;
-  if(!blogArticles.length){ if(list) list.innerHTML=''; if(empty) empty.style.display=''; return; }
-  if(empty) empty.style.display='none';
-  if(!list) return;
-  list.innerHTML=blogArticles.map(function(a){
-    return '<div class="blog-manage-item">'+
-      '<div class="blog-manage-info">'+
-        '<div class="blog-manage-title">'+esc(a.title)+'</div>'+
-        '<div class="blog-manage-sub">'+fmtDate(a.updatedAt)+' · '+(a.status==='published'?'已发布':'草稿')+'</div>'+
-      '</div>'+
-      '<div class="blog-manage-actions">'+
-        '<button class="icon-btn" data-blog-edit="'+esc(a.id)+'" title="编辑">✎</button>'+
-        '<button class="icon-btn" data-blog-del="'+esc(a.id)+'" title="删除">🗑</button>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-  list.querySelectorAll('[data-blog-edit]').forEach(function(b){
-    b.addEventListener('click',function(){ openBlogEditor(b.dataset.blogEdit); });
-  });
-  list.querySelectorAll('[data-blog-del]').forEach(function(b){
-    b.addEventListener('click',function(){
-      var id=b.dataset.blogDel;
-      var a=blogArticles.find(function(x){ return x.id===id; });
-      if(!a) return;
-      if(!confirm('删除「'+a.title+'」？此操作不可恢复。')) return;
-      blogArticles=blogArticles.filter(function(x){ return x.id!==id; });
-      saveBlogArticles();
-      renderBlogManage();
-      renderBlogList();
-      toast('已删除');
-      try{ blogDeleteOne(id); }catch(e){}
-    });
-  });
-}
-
-var blogEditingId=null;
-function openBlogEditor(id){
-  blogEditingId=id || null;
-  var dlg=document.getElementById('blogEditorDlg');
-  var titleEl=document.getElementById('blogEditorTitle');
-  var ti=document.getElementById('blogEditTitleInput');
-  var ta=document.getElementById('blogEditTextarea');
-  var statusEl=document.getElementById('blogEditorStatus');
-  if(statusEl) statusEl.textContent='';
-  if(id){
-    var a=blogArticles.find(function(x){ return x.id===id; });
-    if(!a) return;
-    if(titleEl) titleEl.textContent='编辑文章';
-    if(ti) ti.value=a.title;
-    if(ta) ta.value=a.content;
-  } else {
-    if(titleEl) titleEl.textContent='写文章';
-    if(ti) ti.value='';
-    if(ta) ta.value='';
-  }
-  var isWide=window.innerWidth>=760;
-  document.getElementById('blogPreviewPane').hidden=!isWide;
-  document.querySelector('.blog-editor-body').classList.toggle('blog-preview-active',isWide);
-  document.getElementById('blogPreviewToggle').classList.toggle('active',isWide);
-  var acb=document.getElementById('blogAnnounceCb');
-  if(acb) acb.checked=!!(id && a && a.announce);
-  var pc=document.getElementById('blogPreviewContent');
-  if(isWide && pc && ta) pc.innerHTML=markdownToHtml(ta.value);
-  if(dlg) dlg.showModal();
-}
-
-function closeBlogEditor(){
-  var dlg=document.getElementById('blogEditorDlg');
-  if(dlg) dlg.close();
-  blogEditingId=null;
-}
-
-function saveBlogArticle(status){
-  var ti=document.getElementById('blogEditTitleInput');
-  var ta=document.getElementById('blogEditTextarea');
-  var title=String(ti?ti.value:'').trim();
-  var content=String(ta?ta.value:'').trim();
-  if(!title){ toast('请输入标题'); return; }
-  var now=Date.now();
-  var id=blogEditingId || uid();
-  var idx=blogArticles.findIndex(function(x){ return x.id===id; });
-  var article={
-    id:id,title:title,content:content,status:status,
-    announce:!!(document.getElementById('blogAnnounceCb')&&document.getElementById('blogAnnounceCb').checked),
-    pinned:false,hidden:false,
-    createdAt:idx>=0?blogArticles[idx].createdAt:now,
-    updatedAt:now
-  };
-  if(idx>=0){ blogArticles[idx]=article; } else { blogArticles.unshift(article); }
-  saveBlogArticles();
-  renderBlogList();
-  renderBlogManage();
-  closeBlogEditor();
-  try{ if(window.renderAnnounceCur) renderAnnounceCur(); }catch(e){}
-  if(article.announce && status==='published'){ try{ if(window.__showAnnounce) window.__showAnnounce(article); }catch(e){} }
-  toast(status==='published'?'已发布':'已保存为草稿');
-  try{ blogPushOne(article); }catch(e){}
-}
-
-/* 暴露给页面尾部独立模块（更新公告弹窗等） */
-window.getBlogArticles=function(){ return blogArticles; };
-window.openBlogEditor=openBlogEditor;
-window.markdownToHtml=markdownToHtml;
-window.blogPushOne=blogPushOne;
-
-/* ===== 博客云端同步（v3.24.1 接入 /api/blog，Cloudflare KV 多设备共享） ===== */
-function blogPull(){
-  fetch('/api/blog?size=50',{credentials:'same-origin'})
-    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-    .then(function(d){
-      if(!d || !d.ok) return;
-      var list=d.articles||[];
-      if(!list.length) return;
-      var need=[];
-      list.forEach(function(c){
-        var i=blogArticles.findIndex(function(x){ return x.id===c.id; });
-        if(i<0 || (c.updatedAt||0)>(blogArticles[i].updatedAt||0)) need.push(c.id);
-      });
-      if(!need.length) return;
-      var done=0, changed=false;
-      need.forEach(function(id){
-        fetch('/api/blog/'+encodeURIComponent(id),{credentials:'same-origin'})
-          .then(function(r){ return r.json(); })
-          .then(function(dd){
-            done++;
-            if(dd && dd.ok && dd.article){
-              var a=dd.article;
-              var i=blogArticles.findIndex(function(x){ return x.id===a.id; });
-              if(i>=0){ blogArticles[i]=a; } else { blogArticles.push(a); }
-              changed=true;
-            }
-            if(done>=need.length && changed){ saveBlogArticles(); renderBlogList(); renderBlogManage(); try{ if(window.__checkAnnounce) window.__checkAnnounce(); }catch(e){} }
-          })
-          .catch(function(){});
-      });
-    })
-    .catch(function(){});
-}
-function blogPushOne(article){
-  fetch('/api/blog',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',
-    body:JSON.stringify({id:article.id,title:article.title,summary:makeSummary(article.content),content:article.content,status:article.status,announce:!!article.announce,pinned:article.pinned,hidden:article.hidden})})
-    .then(function(r){ return r.json(); })
-    .then(function(d){ if(!d || !d.ok) toast('云端同步失败：'+(d&&d.error||'未知错误')); })
-    .catch(function(){ toast('云端同步失败：网络异常'); });
-}
-function blogDeleteOne(id){
-  fetch('/api/blog/'+encodeURIComponent(id),{method:'DELETE',credentials:'same-origin'})
-    .then(function(r){ return r.json(); })
-    .then(function(d){ if(!d || !d.ok) toast('云端删除失败：'+(d&&d.error||'未知错误')); })
-    .catch(function(){});
-}
-
-/* 博客编辑器事件绑定 */
-(function(){
-  var dlg=document.getElementById('blogEditorDlg');
-  var closeBtn=document.getElementById('blogEditorClose');
-  var draftBtn=document.getElementById('blogDraftBtn');
-  var pubBtn=document.getElementById('blogPublishBtn');
-  var previewBtn=document.getElementById('blogPreviewToggle');
-  var toolbar=document.getElementById('blogEditorToolbar');
-  var ta=document.getElementById('blogEditTextarea');
-  var backBtn=document.getElementById('blogBackBtn');
-  var writeBtn=document.getElementById('blogWriteBtn');
-
-  if(closeBtn) closeBtn.addEventListener('click',closeBlogEditor);
-  if(draftBtn) draftBtn.addEventListener('click',function(){ saveBlogArticle('draft'); });
-  if(pubBtn) pubBtn.addEventListener('click',function(){ saveBlogArticle('published'); });
-  if(backBtn) backBtn.addEventListener('click',backToBlogList);
-  if(writeBtn) writeBtn.addEventListener('click',function(){ openBlogEditor(); });
-
-  if(previewBtn){
-    previewBtn.addEventListener('click',function(){
-      var pane=document.getElementById('blogPreviewPane');
-      var body=document.querySelector('.blog-editor-body');
-      var content=document.getElementById('blogPreviewContent');
-      var isHidden=pane.hidden;
-      pane.hidden=!isHidden;
-      body.classList.toggle('blog-preview-active',isHidden);
-      previewBtn.classList.toggle('active',isHidden);
-      if(isHidden && content) content.innerHTML=markdownToHtml(ta?ta.value:'');
-    });
-  }
-
-  function blogToolbarCmd(cmd){
-    if(!ta) return;
-    var start=ta.selectionStart, end=ta.selectionEnd;
-    var val=ta.value, sel=val.slice(start,end);
-    var before=val.slice(0,start), after=val.slice(end);
-    var insert='';
-    switch(cmd){
-      case 'bold': insert='**'+(sel||'加粗文本')+'**'; break;
-      case 'italic': insert='*'+(sel||'斜体文本')+'*'; break;
-      case 'h2': insert='\n## '+(sel||'标题')+'\n'; break;
-      case 'h3': insert='\n### '+(sel||'小标题')+'\n'; break;
-      case 'quote': insert='\n> '+(sel||'引用内容')+'\n'; break;
-      case 'link': insert='['+(sel||'链接文本')+'](https://)'; break;
-      case 'image': insert='\n![图片描述]('+(sel||'https://')+')\n'; break;
-      case 'code': insert='`'+(sel||'code')+'`'; break;
-      case 'ul': insert='\n- '+(sel||'列表项')+'\n'; break;
-      case 'ol': insert='\n1. '+(sel||'列表项')+'\n'; break;
-      case 'hr': insert='\n---\n'; break;
-    }
-    ta.value=before+insert+after;
-    ta.focus();
-    ta.selectionStart=ta.selectionEnd=start+insert.length;
-    var pane=document.getElementById('blogPreviewPane');
-    var content=document.getElementById('blogPreviewContent');
-    if(!pane.hidden && content) content.innerHTML=markdownToHtml(ta.value);
-  }
-
-  if(toolbar){
-    toolbar.addEventListener('click',function(ev){
-      var btn=ev.target.closest('button[data-cmd]'); if(!btn) return;
-      blogToolbarCmd(btn.dataset.cmd);
-    });
-  }
-
-  if(ta){
-    ta.addEventListener('keydown',function(ev){
-      if(!(ev.ctrlKey||ev.metaKey)) return;
-      var k=String(ev.key||'').toLowerCase();
-      if(k==='b'){ ev.preventDefault(); blogToolbarCmd('bold'); }
-      else if(k==='i'){ ev.preventDefault(); blogToolbarCmd('italic'); }
-      else if(k==='k'){ ev.preventDefault(); blogToolbarCmd('link'); }
-      else if(k==='e'){ ev.preventDefault(); blogToolbarCmd('code'); }
-    });
-    ta.addEventListener('input',function(){
-      var pane=document.getElementById('blogPreviewPane');
-      var content=document.getElementById('blogPreviewContent');
-      if(!pane.hidden && content) content.innerHTML=markdownToHtml(ta.value);
-    });
-  }
-
-  /* data-tab-trigger for blog empty state */
-  document.querySelectorAll('[data-tab-trigger]').forEach(function(el){
-    el.addEventListener('click',function(){ switchTab(el.dataset.tabTrigger); });
-  });
-})();
-
-loadBlogArticles();
-renderBlogList();
-renderBlogManage();
-blogPull();
-
 })();
 
 /* ================= 光遇数据（应天API）模块 ================= */
@@ -5538,139 +5106,13 @@ else { try{ calBindAll(); }catch(e){} }
     });
   }
   if(viewBtn) viewBtn.addEventListener('click',function(){ openAnnounce(getActiveAnnounce()); });
-  if(writeBtn) writeBtn.addEventListener('click',function(){
-    openBlogEditor();
-    var ti=document.getElementById('blogEditTitleInput');
-    var ta=document.getElementById('blogEditTextarea');
-    var acb=document.getElementById('blogAnnounceCb');
-    if(ti) ti.value='v4.2 更新公告';
-    if(ta) ta.value='## 本次更新\n\n- 在这里写更新内容…\n\n## 修复\n\n- 在这里写修复内容…';
-    if(acb) acb.checked=true;
-  });
   /* 打开页面后延迟弹出（首次 或 勾选提醒后的新公告） */
   setTimeout(function(){ try{ checkAnnounce(); }catch(e){} }, 900);
   /* 跨站公告拉取：延迟执行，优先用 FF大王博客 的公告 */
   setTimeout(function(){ try{ announcePull(); }catch(e){} }, 1200);
 })();
 
-/* ===== v4.1 友链板块 ===== */
-(function(){
-  var KEY='myLinksV1';
-  var links=[];
-  try{ links=JSON.parse(localStorage.getItem(KEY)||'[]'); }catch(e){ links=[]; }
-  if(!Array.isArray(links)) links=[];
 
-  var form=document.getElementById('myLinkForm');
-  var listEl=document.getElementById('myLinkList');
-  var emptyEl=document.getElementById('myLinkEmpty');
-
-  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(links)); }catch(e){} }
-
-  /* v4.2 友链云端同步（Cloudflare KV，多设备共享） */
-  function linksPush(){
-    fetch('/api/links',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',
-      body:JSON.stringify({links:links.map(function(l){ return {id:l.id,title:l.title,url:l.url}; })})})
-      .then(function(r){ return r.json(); })
-      .then(function(d){ if(!d || !d.ok) toast('友链云端同步失败：'+(d&&d.error||'未知错误')); })
-      .catch(function(){ toast('友链云端同步失败：网络异常'); });
-  }
-  function linksPull(){
-    fetch('/api/links',{credentials:'same-origin'})
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(!d || !d.ok) return;
-        var cloud=Array.isArray(d.links)?d.links:[];
-        if(d.t>0){ links=cloud; save(); renderMyLinks(); } /* 云端已初始化 → 以云端为准（含已删空） */
-        else if(cloud.length){ links=cloud; save(); renderMyLinks(); }
-        else if(links.length){ linksPush(); } /* 云端从未有数据 → 首次迁移上云 */
-      })
-      .catch(function(){});
-  }
-  window.linksPush=linksPush; window.linksPull=linksPull;
-
-  function logoInfo(url){
-    try{
-      var u=new URL(url);
-      var d=u.hostname.replace(/^www\./,'');
-      return { primary:'https://'+d+'/favicon.ico', fallback:'https://icons.duckduckgo.com/ip3/'+d+'.ico', initial:(d.charAt(0)||'?').toUpperCase() };
-    }catch(e){ return null; }
-  }
-
-  function renderMyLinks(){
-    if(!listEl) return;
-    if(!links.length){
-      if(listEl) listEl.innerHTML='';
-      if(emptyEl) emptyEl.style.display='block';
-      return;
-    }
-    if(emptyEl) emptyEl.style.display='none';
-    var html=links.map(function(l){
-      var info=logoInfo(l.url);
-      var img='';
-      if(info){
-        img='<span class="mylink-logo-wrap">'+
-          '<img class="mylink-logo" src="'+info.primary+'" alt="" loading="lazy" '+
-          'onerror="this.style.display=\'none\';var p=this.nextElementSibling;if(p)p.style.display=\'flex\';">'+
-          '<span class="mylink-logo-fb" style="display:none">'+info.initial+'</span>'+
-          '</span>';
-      } else {
-        img='<span class="mylink-logo-wrap"><span class="mylink-logo-fb">?</span></span>';
-      }
-      return '<a class="mylink-item" href="'+l.url+'" target="_blank" rel="noopener nofollow">'+
-        img+
-        '<span class="mylink-mid"><span class="mylink-title"></span><span class="mylink-url"></span></span>'+
-        '<button type="button" class="mylink-del" data-id="'+l.id+'" title="删除">×</button>'+
-        '</a>';
-    }).join('');
-    listEl.innerHTML=html;
-    /* 单独填文本，避免 HTML 注入 */
-    listEl.querySelectorAll('.mylink-item').forEach(function(a,i){
-      var t=a.querySelector('.mylink-title'); if(t) t.textContent=links[i].title;
-      var u=a.querySelector('.mylink-url'); if(u) u.textContent=links[i].url.replace(/^https?:\/\//,'');
-    });
-    /* 点击卡片跳转（排除删除按钮） */
-    listEl.querySelectorAll('.mylink-item').forEach(function(a){
-      a.addEventListener('click',function(ev){
-        if(ev.target.closest('.mylink-del')){ ev.preventDefault(); ev.stopPropagation(); return; }
-      });
-    });
-    /* 删除按钮 */
-    listEl.querySelectorAll('.mylink-del').forEach(function(btn){
-      btn.addEventListener('click',function(){
-        var id=btn.getAttribute('data-id');
-        links=links.filter(function(x){ return String(x.id)!==String(id); });
-        save(); renderMyLinks();
-        toast('已删除友链');
-        try{ linksPush(); }catch(e){}
-      });
-    });
-  }
-  window.renderMyLinks=renderMyLinks;
-
-  if(form){
-    form.addEventListener('submit',function(ev){
-      ev.preventDefault();
-      var ti=document.getElementById('myLinkTitle');
-      var ui=document.getElementById('myLinkUrl');
-      var title=String(ti?ti.value:'').trim();
-      var url=String(ui?ui.value:'').trim();
-      if(!title){ toast('请输入网站名称'); return; }
-      if(!url){ toast('请输入网站链接'); return; }
-      var u;
-      try{ u=new URL(url); }catch(e){ toast('链接格式不正确（需以 https:// 开头）'); return; }
-      if(u.protocol!=='http:' && u.protocol!=='https:'){ toast('链接需以 http(s):// 开头'); return; }
-      links.unshift({ id:String(Date.now())+Math.random().toString(36).slice(2,6), title:title, url:u.href });
-      save(); renderMyLinks();
-      if(ti) ti.value='';
-      if(ui) ui.value='';
-      toast('已添加友链：'+title);
-      try{ linksPush(); }catch(e){}
-    });
-  }
-
-  renderMyLinks();
-  try{ linksPull(); }catch(e){}
-})();
 
 </script>
 </body>
