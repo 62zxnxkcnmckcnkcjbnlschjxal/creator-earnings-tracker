@@ -1400,6 +1400,20 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), var(--shadow-sm);
 }
 .chat-presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.chat-model-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;padding:8px 12px;background:var(--soft);border:1px solid var(--border);border-radius:12px}
+.chat-model-bar .ml{font-size:12px;color:var(--muted);flex-shrink:0}
+.chat-model-bar select{height:32px;padding:0 8px;border:1px solid var(--border);border-radius:8px;font-size:12.5px;background:var(--card);color:var(--text);outline:none;max-width:280px}
+.chat-model-bar select:focus{border-color:var(--green)}
+.chat-model-bar .mhint{font-size:11px;color:var(--muted);flex:1;min-width:140px}
+.chat-img-btn{flex-shrink:0;width:44px;height:44px;border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.chat-img-btn:hover{color:var(--green);border-color:var(--green)}
+.chat-img-btn[hidden]{display:none}
+.chat-img-preview{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chat-img-preview[hidden]{display:none}
+.chat-img-preview .ip{position:relative;width:60px;height:60px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.chat-img-preview .ip img{width:100%;height:100%;object-fit:cover;display:block}
+.chat-img-preview .ip button{position:absolute;top:3px;right:3px;width:18px;height:18px;border:0;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:11px;line-height:18px;cursor:pointer;padding:0}
+.chat-bubble .msg-img{max-width:220px;max-height:220px;border-radius:10px;display:block;margin-bottom:8px}
 .chat-preset{padding:7px 12px;border:1px solid var(--border);background:var(--btn-bg);border-radius:999px;font-size:12.5px;cursor:pointer;transition:all .15s;color:var(--text)}
 .chat-preset:hover{border-color:var(--focus);background:var(--primary-soft)}
 .chat-input-wrap{display:flex;gap:8px}
@@ -2580,10 +2594,24 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             </div>
             <span class="card-hint">AI 帮你分析收益、整理催发话术</span>
           </div>
+          <div class="chat-model-bar">
+            <span class="ml">模型：</span>
+            <select id="dsModelSelect">
+              <option value="auto">自动模式（智能选择）</option>
+              <option value="deepseek-chat">官方 DeepSeek（deepseek-chat）</option>
+              <option value="deepseek/deepseek-flash">腾讯云 DeepSeek-V4.1-Flash（视觉）</option>
+            </select>
+            <span id="dsModelHint" class="mhint"></span>
+          </div>
           <div class="chat-box" id="chatBox"></div>
           <div class="chat-presets" id="chatPresets"></div>
+          <div class="chat-img-preview" id="chatImgPreview" hidden></div>
           <form class="chat-input-wrap" id="chatForm">
-            <input id="chatInput" placeholder="输入消息..." autocomplete="off" autocapitalize="off">
+            <button type="button" class="chat-img-btn" id="chatImgBtn" title="上传图片（视觉模型）">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            </button>
+            <input type="file" id="chatImgFile" accept="image/jpeg,image/png,image/gif,image/webp" hidden>
+            <input id="chatInput" placeholder="输入消息...（选视觉模型可附图片）" autocomplete="off" autocapitalize="off">
             <button type="submit" class="btn btn-primary">发送</button>
           </form>
         </section>
@@ -3874,6 +3902,14 @@ setTimeout(loadAuthStatus, 500);
 /* ---- DeepSeek 助手 ---- */
 var dsState={messages:[],apiKey:''};
 var dsEnvConfigured=false; // 服务器是否已配置 env 密钥
+// 模型选择（auto=自动 / deepseek-chat=官方 / deepseek/xxx=腾讯云 TokenHub）
+var dsModel='auto';
+var dsTencentKey=false;   // 服务器是否已配置腾讯云密钥
+var pendingImages=[];     // 待发送图片 dataURL
+try{ dsModel=localStorage.getItem('creator_dsModel')||'auto'; }catch(e){}
+var VISION_IDS={'deepseek/deepseek-flash':1,'deepseek/deepseek-v4-flash-vision-exp':1};
+function dsProvider(){ var m=dsModel||'auto'; if(m==='auto') return 'auto'; return m.indexOf('/')>=0?'tencent':'deepseek'; }
+function dsIsVision(){ var m=dsModel||'auto'; if(m==='auto') return true; return VISION_IDS[m]===1 || m.indexOf('vision')>=0; }
 function loadDs(){ try{ var r=localStorage.getItem('dsSettings'); if(r){ var d=JSON.parse(r); dsState.apiKey=d.apiKey||''; } }catch(e){} }
 function saveDs(){ try{ localStorage.setItem('dsSettings',JSON.stringify({apiKey:dsState.apiKey})); }catch(e){} }
 loadDs();
@@ -3917,11 +3953,11 @@ function updateKeyStatusUI(configured){
   if(dsEnvConfigured){
     el.textContent='已配置';
     el.style.color='var(--green)';
-    setKeyStatusHint('服务器已配置 DeepSeek 密钥，密钥保管在 Cloudflare 加密环境变量中，本地可不填。','ok');
+    setKeyStatusHint('服务器已配置 DeepSeek 密钥（DEEPSEEK_API_KEY / TENCENT_API_KEY），密钥保管在 Cloudflare 加密环境变量中，本地可不填。','ok');
   }else{
     el.textContent='未配置';
     el.style.color='var(--danger)';
-    setKeyStatusHint('服务器未配置密钥。两种方式可选：① 在 Cloudflare Dashboard 设置加密环境变量 DEEPSEEK_API_KEY（推荐，更安全）；② 在本页下方填写本地 Key。','warn');
+    setKeyStatusHint('服务器未配置密钥。两种方式可选：① 在 Cloudflare Dashboard 设置加密环境变量 DEEPSEEK_API_KEY（官方）或 TENCENT_API_KEY（腾讯云，推荐，更安全）；② 在本页下方填写本地 Key。','warn');
   }
 }
 
@@ -3938,9 +3974,53 @@ function checkServerKeyStatus(){
       }
       return r.json().then(function(data){
         updateKeyStatusUI(data.configured);
+        dsTencentKey=!!(data&&data.tencent);
+        if(dsTencentKey) loadTencentModels();
+        syncModelUI();
       }).catch(function(){ updateKeyStatusUI(false); });
     })
     .catch(function(){ updateKeyStatusUI(false); });
+}
+
+// 拉取腾讯云 TokenHub 已开通模型，动态加入下拉框
+function loadTencentModels(){
+  fetch('/api/deepseek?action=models&provider=tencent')
+    .then(function(r){ return r.json().catch(function(){ return null; }); })
+    .then(function(d){
+      var sel=document.getElementById('dsModelSelect');
+      if(!sel||!d||!d.data||!d.data.length) return;
+      var seen={}; for(var i=0;i<sel.options.length;i++) seen[sel.options[i].value]=1;
+      d.data.forEach(function(md){
+        var id=md&&md.id;
+        if(!id||seen[id]) return;
+        if(String(id).indexOf('deepseek')<0) return;
+        seen[id]=1;
+        var isV=(VISION_IDS[id]===1||String(id).indexOf('vision')>=0);
+        var opt=document.createElement('option');
+        opt.value=id;
+        opt.textContent=(md.name||id)+(isV?'（视觉）':'');
+        sel.appendChild(opt);
+      });
+    })
+    .catch(function(){});
+}
+
+// 模型下拉交互 + 密钥栏提示
+function syncModelUI(){
+  var sel=document.getElementById('dsModelSelect');
+  var hint=document.getElementById('dsModelHint');
+  var btn=document.getElementById('chatImgBtn');
+  if(sel){
+    var found=false;
+    for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value===dsModel){ found=true; break; } }
+    if(!found) dsModel='auto';
+    sel.value=dsModel;
+  }
+  if(hint){
+    var p=dsProvider();
+    hint.textContent=p==='auto'?'自动：带图→腾讯视觉模型，纯文本→官方（按可用密钥）':(p==='tencent'?'腾讯云 TokenHub · 密钥通用 · 支持视觉':'DeepSeek 官方 API');
+  }
+  if(btn) btn.hidden=!dsIsVision();
 }
 
 // 解析 fetch 错误为可读中文提示（对话 & 验证通用）
@@ -4108,7 +4188,7 @@ function renderChat(){
           '<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>')+
       '</div>'+
       '<div class="chat-bubble '+(isUser?'user':'assistant')+' md-body">'+
-        (isUser?esc(msg.content):markdownToHtml(msg.content))+
+        msgContentHtml(msg)+
         '<div class="chat-time">'+(msg.time||'')+'</div>'+
       '</div>';
     box.appendChild(row);
@@ -4116,9 +4196,26 @@ function renderChat(){
   box.scrollTop=box.scrollHeight;
 }
 
-function sendChatMessage(text){
-  if(!text||!text.trim()) return;
-  text=text.trim();
+// 消息内容渲染（兼容 OpenAI 多模态数组：图片 + 文本）
+function msgContentHtml(msg){
+  var isUser=msg&&msg.role==='user';
+  if(msg && Array.isArray(msg.content)){
+    var html='';
+    msg.content.forEach(function(block){
+      if(block && block.type==='image_url' && block.image_url && block.image_url.url){
+        html+='<img class="msg-img" src="'+block.image_url.url+'" alt="图片">';
+      }else if(block && block.type==='text' && block.text){
+        html+=(isUser?esc(block.text).replace(/\n/g,'<br>'):markdownToHtml(block.text));
+      }
+    });
+    return html;
+  }
+  return isUser?esc(msg&&msg.content):markdownToHtml(msg&&msg.content);
+}
+
+function sendChatMessage(text, imgs){
+  if((!text||!text.trim()) && !(imgs&&imgs.length)) return;
+  text=(text||'').trim();
   if(!dsEnvConfigured && !dsState.apiKey){ toast('请先配置 DeepSeek 密钥（服务器环境变量或本地填写）'); switchTab('settings'); return; }
 
   // 构建消息历史 + 系统提示 + 本地数据上下文 + 公告上下文
@@ -4128,11 +4225,22 @@ function sendChatMessage(text){
   var notices=getNoticeContext();
   if(notices) sysPrompt+='\n\n最近平台公告：\n'+notices;
 
+  // 组装用户消息（OpenAI 多模态）
+  var userContent;
+  if(imgs && imgs.length){
+    var parts=[];
+    imgs.forEach(function(u){ parts.push({type:'image_url',image_url:{url:u}}); });
+    if(text) parts.push({type:'text',text:text});
+    userContent=parts;
+  }else{
+    userContent=text;
+  }
+
   var messages=[{role:'system',content:sysPrompt}];
   dsState.messages.forEach(function(m){ messages.push({role:m.role,content:m.content}); });
-  messages.push({role:'user',content:text,time:fmtTime(Date.now())});
+  messages.push({role:'user',content:userContent,time:fmtTime(Date.now())});
 
-  dsState.messages.push({role:'user',content:text,time:fmtTime(Date.now())});
+  dsState.messages.push({role:'user',content:userContent,time:fmtTime(Date.now())});
   renderChat();
 
   var input=document.getElementById('chatInput');
@@ -4151,7 +4259,7 @@ function sendChatMessage(text){
   fetch('/api/deepseek',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({messages:messages.filter(function(m){return m.role!=='time';}),apiKey:reqApiKey,stream:false})
+    body:JSON.stringify({provider:dsProvider(),model:dsModel,messages:messages.filter(function(m){return m.role!=='time';}),apiKey:reqApiKey,stream:false})
   })
   .then(function(r){
     var ct=(r.headers.get('content-type')||'');
@@ -4180,9 +4288,66 @@ function sendChatMessage(text){
   });
 }
 
+// 图片上传（压缩 + 预览）
+function readChatImage(file){
+  return new Promise(function(res,rej){
+    var fr=new FileReader();
+    fr.onload=function(){
+      var img=new Image();
+      img.onload=function(){
+        var max=1600;
+        var w=img.width,h=img.height;
+        if(w>max||h>max){ var r=Math.min(max/w,max/h); w=Math.round(w*r); h=Math.round(h*r); }
+        var c=document.createElement('canvas'); c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        res(c.toDataURL('image/jpeg',0.85));
+      };
+      img.onerror=function(){ rej(new Error('图片解码失败')); };
+      img.src=fr.result;
+    };
+    fr.onerror=function(){ rej(new Error('文件读取失败')); };
+    fr.readAsDataURL(file);
+  });
+}
+function renderChatImgPreview(){
+  var pv=document.getElementById('chatImgPreview');
+  if(!pv) return;
+  pv.innerHTML=pendingImages.map(function(u,i){
+    return '<div class="ip"><img src="'+u+'" alt=""><button type="button" data-i="'+i+'" title="移除">&times;</button></div>';
+  }).join('');
+  pv.hidden=!pendingImages.length;
+  pv.querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click',function(){
+      pendingImages.splice(Number(b.getAttribute('data-i')),1);
+      renderChatImgPreview();
+    });
+  });
+}
+(function(){
+  var btn=document.getElementById('chatImgBtn');
+  var file=document.getElementById('chatImgFile');
+  var sel=document.getElementById('dsModelSelect');
+  if(btn) btn.addEventListener('click',function(){ if(file) file.click(); });
+  if(file) file.addEventListener('change',function(){
+    var files=Array.prototype.slice.call(file.files||[]).slice(0,3);
+    file.value='';
+    Promise.all(files.map(readChatImage))
+      .then(function(us){ pendingImages=pendingImages.concat(us); renderChatImgPreview(); })
+      .catch(function(e){ toast(e&&e.message||'图片处理失败'); });
+  });
+  if(sel) sel.addEventListener('change',function(){
+    dsModel=sel.value;
+    try{ localStorage.setItem('creator_dsModel',dsModel); }catch(e){}
+    syncModelUI();
+  });
+  syncModelUI();
+})();
+
 chatForm.addEventListener('submit',function(ev){
   ev.preventDefault();
-  sendChatMessage(chatInput.value);
+  var imgs=pendingImages.slice();
+  pendingImages=[]; renderChatImgPreview();
+  sendChatMessage(chatInput.value, imgs);
 });
 
 /* ---- 公告管理 ---- */
