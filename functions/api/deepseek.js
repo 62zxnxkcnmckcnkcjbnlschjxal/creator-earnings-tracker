@@ -21,9 +21,20 @@ const PROVIDERS = {
   tencent: {
     base: 'https://tokenhub.tencentmaas.com',
     envKey: 'TENCENT_API_KEY',
-    defaultModel: 'deepseek/deepseek-flash'
+    defaultModel: 'deepseek-v4-flash'
   }
 };
+
+// TokenHub API 的 model 参数规范化（控制台服务ID 与 API 模型名不同）
+// 控制台展示 deepseek/deepseek-flash，但 API 必须用 deepseek-v4-flash，否则 400
+const TENCENT_MODEL_ALIAS = {
+  'deepseek/deepseek-flash': 'deepseek-v4-flash',
+  'deepseek-flash': 'deepseek-v4-flash'
+};
+function normalizeModel(provider, model) {
+  if (provider !== 'tencent') return model;
+  return TENCENT_MODEL_ALIAS[model] || model;
+}
 
 function pickProvider(name) {
   // auto：自动模式（见 resolveProvider）
@@ -69,7 +80,7 @@ export async function onRequestPost(ctx) {
     const provider = resolveProvider(ctx.env, requested, withImg);
     const p = PROVIDERS[provider];
     const rawModel = (body.model && String(body.model).trim()) || '';
-    const model = (!rawModel || rawModel === 'auto') ? p.defaultModel : rawModel;
+    const model = normalizeModel(provider, (!rawModel || rawModel === 'auto') ? p.defaultModel : rawModel);
 
     // 密钥：CF 环境变量优先，未配置回退到请求中的 apiKey
     const envKey = getEnvKey(ctx.env, provider);
@@ -129,6 +140,21 @@ export async function onRequestGet(ctx) {
         headers: { 'Authorization': 'Bearer ' + key }
       });
       const body = await res.text();
+      // 规范化模型 id（控制台服务ID → API 可用模型名），避免前端拿到无法调用的 id
+      try {
+        const obj = JSON.parse(body);
+        if (obj && Array.isArray(obj.data)) {
+          obj.data = obj.data.map(function (md) {
+            if (!md || !md.id) return md;
+            const id = normalizeModel('tencent', String(md.id));
+            return (id === md.id) ? md : Object.assign({}, md, { id: id });
+          });
+          return new Response(JSON.stringify(obj), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' }
+          });
+        }
+      } catch (e) { /* 非 JSON 直接透传 */ }
       return new Response(body, {
         status: res.status,
         headers: {

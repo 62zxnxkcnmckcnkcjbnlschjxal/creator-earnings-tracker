@@ -2606,7 +2606,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             <select id="dsModelSelect">
               <option value="auto">自动模式（智能选择）</option>
               <option value="deepseek-chat">官方 DeepSeek（deepseek-chat）</option>
-              <option value="deepseek/deepseek-flash">腾讯云 DeepSeek-V4.1-Flash（视觉）</option>
+              <option value="deepseek-v4-flash">腾讯云 DeepSeek-V4.1-Flash（视觉）</option>
             </select>
             <span id="dsModelHint" class="mhint"></span>
           </div>
@@ -4014,9 +4014,21 @@ var dsModel='auto';
 var dsTencentKey=false;   // 服务器是否已配置腾讯云密钥
 var pendingImages=[];     // 待发送图片 dataURL
 try{ dsModel=localStorage.getItem('creator_dsModel')||'auto'; }catch(e){}
-var VISION_IDS={'deepseek/deepseek-flash':1,'deepseek/deepseek-v4-flash-vision-exp':1};
-function dsProvider(){ var m=dsModel||'auto'; if(m==='auto') return 'auto'; return m.indexOf('/')>=0?'tencent':'deepseek'; }
-function dsIsVision(){ var m=dsModel||'auto'; if(m==='auto') return true; return VISION_IDS[m]===1 || m.indexOf('vision')>=0; }
+if(dsModel==='deepseek/deepseek-flash') dsModel='deepseek-v4-flash'; // 兼容旧版本存储
+var VISION_IDS={'deepseek/deepseek-flash':1,'deepseek/deepseek-v4-flash-vision-exp':1,'deepseek-v4-flash':1,'deepseek-v4-flash-vision-exp':1};
+// 供应商判定：auto → 自动；官方模型只有 deepseek-chat；其余（含 deepseek-v4-flash 等腾讯模型）→ tencent
+function dsProvider(){ var m=dsModel||'auto'; if(m==='auto') return 'auto'; return m==='deepseek-chat'?'deepseek':'tencent'; }
+// 视觉判断：白名单 / id 含 vision / GLM-Flash 系列 / 名称含"视觉"（腾讯控制台标注支持视觉理解）
+function dsIsVisionId(id,name){
+  var s=String(id||'').toLowerCase();
+  var n=String(name||'');
+  if(VISION_IDS[s]===1) return true;
+  if(s.indexOf('vision')>=0) return true;
+  if(/^glm-/.test(s)&&/flash|vl/i.test(s)) return true;
+  if(n.indexOf('视觉')>=0) return true;
+  return false;
+}
+function dsIsVision(){ var m=dsModel||'auto'; if(m==='auto') return true; return dsIsVisionId(m,''); }
 function loadDs(){ try{ var r=localStorage.getItem('dsSettings'); if(r){ var d=JSON.parse(r); dsState.apiKey=d.apiKey||''; } }catch(e){} }
 function saveDs(){ try{ localStorage.setItem('dsSettings',JSON.stringify({apiKey:dsState.apiKey})); }catch(e){} }
 loadDs();
@@ -4100,9 +4112,9 @@ function loadTencentModels(){
       d.data.forEach(function(md){
         var id=md&&md.id;
         if(!id||seen[id]) return;
-        if(String(id).indexOf('deepseek')<0) return;
+        // 不限定 deepseek：TokenHub 上已开通的 GLM / 混元 / DeepSeek 等模型全部可选
         seen[id]=1;
-        var isV=(VISION_IDS[id]===1||String(id).indexOf('vision')>=0);
+        var isV=dsIsVisionId(id, md.name);
         var opt=document.createElement('option');
         opt.value=id;
         opt.textContent=(md.name||id)+(isV?'（视觉）':'');
@@ -4373,7 +4385,14 @@ function sendChatMessage(text, imgs){
     var isHtml=ct.indexOf('text/html')>=0;
     if(!r.ok || isHtml){
       var msg=resolveApiError(r.status, isHtml);
-      throw {handled:true, message:msg};
+      // 尝试读取服务端返回的具体错误信息（如模型不存在 / 参数错误），便于排查
+      return r.json().then(function(d){
+        var em=d&&(d.error&&(d.error.message||d.error.code?('['+d.error.code+'] '+(d.error.message||'')):d.error)||d.message);
+        if(em) msg=String(em).slice(0,300);
+        throw {handled:true, message:msg};
+      }).catch(function(){
+        throw {handled:true, message:msg};
+      });
     }
     return r.json().catch(function(){
       throw {handled:true, message:'服务返回了非预期内容'};
