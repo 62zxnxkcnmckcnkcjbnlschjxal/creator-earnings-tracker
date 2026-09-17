@@ -5435,8 +5435,35 @@ else { try{ calBindAll(); }catch(e){} }
   var curTitle=document.getElementById('announceCurTitle');
   var curMeta=document.getElementById('announceCurMeta');
   var curBody=document.getElementById('announceCurBody');
+  var REMOTE_SRC='announceSourceV1';
+  var REMOTE_CACHE='announceRemoteCacheV1';
+  var REMOTE_DEF='https://ffdaz-blog.pages.dev';
+  var remoteNotice=null;
+  try{ var _rc=localStorage.getItem(REMOTE_CACHE); if(_rc){ var _o=JSON.parse(_rc); if(_o && _o.title) remoteNotice=_o; } }catch(e){}
+
+  function announceBase(){
+    try{ var v=String(localStorage.getItem(REMOTE_SRC)||'').trim(); if(v) return v.replace(/\/+$/,''); }catch(e){}
+    return REMOTE_DEF;
+  }
+  /* 跨站公告拉取：从 FF大王博客 公开接口读取最新公告（失败静默，不影响页面） */
+  function announcePull(){
+    var b=announceBase();
+    fetch(b+'/api/public-notice',{credentials:'omit'}).then(function(r){
+      if(!r.ok) throw new Error('http '+r.status);
+      return r.json();
+    }).then(function(d){
+      if(!d || !d.ok || !d.notice) return;
+      try{ localStorage.setItem(REMOTE_CACHE,JSON.stringify(d.notice)); }catch(e){}
+      remoteNotice=d.notice;
+      try{ checkAnnounce(); }catch(e){}
+      try{ renderAnnounceCur(); }catch(e){}
+    }).catch(function(){});
+  }
+  window.__announcePull=announcePull;
 
   function getActiveAnnounce(){
+    /* 优先跨站公告；远程不可用时回退本地博客数据（兼容老版本） */
+    if(remoteNotice && remoteNotice.title) return remoteNotice;
     var list=(window.getBlogArticles && Array.isArray(window.getBlogArticles()))?window.getBlogArticles():[];
     var arr=list.filter(function(a){ return a && a.announce && !a.hidden; });
     if(!arr.length) return null;
@@ -5522,6 +5549,8 @@ else { try{ calBindAll(); }catch(e){} }
   });
   /* 打开页面后延迟弹出（首次 或 勾选提醒后的新公告） */
   setTimeout(function(){ try{ checkAnnounce(); }catch(e){} }, 900);
+  /* 跨站公告拉取：延迟执行，优先用 FF大王博客 的公告 */
+  setTimeout(function(){ try{ announcePull(); }catch(e){} }, 1200);
 })();
 
 /* ===== v4.1 友链板块 ===== */
