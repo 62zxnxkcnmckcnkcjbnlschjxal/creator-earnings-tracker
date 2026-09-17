@@ -1936,6 +1936,12 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .mylink-del:hover{background:var(--danger-soft)}
 :root.dark .mylink-item{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04)}
 :root.dark .mylink-item:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,0.07),var(--shadow-sm)}
+.link-src-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 20px 0;padding:10px 12px;background:var(--soft);border-radius:var(--radius-md);border:1px solid var(--border)}
+.link-src-bar .ls-label{font-size:12.5px;color:var(--muted);flex:none}
+.link-src-bar input{flex:1;min-width:180px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;color:var(--text)}
+.link-hint{font-size:12px;color:var(--muted);margin:8px 20px 0;line-height:1.6}
+.mylink-list{margin:12px 20px 20px}
+.mylink-empty{text-align:center;padding:30px 16px;font-size:13px;color:var(--muted)}
 /* ===== 更新公告弹窗 ===== */
 .announce-badge{display:inline-block;background:var(--primary);color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px}
 .announce-body{max-height:46vh;overflow-y:auto;padding-right:4px;font-size:13px;line-height:1.7;color:var(--text)}
@@ -2198,17 +2204,9 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     </div>
     <div class="top-actions">
       <button class="btn js-theme" title="切换深浅色模式" aria-label="切换深浅色模式">☀️/🌙/⚙️</button>
-      <button class="btn js-copy" title="复制为表格文本，可粘贴到 WPS 表格">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        复制到 WPS
-      </button>
-      <button class="btn js-export" title="导出 CSV 文件，可用 WPS 打开">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        导出 CSV
-      </button>
-      <button class="btn js-import" title="从 CSV 文件恢复数据（含备注与到账状态）">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 8l5-5 5 5M12 15V3"/></svg>
-        导入 CSV
+      <button class="btn js-links" title="查看友链" onclick="switchTab('links')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        友链
       </button>
     </div>
   </header>
@@ -2221,6 +2219,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     <button class="tab" data-tab="sky">光遇</button>
     <button class="tab" data-tab="chat">DeepSeek</button>
     <button class="tab" data-tab="notice">公告</button>
+    <button class="tab" data-tab="links">友链</button>
     <button class="tab" data-tab="privacy">隐私</button>
     <button class="tab" data-tab="settings">设置</button>
   </div>
@@ -2239,6 +2238,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             <button class="tab" data-tab="sky">光遇</button>
         <button class="tab" data-tab="chat">DeepSeek</button>
         <button class="tab" data-tab="notice">公告</button>
+        <button class="tab" data-tab="links">友链</button>
         <button class="tab" data-tab="privacy">隐私政策</button>
         <button class="tab" data-tab="settings">设置</button>
       </nav>
@@ -2269,9 +2269,10 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         <div class="toolbar-title" id="toolbarTitle">待发放收益</div>
         <div class="toolbar-actions">
           <button class="btn js-theme" title="切换深浅色模式" aria-label="切换深浅色模式">☀️/🌙/⚙️</button>
-          <button class="btn js-copy">复制到 WPS</button>
-          <button class="btn js-export">导出 CSV</button>
-          <button class="btn js-import">导入 CSV</button>
+          <button class="btn js-links" onclick="switchTab('links')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            友链
+          </button>
         </div>
       </div>
 
@@ -2514,6 +2515,12 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
                 <strong>接口未部署</strong>：当前环境无法调用 /api/deepseek。若使用 Cloudflare Pages，请通过 Git 集成或 Wrangler CLI 部署（Dashboard 直接上传 zip 不会部署 functions/ 目录）。<a href="#privacy" style="color:var(--danger);text-decoration:underline;">查看部署说明</a>
               </div>
             </div>
+            <div class="set-group">
+              <div class="set-title">友链同步</div>
+              <div class="set-row"><span>主站友链地址</span><input type="url" id="linksSrcCfg" placeholder="https://主站域名/api/links" style="flex:1;min-width:200px"></div>
+              <div class="set-actions"><button class="btn btn-soft" id="linksSrcCfgSave">保存并同步</button></div>
+              <div class="set-hint">「友链」页会自动读取主站 FF大王博客的 /api/links 并同步友链（默认已预填主站地址，一般无需修改）；主站新增友链，副站自动跟随。修改后仅保存在本浏览器。</div>
+            </div>
           </div>
         </section>
       </div>
@@ -2633,6 +2640,23 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             </div>
           </form>
           <div id="noticeList"></div>
+        </section>
+      </div>
+
+      <!-- 友链页（读取主站友链，自动同步） -->
+      <div id="viewLinks" hidden>
+        <section class="card">
+          <div class="card-head">
+            <h2>友链</h2>
+            <span class="card-hint">来自主站 · 云端同步 · 点击直达</span>
+          </div>
+          <div class="link-src-bar">
+            <span class="ls-label">主站友链地址：</span>
+            <input type="url" id="linksSrcInput" placeholder="https://主站域名/api/links">
+            <button class="btn btn-soft" id="linksSrcSave">保存</button>
+          </div>
+          <div class="link-hint" id="linksSrcHint">在「设置」或此处填写主站友链接口（主站 FF大王博客的 /api/links），即可读取主站全部友链；主站新增友链后，这里自动同步。</div>
+          <div id="linkList" class="mylink-list"></div>
         </section>
       </div>
 
@@ -2918,10 +2942,11 @@ function switchTab(name){
   document.getElementById('viewSky').hidden=(name!=='sky');
   document.getElementById('viewChat').hidden=(name!=='chat');
   document.getElementById('viewNotice').hidden=(name!=='notice');
+  document.getElementById('viewLinks').hidden=(name!=='links');
   document.getElementById('viewPrivacy').hidden=(name!=='privacy');
   document.getElementById('viewSettings').hidden=(name!=='settings');
   var tt=document.getElementById('toolbarTitle');
-  var titles={home:'待发放收益',done:'已发放',guide:'攻略',sky:'光遇数据',chat:'DeepSeek 助手',notice:'公告管理',privacy:'隐私政策与品牌声明',settings:'设置'};
+  var titles={home:'待发放收益',done:'已发放',guide:'攻略',sky:'光遇数据',chat:'DeepSeek 助手',notice:'公告管理',links:'友链',privacy:'隐私政策与品牌声明',settings:'设置'};
   if(tt) tt.textContent=(titles[name]||'待发放收益');
   // 底部工具条：内容页显示
   var gf=document.getElementById('globalFooter');
@@ -2933,6 +2958,7 @@ function switchTab(name){
   if(name==='notice'){ try{ renderNotice(); }catch(e){} }
   if(name==='guide'){ try{ calLoad(); loadGuide(false); }catch(e){} }
   if(name==='sky'){ try{ loadSky(false); }catch(e){} }
+  if(name==='links'){ try{ loadRemoteLinks(); }catch(e){} }
   if(name==='announce'){ try{ renderAnnounceCur(); }catch(e){} }
 }
 // hash 路由：地址栏 #privacy 等可直接打开对应页，支持前进后退
@@ -2941,6 +2967,87 @@ window.addEventListener('hashchange',function(){
   var views=['home','done','blog','blogmanage','links','announce','guide','sky','chat','notice','privacy','settings'];
   if(n && views.indexOf(n)>=0) switchTab(n);
 });
+
+/* ---- 友链（读主站 /api/links，自动同步） ---- */
+var linksSrc='';
+try{ linksSrc=localStorage.getItem('creator_links_src')||''; }catch(e){}
+if(!linksSrc) linksSrc='https://ffdaz-blog.pages.dev/api/links'; // 默认主站 FF大王博客
+function linksLogoInfo(url){
+  try{ var u=new URL(url); var d=u.hostname.replace(/^www\./,'');
+    return { primary:'https://'+d+'/favicon.ico', fallback:'https://icons.duckduckgo.com/ip3/'+d+'.ico', initial:(d.charAt(0)||'?').toUpperCase() };
+  }catch(e){ return null; }
+}
+function loadRemoteLinks(){
+  var box=document.getElementById('linkList');
+  var hint=document.getElementById('linksSrcHint');
+  var inp=document.getElementById('linksSrcInput');
+  if(!box) return;
+  if(inp) inp.value=linksSrc;
+  if(!linksSrc){
+    if(hint){ hint.style.display='block'; hint.textContent='尚未配置主站友链地址：请在「设置」或此处填写主站 FF大王博客的 /api/links 地址，即可自动同步友链。'; }
+    box.innerHTML='<div class="mylink-empty">配置主站友链地址后，这里会展示主站的全部友链（主站新增会自动跟随）。</div>';
+    return;
+  }
+  if(hint){ hint.style.display='block'; hint.textContent='正在从主站读取友链…'; }
+  box.innerHTML='<div class="mylink-empty">正在从主站读取友链…</div>';
+  fetch(linksSrc,{method:'GET'})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(d){
+      var list=Array.isArray(d&&d.links)?d.links:[];
+      if(!list.length){ if(hint) hint.textContent='主站已连接，当前暂无友链。'; box.innerHTML='<div class="mylink-empty">主站暂无友链，去主站添加后会同步到这里。</div>'; return; }
+      if(hint) hint.textContent='已同步主站 '+list.length+' 条友链 · 数据来自主站云端，自动跟随更新。';
+      box.innerHTML=list.map(function(l){
+        var info=linksLogoInfo(l.url);
+        var img=info
+          ? '<span class="mylink-logo-wrap"><img class="mylink-logo" src="'+info.primary+'" alt="" loading="lazy" onerror="this.style.display=\'none\';var p=this.nextElementSibling;if(p)p.style.display=\'flex\';"><span class="mylink-logo-fb" style="display:none">'+info.initial+'</span></span>'
+          : '<span class="mylink-logo-wrap"><span class="mylink-logo-fb">?</span></span>';
+        return '<a class="mylink-item" href="'+esc(l.url)+'" target="_blank" rel="noopener nofollow">'+img+
+          '<span class="mylink-mid"><span class="mylink-title"></span><span class="mylink-url"></span></span></a>';
+      }).join('');
+      box.querySelectorAll('.link-item').forEach(function(a,i){
+        var t=a.querySelector('.link-title'); if(t) t.textContent=list[i].title;
+        var u=a.querySelector('.link-url'); if(u) u.textContent=String(list[i].url).replace(/^https?:\/\//,'');
+      });
+    })
+    .catch(function(e){
+      if(hint) hint.textContent='读取失败：'+esc(e.message||e)+'。请确认主站地址正确且已部署（地址应以 /api/links 结尾）。';
+      box.innerHTML='<div class="mylink-empty">读取失败：'+esc(e.message||e)+'<br>请检查主站地址是否正确、主站是否已部署。</div>';
+    });
+}
+(function(){
+  var save=document.getElementById('linksSrcSave');
+  var inp=document.getElementById('linksSrcInput');
+  var saveCfg=document.getElementById('linksSrcCfgSave');
+  var inpCfg=document.getElementById('linksSrcCfg');
+  function applySrc(v){
+    v=String(v||'').trim().replace(/\/+$/,'');
+    if(!v) return;
+    linksSrc=v;
+    try{ localStorage.setItem('creator_links_src',v); }catch(e){}
+    if(inpCfg) inpCfg.value=v;
+    if(inp) inp.value=v;
+  }
+  if(saveCfg && inpCfg){
+    if(inpCfg.value==='' && linksSrc) inpCfg.value=linksSrc;
+    saveCfg.addEventListener('click',function(){
+      var v=String(inpCfg.value||'').trim().replace(/\/+$/,'');
+      if(!v){ toast('请填写主站友链地址'); return; }
+      applySrc(v);
+      toast('已保存，正在同步主站友链');
+      loadRemoteLinks();
+    });
+  }
+  if(save && inp){
+    if(inp.value==='' && linksSrc) inp.value=linksSrc;
+    save.addEventListener('click',function(){
+      var v=String(inp.value||'').trim().replace(/\/+$/,'');
+      if(!v){ toast('请填写主站友链地址'); return; }
+      applySrc(v);
+      toast('已保存，正在同步主站友链');
+      loadRemoteLinks();
+    });
+  }
+})();
 
 /* ---- 占比条渲染（汇总卡 + 实况栏共用） ---- */
 function fillShare(barEl, legendEl){
