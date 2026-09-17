@@ -100,14 +100,23 @@ export async function onRequestPost(ctx) {
       body: JSON.stringify({ model, messages, stream })
     });
 
-    // 透传响应（含流式）
-    return new Response(res.body, {
-      status: res.status,
-      headers: {
-        'Content-Type': res.headers.get('Content-Type') || 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    });
+    // 透传响应（含流式）；非 2xx 时读取 body 包装成 JSON，给前端明确原因
+    if (res.ok) {
+      return new Response(res.body, {
+        status: res.status,
+        headers: {
+          'Content-Type': res.headers.get('Content-Type') || 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+    }
+    const errBody = await res.text();
+    let errMsg = errBody;
+    try { const o = JSON.parse(errBody); errMsg = (o && (o.error && (o.error.message || o.error)) || o.message) || errBody; } catch (e) { /* 纯文本 */ }
+    if (String(errMsg).indexOf('404') >= 0 || res.status === 404) {
+      errMsg = '模型未开通或不可用（TokenHub 返回 404）：请在腾讯云控制台确认该模型已领取/开通，或换用 DeepSeek-V4.1-Flash';
+    }
+    return json({ error: String(errMsg).slice(0, 300) }, res.status);
   } catch (e) {
     return json({ error: '代理异常：' + e.message }, 500);
   }

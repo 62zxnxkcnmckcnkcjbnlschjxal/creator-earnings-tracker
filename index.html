@@ -4375,12 +4375,17 @@ function sendChatMessage(text, imgs){
   box.scrollTop=box.scrollHeight;
 
   var reqApiKey=dsEnvConfigured?'':dsState.apiKey;
+  // 45 秒超时：大模型（如 Hy4 preview / GLM-5.3）思考生成可能超过 CF 函数执行上限，超时给明确提示
+  var ctrl=typeof AbortController!=='undefined'?new AbortController():null;
+  var to=ctrl?setTimeout(function(){ try{ctrl.abort();}catch(e){} },45000):null;
   fetch('/api/deepseek',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({provider:dsProvider(),model:dsModel,messages:messages.filter(function(m){return m.role!=='time';}),apiKey:reqApiKey,stream:false})
+    body:JSON.stringify({provider:dsProvider(),model:dsModel,messages:messages.filter(function(m){return m.role!=='time';}),apiKey:reqApiKey,stream:false}),
+    signal:ctrl?ctrl.signal:undefined
   })
   .then(function(r){
+    if(to) clearTimeout(to);
     var ct=(r.headers.get('content-type')||'');
     var isHtml=ct.indexOf('text/html')>=0;
     if(!r.ok || isHtml){
@@ -4395,7 +4400,7 @@ function sendChatMessage(text, imgs){
       });
     }
     return r.json().catch(function(){
-      throw {handled:true, message:'服务返回了非预期内容'};
+      throw {handled:true, message:'服务超时或暂不可用（响应异常），请重试或换用 DeepSeek-V4.1-Flash'};
     });
   })
   .then(function(data){
@@ -4408,7 +4413,11 @@ function sendChatMessage(text, imgs){
   .catch(function(e){
     var old=document.getElementById('chatLoading');
     if(old) old.remove();
-    var msg=(e&&e.handled)?e.message:'网络异常：'+esc(String(e.message||e));
+    if(to) clearTimeout(to);
+    var msg;
+    if(e&&e.name==='AbortError') msg='请求超时：模型思考时间较长（Hy4 preview / GLM-5.3 类大模型容易超时），请重试或切换到 DeepSeek-V4.1-Flash';
+    else if(e&&e.handled) msg=e.message;
+    else msg='网络异常：'+esc(String(e.message||e));
     dsState.messages.push({role:'assistant',content:msg,time:fmtTime(Date.now())});
     renderChat();
   });
