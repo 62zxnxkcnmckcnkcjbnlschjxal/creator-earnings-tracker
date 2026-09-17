@@ -2971,7 +2971,7 @@ window.addEventListener('hashchange',function(){
 /* ---- 友链（读主站 /api/links，自动同步） ---- */
 var linksSrc='';
 try{ linksSrc=localStorage.getItem('creator_links_src')||''; }catch(e){}
-if(!linksSrc) linksSrc='https://ffdaz-blog.pages.dev/api/links'; // 默认主站 FF大王博客
+if(!linksSrc) linksSrc='https://skyzyf335.top/api/links'; // 默认主站 FF大王博客
 function linksLogoInfo(url){
   try{ var u=new URL(url); var d=u.hostname.replace(/^www\./,'');
     return { primary:'https://'+d+'/favicon.ico', fallback:'https://icons.duckduckgo.com/ip3/'+d+'.ico', initial:(d.charAt(0)||'?').toUpperCase() };
@@ -3004,9 +3004,9 @@ function loadRemoteLinks(){
         return '<a class="mylink-item" href="'+esc(l.url)+'" target="_blank" rel="noopener nofollow">'+img+
           '<span class="mylink-mid"><span class="mylink-title"></span><span class="mylink-url"></span></span></a>';
       }).join('');
-      box.querySelectorAll('.link-item').forEach(function(a,i){
-        var t=a.querySelector('.link-title'); if(t) t.textContent=list[i].title;
-        var u=a.querySelector('.link-url'); if(u) u.textContent=String(list[i].url).replace(/^https?:\/\//,'');
+      box.querySelectorAll('.mylink-item').forEach(function(a,i){
+        var t=a.querySelector('.mylink-title'); if(t) t.textContent=list[i].title;
+        var u=a.querySelector('.mylink-url'); if(u) u.textContent=String(list[i].url).replace(/^https?:\/\//,'');
       });
     })
     .catch(function(e){

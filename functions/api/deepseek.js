@@ -91,7 +91,7 @@ export async function onRequestPost(ctx) {
       return json({ error: '缺少 apiKey（服务器未配置 ' + p.envKey + '，且请求未提供）' }, 400);
     }
 
-    const res = await fetch(p.base + '/chat/completions', {
+    const res = await fetch(p.base + '/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
