@@ -307,7 +307,7 @@ body{min-height:100vh}
 input, select, textarea { font-size: 16px !important; }
 @media (min-width:760px){ input, select, textarea { font-size: 16px !important; } }
 /* ===== 窄屏头部（手机/小窗） ===== */
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding-top:env(safe-area-inset-top)}
 .brand{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
 .brand .logo{width:34px;height:34px;border-radius:11px;background:var(--hero-grad);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 14px -6px color-mix(in srgb,var(--primary) 55%,transparent)}
@@ -423,7 +423,7 @@ input, select, textarea { font-size: 16px !important; }
 .rail{display:none}
 .toolbar{display:none}
 @media (min-width:760px){
-  .page{padding:20px 26px calc(40px + env(safe-area-inset-bottom))}
+  .page{padding:calc(20px + env(safe-area-inset-top)) 26px calc(40px + env(safe-area-inset-bottom))}
   .top{display:none}
   .shell{display:grid;grid-template-columns:240px minmax(0,1fr);gap:24px;align-items:start}
   .rail{display:flex;flex-direction:column;gap:14px;position:sticky;top:20px}
