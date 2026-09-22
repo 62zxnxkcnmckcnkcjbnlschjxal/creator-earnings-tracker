@@ -29,8 +29,8 @@ const PROVIDERS = {
 // 控制台展示 deepseek/deepseek-flash，但 API 必须用 deepseek-v4-flash，否则 400
 const TENCENT_MODEL_ALIAS = {
   'deepseek/deepseek-flash': 'deepseek-v4-flash',
-  'deepseek-flash': 'deepseek-v4-flash',
-  'deepseek/deepseek-v4-flash-vision-exp': 'deepseek-v4-flash-vision-exp'
+  'deepseek-flash': 'deepseek-v4-flash'
+  // 注意：deepseek/deepseek-v4-flash-vision-exp 是控制台在线推理的服务ID，必须原样透传，不能剥前缀
 };
 function normalizeModel(provider, model) {
   if (provider !== 'tencent') return model;

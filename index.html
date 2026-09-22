@@ -4015,6 +4015,7 @@ var dsTencentKey=false;   // 服务器是否已配置腾讯云密钥
 var pendingImages=[];     // 待发送图片 dataURL
 try{ dsModel=localStorage.getItem('creator_dsModel')||'auto'; }catch(e){}
 if(dsModel==='deepseek/deepseek-flash') dsModel='deepseek-v4-flash'; // 兼容旧版本存储
+if(dsModel==='deepseek-v4-flash-vision-exp') dsModel='deepseek/deepseek-v4-flash-vision-exp'; // 旧ID迁移为控制台服务ID（带前缀）
 var VISION_IDS={'deepseek/deepseek-flash':1,'deepseek/deepseek-v4-flash-vision-exp':1,'deepseek-v4-flash':1,'deepseek-v4-flash-vision-exp':1};
 // 供应商判定：auto → 自动；官方模型只有 deepseek-chat；其余（含 deepseek-v4-flash 等腾讯模型）→ tencent
 function dsProvider(){ var m=dsModel||'auto'; if(m==='auto') return 'auto'; return m==='deepseek-chat'?'deepseek':'tencent'; }
@@ -4606,6 +4607,92 @@ function saveGuideApis(){ try{ localStorage.setItem(GUIDE_API_KEY,JSON.stringify
 function loadGuideCache(){ try{ guideCache=JSON.parse(localStorage.getItem(GUIDE_CACHE_KEY))||{}; }catch(e){ guideCache={}; } }
 function saveGuideCache(){ try{ localStorage.setItem(GUIDE_CACHE_KEY,JSON.stringify(guideCache)); }catch(e){} }
 
+/* ===== 攻略内容自动去重：同源数据只保留最新一份 ===== */
+// 归一化图片 URL：去掉时间戳/随机参数（t、_、ts、time、date、v、ver、version、update、rnd 等），得到内容主键
+function normGuideKey(url){
+  try{
+    var u=new URL(url);
+    var keep=[];
+    u.searchParams.forEach(function(v,p){
+      if(!/^(t|_|ts|time|date|v|ver|version|update|updated|rnd|rand|timestamp|_t|t_|sign|sig|token|key)$/i.test(p)){
+        keep.push(p+'='+v);
+      }
+    });
+    keep.sort();
+    return u.origin+u.pathname+(keep.length?'?'+keep.join('&'):'');
+  }catch(e){
+    return String(url).replace(/[?&](?:t|_|ts|time|date|v|ver|version|update|updated|rnd|rand|timestamp)=[^&]*/gi,'');
+  }
+}
+// 从 URL 提取时间戳（数字或可解析日期），用于判断新旧；拿不到返回 0
+function guideUrlTs(url){
+  try{
+    var u=new URL(url);
+    var best=0;
+    u.searchParams.forEach(function(v,p){
+      if(!/^(t|_|ts|time|date|v|ver|version|update|updated|timestamp|_t|t_)$/i.test(p)) return;
+      var n=parseInt(v,10);
+      if(!isNaN(n) && n>1000000000 && n>best) best=n;
+      var d=Date.parse(v);
+      if(!isNaN(d) && d>best) best=d;
+    });
+    return best;
+  }catch(e){ return 0; }
+}
+// 清洗一组 items：按主键去重，同主键保留时间戳更新的（无时间戳时保留最后出现的）；文字卡片同内容只留一条
+function dedupeGuideItems(items){
+  var seen={}, out=[];
+  (items||[]).forEach(function(it){
+    if(!it) return;
+    if(it.type==='img'&&it.url){
+      var k=normGuideKey(it.url);
+      var ts=guideUrlTs(it.url);
+      if(!seen[k]){ seen[k]={it:it,ts:ts}; }
+      else if(ts>=seen[k].ts){ seen[k]={it:it,ts:ts}; }
+      return;
+    }
+    if(it.type==='text'&&it.content){
+      var ck='t:'+it.content;
+      if(!seen[ck]){ seen[ck]={it:it,ts:0}; }
+      return;
+    }
+    out.push(it);
+  });
+  Object.keys(seen).forEach(function(k){ out.push(seen[k].it); });
+  return out;
+}
+// 跨 API 合并去重：返回 {items, removed}，removed 为被清掉的重复/旧内容数
+function mergeGuideDedupe(apiItemsList){
+  var seen={}, out=[], removed=0;
+  apiItemsList.forEach(function(items){
+    (items||[]).forEach(function(it){
+      if(!it) return;
+      if(it.type==='img'&&it.url){
+        var k=normGuideKey(it.url);
+        var ts=guideUrlTs(it.url);
+        if(seen[k]!==undefined){
+          // 已有同主键：谁新留谁
+          if(ts>=seen[k].ts){ out[seen[k].idx]=it; seen[k]={ts:ts,idx:seen[k].idx}; }
+          removed++;
+        } else {
+          seen[k]={ts:ts,idx:out.length};
+          out.push(it);
+        }
+        return;
+      }
+      if(it.type==='text'&&it.content){
+        var ck='t:'+it.content;
+        if(seen[ck]!==undefined){ removed++; return; }
+        seen[ck]=0;
+        out.push(it);
+        return;
+      }
+      out.push(it);
+    });
+  });
+  return {items:out, removed:removed};
+}
+
 /* IndexedDB 图片缓存（离线可看） */
 var IMG_DB='guide-img-db', IMG_STORE='imgs';
 function openImgDB(){
@@ -4707,6 +4794,7 @@ function fetchGuideApi(api){
     }
     return r.text().then(function(text){
       var items=parseGuidePayload(text,ct);
+      items=dedupeGuideItems(items); // 同源数据只保留最新一份
       if(items && items.length){ guideCache[api.url]={ts:Date.now(),items:items,ct:ct}; }
       else{ delete guideCache[api.url]; }
       saveGuideCache();
@@ -4748,24 +4836,27 @@ function renderGuide(results){
   var ratio=localStorage.getItem(GUIDE_RATIO_KEY)||'orig';
   var size=localStorage.getItem(GUIDE_SIZE_KEY)||'m';
   grid.className='guide-grid guide-ratio-'+ratio+' guide-size-'+size;
+  // 跨 API 合并去重：新旧同源内容只保留最新一份
+  var merged=mergeGuideDedupe(results.map(function(r){ return r.items; }));
   var html='', hasErr=false, imgCount=0;
   results.forEach(function(r){
     if(r.error){ hasErr=true; html+='<div class="guide-text-card" style="color:var(--danger)">拉取失败：'+esc(r.api.url)+' — '+esc(r.error)+(r.items&&r.items.length?'（已显示缓存内容）':'')+'</div>'; }
-    if(r.items) r.items.forEach(function(it){
-      if(it.type==='img'){
-        imgCount++;
-        var src;
-        if(it.isData) src=it.url;
-        else src='/api/guide?url='+encodeURIComponent(it.url)+'&img=1';
-        html+='<figure class="guide-fig" data-src="'+esc(src)+'" data-title="'+esc(it.title)+'"><img loading="lazy" referrerpolicy="no-referrer" src="'+esc(src)+'" data-fb="'+esc(it.isData?'':it.url)+'" alt="'+esc(it.title)+'"><figcaption class="guide-fig-cap">'+esc(it.title||'')+'</figcaption></figure>';
-      } else {
-        html+='<div class="guide-text-card">'+esc(it.content)+'</div>';
-      }
-    });
+  });
+  merged.items.forEach(function(it){
+    if(it.type==='img'){
+      imgCount++;
+      var src;
+      if(it.isData) src=it.url;
+      else src='/api/guide?url='+encodeURIComponent(it.url)+'&img=1';
+      html+='<figure class="guide-fig" data-src="'+esc(src)+'" data-title="'+esc(it.title)+'"><img loading="lazy" referrerpolicy="no-referrer" src="'+esc(src)+'" data-fb="'+esc(it.isData?'':it.url)+'" alt="'+esc(it.title)+'"><figcaption class="guide-fig-cap">'+esc(it.title||'')+'</figcaption></figure>';
+    } else {
+      html+='<div class="guide-text-card">'+esc(it.content)+'</div>';
+    }
   });
   if(!html) html='<div class="guide-empty">该 API 未返回可展示的图片或文字</div>';
   grid.innerHTML=html;
-  if(note) note.textContent=(hasErr?'部分接口拉取失败，已尝试显示缓存；':'')+'共 '+imgCount+' 张图片 · 本地缓存 24 小时，每天首次打开自动拉取最新内容。';
+  var dedupNote=(merged.removed>0)?'已自动清理 '+merged.removed+' 条重复/旧版本内容（同源只保留最新）：':'';
+  if(note) note.textContent=dedupNote+(hasErr?'部分接口拉取失败，已尝试显示缓存；':'')+'共 '+imgCount+' 张图片 · 本地缓存 24 小时，每天首次打开自动拉取最新内容。';
   // 图片：dataURL 直接用；代理图读 IndexedDB 缓存 → objectURL，无缓存则异步缓存（离线可看）
   var imgs=grid.querySelectorAll('.guide-fig img');
   imgs.forEach(function(img){
@@ -5305,7 +5396,8 @@ else { try{ calBindAll(); }catch(e){} }
   var curBody=document.getElementById('announceCurBody');
   var REMOTE_SRC='announceSourceV1';
   var REMOTE_CACHE='announceRemoteCacheV1';
-  var REMOTE_DEF='https://ffdaz-blog.pages.dev';
+  var REMOTE_DEF='https://skyzyf335.top'; // 主站 FF大王博客（公告源）
+  var REMOTE_BAK='https://ffdaz-blog.pages.dev'; // 旧部署兼容
   var remoteNotice=null;
   try{ var _rc=localStorage.getItem(REMOTE_CACHE); if(_rc){ var _o=JSON.parse(_rc); if(_o && _o.title) remoteNotice=_o; } }catch(e){}
 
@@ -5313,19 +5405,28 @@ else { try{ calBindAll(); }catch(e){} }
     try{ var v=String(localStorage.getItem(REMOTE_SRC)||'').trim(); if(v) return v.replace(/\/+$/,''); }catch(e){}
     return REMOTE_DEF;
   }
-  /* 跨站公告拉取：从 FF大王博客 公开接口读取最新公告（失败静默，不影响页面） */
+  /* 跨站公告拉取：多源自动探测（本地设置 → 主站域名 → 旧部署域名），成功后静默展示 */
   function announcePull(){
+    var candidates=[];
     var b=announceBase();
-    fetch(b+'/api/public-notice',{credentials:'omit'}).then(function(r){
-      if(!r.ok) throw new Error('http '+r.status);
-      return r.json();
-    }).then(function(d){
-      if(!d || !d.ok || !d.notice) return;
-      try{ localStorage.setItem(REMOTE_CACHE,JSON.stringify(d.notice)); }catch(e){}
-      remoteNotice=d.notice;
-      try{ checkAnnounce(); }catch(e){}
-      try{ renderAnnounceCur(); }catch(e){}
-    }).catch(function(){});
+    if(b) candidates.push(b);
+    if(REMOTE_DEF && candidates.indexOf(REMOTE_DEF)<0) candidates.push(REMOTE_DEF);
+    if(REMOTE_BAK && candidates.indexOf(REMOTE_BAK)<0) candidates.push(REMOTE_BAK);
+    (function tryNext(i){
+      if(i>=candidates.length) return;
+      var src=candidates[i];
+      fetch(src+'/api/public-notice',{credentials:'omit'}).then(function(r){
+        if(!r.ok) throw new Error('http '+r.status);
+        return r.json();
+      }).then(function(d){
+        if(!d || !d.ok || !d.notice){ throw new Error('empty'); }
+        try{ localStorage.setItem(REMOTE_SRC,src); }catch(e){}
+        try{ localStorage.setItem(REMOTE_CACHE,JSON.stringify(d.notice)); }catch(e){}
+        remoteNotice=d.notice;
+        try{ checkAnnounce(); }catch(e){}
+        try{ renderAnnounceCur(); }catch(e){}
+      }).catch(function(){ tryNext(i+1); });
+    })(0);
   }
   window.__announcePull=announcePull;
 
