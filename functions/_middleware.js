@@ -46,8 +46,9 @@ function getCookie(req, name) {
 export async function onRequest(ctx) {
   const url = new URL(ctx.request.url);
 
-  // 管理接口始终放行（接口内部自行校验授权）
+  // 管理接口和推送接口始终放行（推送接口给定时任务调用）
   if (url.pathname === '/api/auth' || url.pathname.startsWith('/api/auth/')) return ctx.next();
+  if (url.pathname.startsWith('/api/push/')) return ctx.next();
 
   const cfg = await getConfig(ctx.env);
   if (!cfg.enabled) return ctx.next();
