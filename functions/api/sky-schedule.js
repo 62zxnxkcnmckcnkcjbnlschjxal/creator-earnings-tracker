@@ -134,30 +134,6 @@ export async function onRequestPost(ctx) {
       return json({ ok: true, items: merged, updated: Date.now() });
     }
 
-    // ===== 一键清除（全部 / 时间段） =====
-    if (action === 'clear') {
-      const mode = String(body.mode || 'all');
-      const existing = await readItems(ctx.env);
-      if (mode === 'range') {
-        const start = String(body.start || '');
-        const end = String(body.end || '');
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(start) || !/^\d{4}-\d{2}-\d{2}$/.test(end)) {
-          return json({ ok: false, error: '时间段清除需要有效的开始和结束日期（YYYY-MM-DD）' }, 400);
-        }
-        const kept = existing.filter(function (x) {
-          const d = x.date || '';
-          return d < start || d > end;
-        });
-        const removed = existing.length - kept.length;
-        await writeItems(ctx.env, kept);
-        return json({ ok: true, items: kept, removed: removed, updated: Date.now() });
-      }
-      // 全部清除
-      await ctx.env.EARNINGS_KV.put(SKY_KEY, '[]');
-      await ctx.env.EARNINGS_KV.put(SKY_META, JSON.stringify({ updated: Date.now(), source: 'cleared' }));
-      return json({ ok: true, items: [], removed: existing.length, updated: Date.now() });
-    }
-
     // ===== AI 解析更新 =====
     const envKey = ctx.env.DEEPSEEK_API_KEY;
     if (!envKey || typeof envKey !== 'string' || !envKey.trim()) {

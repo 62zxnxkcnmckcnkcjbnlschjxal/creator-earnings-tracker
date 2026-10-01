@@ -536,25 +536,6 @@ input, select, textarea { font-size: 16px !important; }
   transform: none;
   box-shadow: none;
 }
-/* 加载中：保持主题色，加旋转 spinner，不变白 */
-.btn.btn-loading{
-  opacity: 1 !important;
-  filter: none !important;
-  pointer-events: none;
-}
-.btn.btn-loading::before{
-  content: '';
-  display: inline-block;
-  width: 13px;
-  height: 13px;
-  margin-right: 7px;
-  vertical-align: -2px;
-  border: 2px solid rgba(255,255,255,0.35);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: btnSpin .7s linear infinite;
-}
-@keyframes btnSpin{ to{ transform: rotate(360deg);} }
 /* 内高光伪元素 —— 增强玻璃质感 */
 .btn-primary::after{
   content: '';
@@ -1927,9 +1908,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   max-width: 460px;
   width: 92%;
   box-sizing: border-box;
-  margin: auto;
-  max-height: 88vh;
-  overflow-y: auto;
   /* 琉璃：内高光 + 强柔影 */
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), var(--shadow-lg);
 }
@@ -2038,7 +2016,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .cal-dlg-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
 .cal-row{display:flex;align-items:center;gap:10px;margin:8px 0}
 .cal-row span{width:66px;font-size:13px;color:var(--muted);flex-shrink:0}
-.cal-row input[type=radio]{width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0}
 .cal-row input,.cal-row select{
   flex: 1;
   min-width: 0;
@@ -2539,6 +2516,13 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
               </div>
             </div>
             <div class="set-group">
+              <div class="set-title">红石提醒（Bark 推送）</div>
+              <div class="set-row"><span>Bark Key</span><input type="text" id="barkKeyInput" placeholder="从 Bark App 复制" style="flex:1;min-width:200px"></div>
+              <div class="set-actions"><button class="btn btn-soft" id="barkSave">保存 Key</button><button class="btn" id="barkTest">测试红石提醒</button></div>
+              <div class="set-hint" id="barkHint" style="display:none;margin-top:6px;padding:8px 10px;border-radius:8px;font-size:12px;"></div>
+              <div class="set-hint">配置后，每周五自动检查本周末（周五~周日）红石日程，有红石就推送到你 iPhone。点"测试红石提醒"可立即触发一次检查。Bark Key 保存在云端 KV，全设备同步。</div>
+            </div>
+            <div class="set-group">
               <div class="set-title">友链同步</div>
               <div class="set-row"><span>主站友链地址</span><input type="url" id="linksSrcCfg" placeholder="https://主站域名/api/links" style="flex:1;min-width:200px"></div>
               <div class="set-actions"><button class="btn btn-soft" id="linksSrcCfgSave">保存并同步</button></div>
@@ -2564,7 +2548,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
               </div>
               <button class="btn btn-soft" id="calAdd">＋ 添加</button>
               <button class="btn btn-primary" id="calAi">AI 更新</button>
-              <button class="btn btn-danger" id="calClear">🗑 清除</button>
             </div>
           </div>
           <div class="cal-meta" id="calMeta"></div>
@@ -4291,6 +4274,50 @@ dsVerifyEnv.addEventListener('click',function(){
 // 页面加载时检测服务器密钥状态
 checkServerKeyStatus();
 
+// ===== Bark 红石提醒 =====
+var barkKeyInput=document.getElementById('barkKeyInput');
+var barkSave=document.getElementById('barkSave');
+var barkTest=document.getElementById('barkTest');
+var barkHint=document.getElementById('barkHint');
+
+function setBarkHint(msg,type){
+  if(!barkHint) return;
+  barkHint.style.display='block';
+  barkHint.textContent=msg;
+  barkHint.style.background=type==='ok'?'var(--ok-soft)':(type==='err'?'var(--danger-soft)':'transparent');
+  barkHint.style.color=type==='ok'?'var(--green)':(type==='err'?'var(--danger)':'var(--muted)');
+}
+
+// 加载已保存的 Bark Key
+fetch('/api/push/config').then(function(r){return r.json();}).then(function(d){
+  if(barkKeyInput && d.barkKey) barkKeyInput.value=d.barkKey;
+}).catch(function(){});
+
+if(barkSave) barkSave.addEventListener('click',function(){
+  var key=String(barkKeyInput.value||'').trim();
+  fetch('/api/push/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({barkKey:key})})
+    .then(function(r){return r.json();}).then(function(d){
+      if(d.ok){setBarkHint('Bark Key 已保存','ok');toast('Bark Key 已保存');}
+      else setBarkHint(d.error||'保存失败','err');
+    }).catch(function(e){setBarkHint('保存失败：'+e.message,'err');});
+});
+
+if(barkTest) barkTest.addEventListener('click',function(){
+  barkTest.disabled=true;
+  barkTest.textContent='检查中...';
+  fetch('/api/push/redstone-reminder').then(function(r){return r.json();}).then(function(d){
+    barkTest.disabled=false;
+    barkTest.textContent='测试红石提醒';
+    if(d.pushed){setBarkHint('已推送！'+d.body,'ok');toast('红石提醒已推送');}
+    else if(d.message){setBarkHint(d.message,'');}
+    else setBarkHint(d.error||'未知错误','err');
+  }).catch(function(e){
+    barkTest.disabled=false;
+    barkTest.textContent='测试红石提醒';
+    setBarkHint('请求失败：'+e.message,'err');
+  });
+});
+
 var CHAT_PRESETS=[
   {label:'催发提醒',text:'那些活动已经很久没发放了，请帮我整理一份催发提醒话术，包含每个待发放活动的平台、活动名称和金额。'},
   {label:'收益分析',text:'请帮我分析目前的待发收益情况，按平台统计总金额和笔数，并给出接下来应该优先关注哪些活动的建议。'},
@@ -5320,53 +5347,12 @@ function calBindAll(){
   if(aiOk) aiOk.addEventListener('click',function(){
     var text=document.getElementById('calAiText').value.trim();
     if(!text){ toast('请先粘贴播报文本'); return; }
-    aiOk.disabled=true; aiOk.classList.add('btn-loading'); aiOk.textContent='解析中';
+    aiOk.disabled=true; aiOk.textContent='解析中…';
     calPost({action:'ai',text:text}).then(function(d){
       if(d.ok){ CAL.items=d.items||[]; CAL.selected=null; renderCal(); toast('解析成功，已保存 '+d.items.length+' 条日程'); calCloseDlg('calAiDlg'); }
       else toast(d.error||'解析失败');
     }).catch(function(e){ toast('解析失败：'+((e&&e.message)||e)); })
-    .finally(function(){ aiOk.disabled=false; aiOk.classList.remove('btn-loading'); aiOk.textContent='解析并保存'; });
-  });
-
-  // ===== 一键清除 =====
-  var clearBtn=document.getElementById('calClear');
-  if(clearBtn) clearBtn.addEventListener('click',function(){
-    // 重置弹窗状态
-    document.getElementById('clrAll').checked=true;
-    document.getElementById('clrRangeBox').style.display='none';
-    document.getElementById('clrStart').value='';
-    document.getElementById('clrEnd').value='';
-    document.getElementById('clrConfirmText').value='';
-    var ok=document.getElementById('calClearOk');
-    ok.disabled=true;
-    ok.classList.remove('btn-loading'); ok.textContent='确认清除';
-    calOpenDlg('calClearDlg');
-  });
-  // 时间段/全部切换
-  document.querySelectorAll('input[name="clrMode"]').forEach(function(r){
-    r.addEventListener('change',function(){
-      var range=document.getElementById('clrRange').checked;
-      document.getElementById('clrRangeBox').style.display=range?'':'none';
-    });
-  });
-  // 二次验证输入：匹配文字后才点亮按钮
-  document.getElementById('clrConfirmText').addEventListener('input',function(){
-    document.getElementById('calClearOk').disabled = this.value.trim()!=='我确认删除';
-  });
-  // 确认清除
-  var clrOk=document.getElementById('calClearOk');
-  if(clrOk) clrOk.addEventListener('click',function(){
-    var rangeMode=document.getElementById('clrRange').checked;
-    var start=document.getElementById('clrStart').value;
-    var end=document.getElementById('clrEnd').value;
-    if(rangeMode && (!start || !end)){ toast('请选择开始和结束日期'); return; }
-    if(rangeMode && start>end){ toast('开始日期不能晚于结束日期'); return; }
-    clrOk.disabled=true; clrOk.classList.add('btn-loading'); clrOk.textContent='清除中';
-    calPost({action:'clear',mode:rangeMode?'range':'all',start:start,end:end}).then(function(d){
-      if(d.ok){ CAL.items=d.items||[]; CAL.selected=null; renderCal(); toast('已清除 '+d.removed+' 条日程'); calCloseDlg('calClearDlg'); }
-      else toast(d.error||'清除失败');
-    }).catch(function(e){ toast('清除失败：'+((e&&e.message)||e)); })
-    .finally(function(){ clrOk.disabled=false; clrOk.classList.remove('btn-loading'); clrOk.textContent='确认清除'; });
+    .finally(function(){ aiOk.disabled=false; aiOk.textContent='解析并保存'; });
   });
   var addOk=document.getElementById('calAddOk');
   if(addOk) addOk.addEventListener('click',function(){
@@ -5397,30 +5383,6 @@ else { try{ calBindAll(); }catch(e){} }
     <div class="cal-dlg-actions">
       <button value="cancel" class="btn btn-soft">取消</button>
       <button type="button" class="btn btn-primary" id="calAiOk">解析并保存</button>
-    </div>
-  </form>
-</dialog>
-<dialog class="cal-dialog" id="calClearDlg">
-  <form method="dialog" class="cal-dlg-form">
-    <h4>清除碎石日程</h4>
-    <div class="set-hint" style="margin-bottom:10px">选择要清除的范围，删除后云端数据同步清空，无法恢复。</div>
-    <div class="cal-row" style="margin:6px 0">
-      <input type="radio" name="clrMode" id="clrAll" value="all" checked style="width:auto;flex:none">
-      <label for="clrAll" style="cursor:pointer;flex:1">全部清除（清空所有日程）</label>
-    </div>
-    <div class="cal-row" style="margin:6px 0">
-      <input type="radio" name="clrMode" id="clrRange" value="range" style="width:auto;flex:none">
-      <label for="clrRange" style="cursor:pointer;flex:1">按时间段清除</label>
-    </div>
-    <div id="clrRangeBox" style="display:none">
-      <div class="cal-row"><span>开始日期</span><input type="date" id="clrStart"></div>
-      <div class="cal-row"><span>结束日期</span><input type="date" id="clrEnd"></div>
-    </div>
-    <div class="cal-row"><span>二次验证</span><input type="text" id="clrConfirmText" placeholder='输入"我确认删除"' autocomplete="off"></div>
-    <div class="set-hint" style="font-size:12px;margin:0 0 10px 76px">必须一字不差输入上面的文字，确认按钮才会点亮。</div>
-    <div class="cal-dlg-actions">
-      <button value="cancel" class="btn btn-soft">取消</button>
-      <button type="button" class="btn btn-primary" id="calClearOk" disabled>确认清除</button>
     </div>
   </form>
 </dialog>
