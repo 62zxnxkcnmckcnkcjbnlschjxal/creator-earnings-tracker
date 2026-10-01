@@ -69,8 +69,8 @@ export async function onRequestGet(ctx) {
         title: title,
         body: body,
         group: '红石提醒',
-        url: 'https://skyzyf335.top/#/攻略',
-        icon: 'https://skyzyf335.top/icons/icon-192.png'
+        url: 'https://gzz.skyzyf335.top/#/攻略',
+        icon: 'https://gzz.skyzyf335.top/icons/icon-192.png'
       })
     });
 
